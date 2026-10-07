@@ -145,6 +145,54 @@ async function setup() {
 
 // ---------- tests ----------
 async function tests(d) {
+  // ===== 0. Employee import and attendance capture functions =====
+  const imp = 'select public.import_employees($1,$2,$3,$4::jsonb) as r';
+  const rowsA = JSON.stringify([
+    { employee_code: '3001', first_name: 'Nina', last_name: 'New', shift: 'first shift', department: 'Receiving' },
+    { employee_code: '1001', first_name: 'Ana', last_name: 'Changed' },          // existing: update
+    { employee_code: '1002', first_name: 'Abel', last_name: 'Alpha' },           // existing: unchanged
+    { employee_code: '3002', first_name: 'Ulla', last_name: 'X', shift: 'Night' }, // unknown shift
+    { employee_code: '3001', first_name: 'Nina', last_name: 'Again' },           // duplicate in file
+    { employee_code: '3003', first_name: '', last_name: 'Nameless' },            // missing name
+    { employee_code: '2001', first_name: 'Aria', last_name: 'Alpha' },           // belongs to warehouse A2
+    { employee_code: '3004', first_name: 'Bad', last_name: 'Date', hire_date: '31/31/2026' },
+  ]);
+  const res = await one(U.adminA, imp, [d.orgA, d.whA1, 'staff.xlsx', rowsA]).catch(e => ({ r: { error: e.message } }));
+  const errs = (res.r.errors || []).map(e => e.error).sort().join(',');
+  ok('import: new, updated and unchanged counted by badge', res.r.new === 1 && res.r.updated === 1 && res.r.unchanged === 1, JSON.stringify(res.r));
+  ok('import: each bad row explained', errs === 'bad_date,duplicate_in_file,missing_name,other_warehouse,unknown_shift', errs);
+  await run(U.adminA, async c => {
+    await c.query(imp, [d.orgA, d.whA1, 'staff.xlsx', rowsA]);
+    const e = (await c.query("select e.last_name, d.name dept, s.name shift from employees e left join departments d on d.id = e.department_id left join shifts s on s.id = e.shift_id where e.organization_id = $1 and e.employee_code in ('1001','3001') order by e.employee_code", [d.orgA])).rows;
+    ok('import: update keeps saved shift when the file leaves it blank', e[0].last_name === 'Changed' && e[0].shift === 'First Shift', JSON.stringify(e[0]));
+    ok('import: unknown department is created, shift matched by name', e[1].dept === 'Receiving' && e[1].shift === 'First Shift', JSON.stringify(e[1]));
+    ok('import: history row written', (await c.query("select rows_new, rows_error from import_batches where organization_id = $1 and kind = 'employees'", [d.orgA])).rows[0]?.rows_error === 5);
+  });
+  await rejects('import: A owner cannot import into company B', U.ownerA, imp, [d.orgB, d.whB1, 'x.csv', rowsA], /not_allowed/);
+  await rejects('import: A owner cannot import into a B warehouse', U.ownerA, imp, [d.orgA, d.whB1, 'x.csv', rowsA], /warehouse_not_found/);
+  await rejects('import: supervisor cannot import', U.supA, imp, [d.orgA, d.whA1, 'x.csv', rowsA], /not_allowed/);
+  await rejects('import: anonymous cannot call', 'anon', imp, [d.orgA, d.whA1, 'x.csv', rowsA], /permission denied/);
+
+  const rec = 'select public.record_attendance(current_date, $1::jsonb) as n';
+  const entry = (id, status, extra = {}) => JSON.stringify([{ employee_id: id, status, ...extra }]);
+  await run(U.supA, async c => {
+    await c.query(rec, [entry(d.empA1, 'present', { reason_code: 'personal' })]);
+    await c.query(rec, [entry(d.empA1, 'absent', { reason_code: 'no_call_no_show' })]);
+    const rows = (await c.query('select status, reason_code, recorded_by, organization_id from attendance_records where employee_id = $1 and work_date = current_date', [d.empA1])).rows;
+    ok('attendance: re-marking replaces the status (one row per day)', rows.length === 1 && rows[0].status === 'absent' && rows[0].reason_code === 'no_call_no_show', JSON.stringify(rows));
+    ok('attendance: author and company set by the server', rows[0].recorded_by === U.supA.id && rows[0].organization_id === d.orgA);
+  });
+  await run(U.supA, async c => {
+    await c.query(rec, [entry(d.empA1b, 'present', { reason_code: 'personal' })]);
+    const r = (await c.query('select reason_code from attendance_records where employee_id = $1 and work_date = current_date', [d.empA1b])).rows[0];
+    ok('attendance: a reason is only kept for absences', r.reason_code === null);
+  });
+  await blocked('attendance: supervisor cannot mark an employee of another warehouse', U.supA, rec, [entry(d.empA2, 'present')]);
+  await blocked('attendance: A cannot mark a B employee', U.ownerA, rec, [entry(d.empB1, 'present')]);
+  await rejects('attendance: B reason codes cannot be used by A', U.ownerA, rec, [entry(d.empA1, 'absent', { reason_code: 'made_up' })], /foreign key/);
+  await rejects('attendance: far-future dates rejected', U.supA,
+    "select public.record_attendance(current_date + 30, $1::jsonb)", [entry(d.empA1, 'present')], /work_date_out_of_range/);
+  await rejects('attendance: anonymous cannot call', 'anon', rec, [entry(d.empA1, 'present')], /permission denied/);
   // ===== 1. Company A trying to reach Company B =====
   const crossReads = [
     ['employees', 'select * from employees where organization_id = $1'],

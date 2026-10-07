@@ -2,77 +2,96 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useOrg, canManage } from '../lib/org';
-import { formatTime, WEEKDAYS } from '../lib/time';
-import type { Shift, Warehouse } from '../lib/types';
+import { useWorkspace } from '../lib/workspace';
+import { formatTime, formatDate, todayIn, workDateFor, isoWeekday, addDays } from '../lib/time';
+import type { AttendanceStatus } from '../lib/types';
 import { Loading, Notice } from '../components/ui';
 
-interface WarehouseWithShifts extends Warehouse { shifts: Shift[] }
-
-function todayIso(tz: string) {
-  // ISO weekday (1 = Monday) in the company's time zone
-  const wd = new Intl.DateTimeFormat('en-US', { weekday: 'short', timeZone: tz }).format(new Date());
-  return WEEKDAYS.find(d => d.short === wd)?.n ?? 1;
-}
+type Tally = Record<AttendanceStatus | 'none', number>;
 
 export default function Home() {
   const { current } = useOrg();
-  const [data, setData] = useState<WarehouseWithShifts[] | null>(null);
-  const [tz, setTz] = useState('America/New_York');
+  const ws = useWorkspace(current?.organization_id);
+  const [emps, setEmps] = useState<{ id: string; shift_id: string | null; warehouse_id: string }[] | null>(null);
+  const [recs, setRecs] = useState<{ employee_id: string; work_date: string; status: AttendanceStatus }[]>([]);
+  const today = todayIn(ws.timezone);
 
   useEffect(() => {
-    if (!current) return;
+    if (!current || ws.loading) return;
     (async () => {
-      const { data: org } = await supabase.from('organizations').select('timezone').eq('id', current.organization_id).single();
-      if (org?.timezone) setTz(org.timezone);
-      const { data: wh } = await supabase.from('warehouses')
-        .select('id, organization_id, name, is_active, shifts(id, name, start_time, end_time, days, late_grace_minutes, is_active, sort_order)')
-        .eq('organization_id', current.organization_id).order('created_at');
-      setData((wh ?? []) as unknown as WarehouseWithShifts[]);
+      const [e, r] = await Promise.all([
+        supabase.from('employees').select('id, shift_id, warehouse_id').eq('organization_id', current.organization_id)
+          .eq('status', 'active').limit(10000),
+        supabase.from('attendance_records').select('employee_id, work_date, status')
+          .eq('organization_id', current.organization_id).in('work_date', [today, addDays(today, -1)]).limit(20000),
+      ]);
+      setEmps(e.data ?? []);
+      setRecs((r.data ?? []) as typeof recs);
     })();
-  }, [current]);
+  }, [current, ws.loading, today]);
 
-  if (!current || !data) return <Loading />;
+  if (!current || ws.loading || !emps) return <Loading />;
 
-  const weekday = todayIso(tz);
-  const dateLabel = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: tz }).format(new Date());
+  const manage = canManage(current);
+  const byDate = new Map<string, Map<string, AttendanceStatus>>();
+  recs.forEach(r => { if (!byDate.has(r.work_date)) byDate.set(r.work_date, new Map()); byDate.get(r.work_date)!.set(r.employee_id, r.status); });
 
   return (
     <div className="stack-lg">
       <div className="page-head">
         <h1>Today</h1>
-        <p className="muted">{dateLabel} · {current.name}</p>
+        <p className="muted">{formatDate(today)} · {current.name}</p>
       </div>
 
-      {!data.length && (
+      {!ws.warehouses.length && (
         <Notice kind="info">Your admin hasn’t given you access to a warehouse yet. Ask them to assign one to you.</Notice>
       )}
 
-      {data.map(w => {
-        const running = (w.shifts ?? []).filter(s => s.is_active && s.days.includes(weekday))
-          .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+      {ws.warehouses.map(w => {
+        const whEmps = emps.filter(e => e.warehouse_id === w.id);
+        const shifts = w.shifts.filter(s => s.is_active && s.days.includes(isoWeekday(workDateFor(s, ws.timezone))));
         return (
           <section key={w.id} className="panel" aria-labelledby={`wh-${w.id}`}>
-            <h2 id={`wh-${w.id}`}>{w.name}</h2>
-            {running.length ? (
-              <ul className="stack" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                {running.map(s => (
-                  <li key={s.id} className="row" style={{ justifyContent: 'space-between', borderTop: '1px solid var(--line)', paddingTop: 12 }}>
-                    <strong>{s.name}</strong>
-                    <span className="muted">{formatTime(s.start_time)} – {formatTime(s.end_time)}</span>
-                  </li>
-                ))}
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <h2 id={`wh-${w.id}`}>{w.name}</h2>
+              <span className="muted small">{whEmps.length} active employees</span>
+            </div>
+            {!whEmps.length && manage && (
+              <Notice kind="info">No employees yet. <Link to={`/employees/import?wh=${w.id}`}>Import your roster</Link> to start taking attendance.</Notice>
+            )}
+            {shifts.length ? (
+              <ul className="shift-cards">
+                {shifts.map(s => {
+                  const date = workDateFor(s, ws.timezone);
+                  const marks = byDate.get(date) ?? new Map();
+                  const roster = whEmps.filter(e => e.shift_id === s.id);
+                  const t: Tally = { present: 0, late: 0, absent: 0, excused: 0, none: 0 };
+                  roster.forEach(e => { t[(marks.get(e.id) as AttendanceStatus | undefined) ?? 'none']++; });
+                  const done = roster.length > 0 && t.none === 0;
+                  return (
+                    <li key={s.id} className="shift-card">
+                      <div>
+                        <strong>{s.name}</strong>
+                        <span className="muted small"> {formatTime(s.start_time)} – {formatTime(s.end_time)}{date !== today ? ' · started yesterday' : ''}</span>
+                      </div>
+                      {roster.length ? (
+                        <p className="tally-line small">
+                          <span className="t-present">{t.present} present</span> · <span className="t-late">{t.late} late</span> ·{' '}
+                          <span className="t-absent">{t.absent} absent</span> · {t.excused} excused ·{' '}
+                          <span className={t.none ? 't-none' : undefined}>{t.none} no record</span>
+                        </p>
+                      ) : <p className="small muted">No employees assigned to this shift.</p>}
+                      <Link className={`btn ${done ? 'btn-ghost' : 'btn-primary'}`} to={`/attendance?wh=${w.id}&shift=${s.id}&date=${date}`}>
+                        {done ? 'Review attendance' : t.present + t.late + t.absent + t.excused ? 'Continue attendance' : 'Take attendance'}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             ) : <p className="muted">No shifts scheduled today.</p>}
           </section>
         );
       })}
-
-      <section className="panel">
-        <h2>Coming next</h2>
-        <p>Attendance capture, employee lists and reports arrive in the next updates. Your company, warehouse and
-           shifts are already saved, so you’ll pick up right where you left off.</p>
-        {canManage(current) && <Link to="/settings" className="btn btn-ghost" style={{ justifySelf: 'start' }}>Edit shifts</Link>}
-      </section>
     </div>
   );
 }

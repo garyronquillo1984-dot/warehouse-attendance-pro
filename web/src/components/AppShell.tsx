@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useOrg, canManage } from '../lib/org';
 import { Wordmark } from './ui';
 
-const SOON = ['Attendance', 'Employees', 'Reports'];
+const SOON = ['Reports'];
 
 export default function AppShell() {
   const { orgs, current, select } = useOrg();
@@ -36,9 +36,11 @@ export default function AppShell() {
       <div className="body">
         <nav className="sidenav" aria-label="Main">
           <NavLink to="/" end>Today</NavLink>
+          <NavLink to="/attendance">Attendance</NavLink>
+          <NavLink to="/employees">Employees</NavLink>
           {SOON.map(s => <span key={s} aria-disabled="true">{s} <span className="soon">Coming soon</span></span>)}
           {canManage(current) && <NavLink to="/settings">Settings</NavLink>}
-          <NavLink to="/account">My account</NavLink>
+          <NavLink to="/account"><span className="wide-only">My account</span><span className="narrow-only">Account</span></NavLink>
         </nav>
         <main className="main" id="content">
           <Outlet />

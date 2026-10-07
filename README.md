@@ -11,8 +11,8 @@ Each customer company's data is fully isolated by the database itself.
 | --- | --- | --- |
 | 1. Foundations | Schema, row-level security, server functions, Hotmart license logic, isolation tests | Done |
 | 2. Accounts & onboarding | Sign up, login, password reset, company → warehouse → shifts wizard | Done |
-| 3. Employees | List, filters, add/edit/deactivate, CSV/Excel import | |
-| 4. Attendance | Fast capture screen (no scroll jumps) | |
+| 3. Employees | List, filters, add/edit/deactivate, CSV/Excel import | Done |
+| 4. Attendance | Fast capture screen (no scroll jumps), badge scan, bulk present | Done |
 | 5. Dashboard & reports | KPIs, 7 reports, CSV/Excel/PDF | |
 | 6. Licensing & Hotmart | Webhook edge function, inactive page, super admin | |
 | 7. Demo & launch | Demo mode, legal pages, production deploy | |
@@ -33,6 +33,7 @@ versions match the history of the Supabase project `warehouse-attendance-dev`
 | `20261007143757_functions_admin_and_billing.sql` | Super admin, Hotmart billing | Yes |
 | `20261007143827_functions_profiles_on_signup.sql` | Profile created on sign up | Yes |
 | `20261007150000_functions_team.sql` | Change role, remove member, transfer ownership | Yes (applied from the SQL Editor on 2026-10-07, so it is not in Supabase's migration list) |
+| `20261007165553_functions_employees_attendance.sql` | Employee import, attendance capture | Yes |
 
 The last file contains `DELETE` statements inside functions, so Supabase requires a human
 confirmation; it was run by hand from Supabase → SQL Editor.

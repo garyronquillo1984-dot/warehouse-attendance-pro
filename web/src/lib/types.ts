@@ -35,3 +35,36 @@ export interface Shift {
   is_active: boolean;
   sort_order?: number;
 }
+
+export type EmployeeStatus = 'active' | 'inactive';
+export type AttendanceStatus = 'present' | 'late' | 'absent' | 'excused';
+
+export interface Department { id: string; warehouse_id: string; name: string; is_active: boolean }
+
+export interface Employee {
+  id: string;
+  organization_id: string;
+  warehouse_id: string;
+  employee_code: string;      // badge ID
+  first_name: string;
+  last_name: string;
+  shift_id: string | null;
+  department_id: string | null;
+  status: EmployeeStatus;
+  hire_date: string | null;
+  first_attendance_date: string | null;
+}
+
+export interface AttendanceRecord {
+  id: string;
+  employee_id: string;
+  work_date: string;
+  shift_id: string | null;
+  status: AttendanceStatus;
+  reason_code: string | null;
+  note: string | null;
+}
+
+export interface AbsenceReason { code: string; label: string; is_active: boolean; sort_order: number }
+
+export const EMPLOYEE_COLUMNS = 'id, organization_id, warehouse_id, employee_code, first_name, last_name, shift_id, department_id, status, hire_date, first_attendance_date';

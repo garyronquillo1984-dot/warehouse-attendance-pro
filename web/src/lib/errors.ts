@@ -14,6 +14,11 @@ const MESSAGES: [RegExp, string][] = [
   [/invitation_invalid_or_expired/, 'This invitation has expired or was already used. Ask your admin for a new one.'],
   [/invitation_for_another_email/, 'This invitation was sent to a different email. Sign in with that email to accept it.'],
   [/license_inactive/, 'This company’s subscription is inactive, so new members can’t join right now.'],
+  [/import_too_large/, 'That file has more than 5,000 rows. Split it into smaller files.'],
+  [/import_empty/, 'That file has no employee rows.'],
+  [/warehouse_not_found/, 'That warehouse no longer exists. Refresh the page.'],
+  [/work_date_out_of_range/, 'Attendance can only be taken for today or past dates within the last year.'],
+  [/employees_organization_id_employee_code_key|duplicate key.*employee_code/, 'Another employee already has this badge ID.'],
   [/row-level security|permission denied|not_allowed|42501/i, 'You don’t have permission to do that.'],
   [/failed to fetch|network/i, 'Can’t reach the server. Check your connection and try again.'],
 ];

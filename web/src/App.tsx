@@ -14,6 +14,10 @@ import Home from './pages/Home';
 import Settings from './pages/Settings';
 import Account from './pages/Account';
 import AcceptInvite from './pages/AcceptInvite';
+import Employees from './pages/Employees';
+import EmployeeForm from './pages/EmployeeForm';
+import ImportEmployees from './pages/ImportEmployees';
+import Attendance from './pages/Attendance';
 
 // Signed-out visitors only (signed-in users go to the app).
 function PublicOnly() {
@@ -65,6 +69,11 @@ export default function App() {
         <Route path="/setup" element={<Setup />} />
         <Route element={<AppGate />}>
           <Route path="/" element={<Home />} />
+          <Route path="/attendance" element={<Attendance />} />
+          <Route path="/employees" element={<Employees />} />
+          <Route path="/employees/new" element={<EmployeeForm />} />
+          <Route path="/employees/import" element={<ImportEmployees />} />
+          <Route path="/employees/:id" element={<EmployeeForm />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/account" element={<Account />} />
         </Route>
