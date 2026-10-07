@@ -14,7 +14,7 @@ Each customer company's data is fully isolated by the database itself.
 | 3. Employees | List, filters, add/edit/deactivate, CSV/Excel import | Done |
 | 4. Attendance | Fast capture screen (no scroll jumps), badge scan, bulk present | Done |
 | 5. Dashboard & reports | KPIs, 7 reports, CSV/Excel/PDF | Done |
-| 6. Licensing & Hotmart | Webhook edge function, inactive page, super admin | |
+| 6. Licensing & Hotmart | Webhook edge function, inactive page, super admin | Done (needs the Hotmart token as a secret) |
 | 7. Demo & launch | Demo mode, legal pages, production deploy | |
 
 ## Database
@@ -36,6 +36,8 @@ versions match the history of the Supabase project `warehouse-attendance-dev`
 | `20261007165553_functions_employees_attendance.sql` | Employee import, attendance capture | Yes |
 | `20261007171108_functions_reports.sql` | Report grid (records + scheduled days with no record) | Yes |
 | `20261007171509_report_grid_since.sql` | No Record counts from the later of hire date and date added | Yes |
+| `20261007220000_functions_team_admin_webhook.sql` | Team list, cancel invitation, admin extras, webhook entry point | Yes |
+| `20261007221000_schedule_license_expiry.sql` | Daily license expiry (pg_cron, 05:15 UTC) | Yes |
 
 The last file contains `DELETE` statements inside functions, so Supabase requires a human
 confirmation; it was run by hand from Supabase → SQL Editor.
@@ -80,3 +82,21 @@ npm run build    # output in web/dist (what Cloudflare serves)
 arriving, sign up and email confirmation, the setup wizard, settings, changing and resetting the
 password, someone signing up without a purchase, inviting a supervisor, and a refund locking
 access. Emails are captured to `~/.wap-localstack/mail`. Screenshots go to `tests/e2e/screenshots/`.
+
+## Hotmart webhook (`supabase/functions/hotmart-webhook`)
+
+Deployed as the Edge Function `hotmart-webhook` (JWT check off: Hotmart authenticates with its own token).
+
+URL to paste in Hotmart → Tools → Webhook (version 2.0.0):
+`https://sduevxvdqlxclpjabkru.supabase.co/functions/v1/hotmart-webhook`
+
+Secrets (Supabase → Edge Functions → Secrets — never in the repo or chat):
+
+| Name | Required | What |
+| --- | --- | --- |
+| `HOTMART_HOTTOK` | Yes | The token Hotmart shows on the webhook screen. Until it is set, every call is refused. |
+| `HOTMART_PRODUCT_IDS` | Recommended | This product's Hotmart id(s), comma-separated; events for other products are ignored. |
+| `HOTMART_PLAN_MAP` | No | JSON, offer code / plan name → `starter`, `professional` or `business`. |
+| `HOTMART_DEFAULT_PLAN` | No | Plan for purchases not in the map. Default `professional`. |
+
+Payload reading is tested with `node --experimental-strip-types tests/webhook/parse.test.mts`.

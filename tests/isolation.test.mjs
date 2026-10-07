@@ -207,6 +207,33 @@ async function tests(d) {
   await rejects('report: range longer than 3 months refused', U.ownerA, grid, [d.orgA, null, '2026-01-01', '2026-10-07'], /range_too_long/);
   await rejects('report: anonymous cannot call', 'anon', grid, [d.orgA, null, '2026-10-01', '2026-10-07'], /permission denied/);
 
+
+  // Team screen, invitations, super admin extras, webhook entry point.
+  const team = await q(U.ownerA, 'select * from public.team_members($1)', [d.orgA]);
+  ok('team: owner sees members with emails', team.rows.some(r => r.email === U.supA.email && r.role === 'supervisor' && r.warehouse_ids.includes(d.whA1)));
+  await rejects('team: supervisor cannot list the team', U.supA, 'select * from public.team_members($1)', [d.orgA], /not_allowed/);
+  await rejects('team: A cannot list B team', U.ownerA, 'select * from public.team_members($1)', [d.orgB], /not_allowed/);
+  await run(U.ownerA, async c => {
+    const tok = (await c.query("select public.create_invitation($1, 'late@test.dev', 'supervisor') as t", [d.orgA])).rows[0].t;
+    const inv = (await c.query("select id from invitations where email = 'late@test.dev'")).rows[0].id;
+    await c.query('select public.revoke_invitation($1)', [inv]);
+    ok('invitation revoked = expired now', (await c.query('select expires_at <= now() as x from invitations where id = $1', [inv])).rows[0].x && !!tok);
+  });
+  const invB = (await one(U.ownerB, "select public.create_invitation($1, 'x2@test.dev', 'supervisor') as t", [d.orgB], { commit: true })).t;
+  const invBId = (await one('superuser', "select id from invitations where email = 'x2@test.dev'")).id;
+  await rejects('A cannot revoke B invitation', U.ownerA, 'select public.revoke_invitation($1)', [invBId], /not_allowed/);
+  ok('am_platform_admin: true only for the platform owner',
+     (await one(U.platform, 'select public.am_platform_admin() as x')).x === true && (await one(U.ownerA, 'select public.am_platform_admin() as x')).x === false && !!invB);
+  await rejects('admin billing log needs two-step sign-in', U.platform, 'select * from public.admin_billing_events()', [], /not_allowed/);
+  await allowed('admin billing log with two-step sign-in', U.platform, 'select * from public.admin_billing_events()', [], 1, { aal: 'aal2' });
+  await rejects('customers cannot read the billing log', U.ownerA, 'select * from public.admin_billing_events()', [], /not_allowed/, { aal: 'aal2' });
+  await rejects('signed-in users cannot fake a Hotmart event', U.ownerA,
+    "select public.hotmart_apply_event('x','PURCHASE_APPROVED',now(),'S',null,'owner.a@test.dev','business',null,null)", [], /permission denied/);
+  await rejects('anonymous cannot fake a Hotmart event', 'anon',
+    "select public.hotmart_apply_event('x','PURCHASE_APPROVED',now(),'S',null,'a@test.dev','business',null,null)", [], /permission denied/);
+  ok('the webhook entry point works for the server', (await one('service',
+    "select public.hotmart_apply_event('evt-svc','PURCHASE_APPROVED',now(),'SUB-SVC',null,'svc@test.dev','professional',null,null) as o")).o === 'license_created');
+
   // ===== 1. Company A trying to reach Company B =====
   const crossReads = [
     ['employees', 'select * from employees where organization_id = $1'],

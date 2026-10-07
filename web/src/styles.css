@@ -419,3 +419,36 @@ button.chip[aria-pressed='true'] strong { color: inherit; }
 }
 .narrow-only-block { display: none; }
 @media (max-width: 760px) { .narrow-only-block { display: grid; } }
+
+/* ---------- Team ---------- */
+.team-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.team-list > li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 16px; padding: 12px 0; border-top: 1px solid var(--line); }
+.team-list .who { display: grid; gap: 2px; min-width: 0; }
+.team-list .name { font-weight: 600; }
+.team-list .meta { color: var(--slate); font-size: 0.92rem; overflow-wrap: anywhere; }
+.member-edit { flex-basis: 100%; background: var(--surface-2); border-radius: var(--radius-sm); padding: 14px; }
+.wh-pick { border: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px 20px; }
+.wh-pick legend { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; padding: 0; }
+.wh-pick .check { align-items: center; }
+.invite-form { border-top: 1px solid var(--line); padding-top: 16px; }
+.invite-link { background: var(--caution-soft); border-left: 4px solid var(--tape); border-radius: var(--radius-sm); padding: 12px 14px; display: grid; gap: 10px; }
+.invite-link input { flex: 1; min-width: 0; font-size: 0.9rem; }
+.invite-link .row { flex-wrap: nowrap; }
+.btn.danger { color: var(--stop); }
+.btn.danger-fill { background: var(--stop); color: #fff; }
+
+/* ---------- Two-step ---------- */
+.steps { margin: 0; padding-left: 20px; display: grid; gap: 12px; }
+.steps li { display: grid; gap: 8px; }
+.qr { background: #fff; padding: 8px; border-radius: var(--radius-sm); border: 1px solid var(--line); }
+
+/* ---------- Admin ---------- */
+.admin { min-height: 100%; }
+.admin .main { margin: 0 auto; }
+.admin-badge { background: var(--tape); color: #1C2321; font-weight: 700; font-size: 0.8rem; padding: 3px 10px; border-radius: 999px; }
+.admin-kpis { grid-template-columns: 1.4fr repeat(3, 1fr); }
+@media (max-width: 760px) { .admin-kpis { grid-template-columns: repeat(2, 1fr); } }
+.lic { font-weight: 600; font-size: 0.85rem; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); }
+.lic-active, .lic-trial { background: var(--go-soft); border-color: transparent; color: var(--go); }
+.lic-cancelled, .lic-suspended, .lic-expired { background: var(--stop-soft); border-color: transparent; color: var(--stop); }
+.license-form { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--surface-2); }

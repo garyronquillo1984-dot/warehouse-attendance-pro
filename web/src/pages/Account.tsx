@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/auth';
 import { friendlyError } from '../lib/errors';
 import { Field, Notice } from '../components/ui';
+import TwoStep from '../components/TwoStep';
 
 export default function Account() {
   const { session } = useAuth();
@@ -63,6 +64,8 @@ export default function Account() {
           {busy ? 'Saving…' : 'Change password'}
         </button>
       </form>
+
+      <TwoStep />
 
       <section className="panel narrow-only-block">
         <h2>Sign out</h2>

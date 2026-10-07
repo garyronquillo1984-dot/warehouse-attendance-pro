@@ -2,7 +2,9 @@ import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import { useAuth } from './lib/auth';
 import { OrgProvider, useOrg, canManage } from './lib/org';
 import { pendingInvite, useSetupStatus } from './lib/setup';
-import { Loading } from './components/ui';
+import { AuthLayout, Loading } from './components/ui';
+import { TwoStepChallenge } from './components/TwoStep';
+import Admin from './pages/Admin';
 import AppShell from './components/AppShell';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -29,7 +31,7 @@ function PublicOnly() {
 }
 
 function RequireAuth() {
-  const { session, loading, recovering } = useAuth();
+  const { session, loading, recovering, needsCode, recheckCode } = useAuth();
   const loc = useLocation();
   if (loading) return <Loading />;
   if (recovering) return <Navigate to="/reset-password" replace />;
@@ -37,6 +39,7 @@ function RequireAuth() {
     const back = loc.pathname + loc.search;
     return <Navigate to={back === '/' ? '/login' : `/login?next=${encodeURIComponent(back)}`} replace />;
   }
+  if (needsCode) return <AuthLayout><TwoStepChallenge onDone={recheckCode} /></AuthLayout>;
   return <OrgProvider><Outlet /></OrgProvider>;
 }
 
@@ -68,6 +71,7 @@ export default function App() {
       <Route path="/invite" element={<OrgProvider><AcceptInvite /></OrgProvider>} />
       <Route element={<RequireAuth />}>
         <Route path="/setup" element={<Setup />} />
+        <Route path="/admin" element={<Admin />} />
         <Route element={<AppGate />}>
           <Route path="/" element={<Home />} />
           <Route path="/attendance" element={<Attendance />} />

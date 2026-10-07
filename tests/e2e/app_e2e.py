@@ -21,6 +21,16 @@ SUPERVISOR = 'sup@example.com'
 PW1, PW2, PW3 = 'FloorCount-2026!', 'NewSecret-2026!', 'ResetSecret-2026!'
 
 passed, failed = [], []
+
+def totp(secret, at=None):
+    # RFC 6238 code, as an authenticator app computes it.
+    import base64, hashlib, hmac, struct
+    key = base64.b32decode(secret.upper() + '=' * (-len(secret) % 8))
+    counter = int((at or time.time()) // 30)
+    h = hmac.new(key, struct.pack('>Q', counter), hashlib.sha1).digest()
+    o = h[-1] & 15
+    return str((struct.unpack('>I', h[o:o + 4])[0] & 0x7fffffff) % 1000000).zfill(6)
+
 OPEN_PAGES = []
 PW = []
 def check(name, cond, detail=''):
@@ -289,18 +299,24 @@ async def main():
         await expect(page.get_by_role('heading', name='Today', exact=True)).to_be_visible()
         check('new password signs in', True)
 
-        # ---------- invite a supervisor (owner calls the server function) ----------
-        org = psql('select id from organizations')
-        wh = psql('select id from warehouses')
-        token = await page.evaluate("""async ([api, org, wh, email]) => {
-            const key = Object.keys(localStorage).find(k => k.endsWith('-auth-token'));
-            const s = JSON.parse(localStorage.getItem(key));
-            const r = await fetch(api + '/rest/v1/rpc/create_invitation', {method: 'POST',
-              headers: {apikey: s.access_token, Authorization: 'Bearer ' + s.access_token, 'Content-Type': 'application/json'},
-              body: JSON.stringify({org, invite_email: email, invite_role: 'supervisor', warehouse_ids: [wh]})});
-            return await r.json();
-        }""", [API, org, wh, SUPERVISOR])
-        check('owner can create an invitation', isinstance(token, str) and len(token) == 64, str(token))
+        # ---------- invite a supervisor from Settings → Team ----------
+        await page.get_by_role('link', name='Settings', exact=True).click()
+        await expect(page.get_by_role('heading', name='Team')).to_be_visible()
+        await page.get_by_label('Their email').fill(SUPERVISOR)
+        await page.get_by_role('button', name='Create invitation link').click()
+        await expect(page.locator('.invite-link')).to_be_visible()
+        link = await page.get_by_label('Invitation link').input_value()
+        token = link.split('token=')[-1]
+        check('owner can create an invitation link', len(token) == 64 and link.startswith(BASE + '/invite?token='), link)
+        check('invitation is listed as waiting', await page.get_by_text('Waiting to accept').count() == 1)
+        check('supervisor invite carries the warehouse', psql(f"select array_length(warehouse_ids,1) from invitations where email='{SUPERVISOR}'") == '1')
+        await page.get_by_label('Their email').fill('mistake@example.com')
+        await page.get_by_role('button', name='Create invitation link').click()
+        await expect(page.locator('.team-list li', has_text='mistake@example.com')).to_be_visible()
+        await page.locator('.team-list li', has_text='mistake@example.com').get_by_role('button', name='Cancel invitation').click()
+        await expect(page.get_by_text('Invitation cancelled')).to_be_visible()
+        check('cancelled invitation stops working', psql("select expires_at <= now() from invitations where email='mistake@example.com'") == 't')
+        await shot(page, '10b-team')
         await page.get_by_role('button', name='Sign out').click()
 
         # ---------- forgot / reset password ----------
@@ -322,6 +338,49 @@ async def main():
         await page.get_by_role('button', name='Sign in').click()
         await expect(page.get_by_role('heading', name='Today', exact=True)).to_be_visible()
         check('reset link sets a new password', True)
+
+        # ---------- two-step sign-in and the platform admin panel ----------
+        await page.get_by_role('link', name='My account').click()
+        await page.get_by_role('button', name='Set up two-step sign-in').click()
+        secret = (await page.locator('.steps code').inner_text()).strip()
+        await shot(page, '12b-two-step-setup')
+        await page.get_by_label('Code').fill(totp(secret))
+        await page.get_by_role('button', name='Turn on').click()
+        await expect(page.get_by_text('Two-step sign-in is on.')).to_be_visible()
+        check('two-step sign-in turned on', psql(f"select count(*) from auth.mfa_factors f join auth.users u on u.id=f.user_id where u.email='{BUYER}' and f.status='verified'") == '1')
+        await page.get_by_role('button', name='Sign out').click()
+        await page.get_by_label('Email').fill(BUYER)
+        await page.get_by_label('Password').fill(PW3)
+        await page.get_by_role('button', name='Sign in').click()
+        await expect(page.get_by_role('heading', name='Enter your code')).to_be_visible()
+        check('password alone is not enough once two-step is on', await page.get_by_role('heading', name='Today', exact=True).count() == 0)
+        await shot(page, '12c-two-step-code')
+        await page.get_by_label('Code').fill('000000')
+        await page.get_by_role('button', name='Continue').click()
+        await expect(page.get_by_role('alert')).to_contain_text('code didn’t work')
+        check('wrong code refused', True)
+        await page.wait_for_timeout(1000)
+        await page.get_by_label('Code').fill(totp(secret))
+        await page.get_by_role('button', name='Continue').click()
+        await expect(page.get_by_role('heading', name='Today', exact=True)).to_be_visible()
+        check('right code signs in', True)
+
+        psql(f"insert into platform_admins (user_id) select id from auth.users where email='{BUYER}'")
+        await page.goto(f'{BASE}/admin')
+        await expect(page.get_by_role('heading', name='Admin', exact=True)).to_be_visible()
+        await expect(page.locator('.report-table').first).to_contain_text('Northgate Logistics LLC')
+        check('platform admin sees companies with two-step sign-in', True)
+        check('admin panel shows the Hotmart deliveries', await page.get_by_text('PURCHASE_APPROVED').count() >= 1)
+        await page.get_by_role('button', name='Give a license').click()
+        await page.get_by_label('Buyer email').fill('pilot@example.com')
+        await page.get_by_role('button', name='Save license').click()
+        await expect(page.get_by_text('License created.')).to_be_visible()
+        check('admin gives a pilot license', psql("select status || ' ' || plan_code from licenses where buyer_email='pilot@example.com'") == 'trial professional')
+        await shot(page, '12d-admin')
+        await page.goto(f'{BASE}/account')
+        await page.get_by_role('button', name='Turn off').click()
+        await page.get_by_role('button', name='Yes, turn off').click()
+        await expect(page.get_by_text('Two-step sign-in is off.')).to_be_visible()
         await page.get_by_role('button', name='Sign out').click()
 
         # ---------- someone without a purchase ----------
@@ -391,7 +450,8 @@ async def main():
         await page.get_by_label('Password').fill(PW3)
         await page.get_by_role('button', name='Sign in').click()
         await expect(page.get_by_role('heading', name='Your subscription is inactive')).to_be_visible()
-        check('owner sees the export-window note', await page.get_by_text('30 days after the subscription ends').count() == 1)
+        await expect(page.get_by_text(re.compile('30 days after the subscription ends'))).to_be_visible()
+        check('owner sees the export-window note', True)
         await shot(page, '17-owner-inactive')
 
         check('no JavaScript errors', not console_errors, '; '.join(console_errors))

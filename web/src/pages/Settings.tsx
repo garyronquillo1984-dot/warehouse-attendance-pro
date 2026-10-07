@@ -7,6 +7,7 @@ import { timezoneOptions } from '../lib/time';
 import type { Shift, Warehouse } from '../lib/types';
 import { Field, Loading, Notice } from '../components/ui';
 import { ShiftEditor, validateShifts } from '../components/ShiftEditor';
+import Team from '../components/Team';
 
 type Msg = { kind: 'ok' | 'error'; text: string } | null;
 
@@ -54,7 +55,7 @@ export default function Settings() {
     <div className="stack-lg">
       <div className="page-head">
         <h1>Settings</h1>
-        <p className="muted">Company details, warehouses and shifts.</p>
+        <p className="muted">Company details, warehouses, shifts and team.</p>
       </div>
 
       <form className="panel" onSubmit={saveCompany}>
@@ -78,6 +79,8 @@ export default function Settings() {
         <Field label="Warehouse name" name="new_warehouse" maxLength={120} value={newWh} onChange={e => setNewWh(e.target.value)} />
         <button className="btn btn-ghost" style={{ justifySelf: 'start' }} disabled={!newWh.trim()}>Add warehouse</button>
       </form>
+
+      <Team org={current} warehouses={warehouses} />
     </div>
   );
 }

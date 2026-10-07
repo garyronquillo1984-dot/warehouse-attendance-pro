@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useOrg, canManage } from '../lib/org';
@@ -7,6 +8,8 @@ import { Wordmark } from './ui';
 export default function AppShell() {
   const { orgs, current, select } = useOrg();
   const nav = useNavigate();
+  const [platformAdmin, setPlatformAdmin] = useState(false);
+  useEffect(() => { supabase.rpc('am_platform_admin').then(({ data }) => setPlatformAdmin(!!data)); }, []);
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -40,6 +43,7 @@ export default function AppShell() {
           <NavLink to="/reports">Reports</NavLink>
           {canManage(current) && <NavLink to="/settings">Settings</NavLink>}
           <NavLink to="/account" className="wide-only">My account</NavLink>
+          {platformAdmin && <NavLink to="/admin" className="wide-only">Admin</NavLink>}
         </nav>
         <main className="main" id="content">
           <Outlet />
