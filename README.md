@@ -32,10 +32,10 @@ versions match the history of the Supabase project `warehouse-attendance-dev`
 | `20261007143729_functions_claim_and_invitations.sql` | `claim_license`, invitations | Yes |
 | `20261007143757_functions_admin_and_billing.sql` | Super admin, Hotmart billing | Yes |
 | `20261007143827_functions_profiles_on_signup.sql` | Profile created on sign up | Yes |
-| `20261007150000_functions_team.sql` | Change role, remove member, transfer ownership | **Pending: paste into the Supabase SQL Editor** |
+| `20261007150000_functions_team.sql` | Change role, remove member, transfer ownership | Yes (applied from the SQL Editor on 2026-10-07, so it is not in Supabase's migration list) |
 
 The last file contains `DELETE` statements inside functions, so Supabase requires a human
-confirmation; run it from Supabase → SQL Editor → New query → paste → Run.
+confirmation; it was run by hand from Supabase → SQL Editor.
 
 ### Security model (summary)
 
