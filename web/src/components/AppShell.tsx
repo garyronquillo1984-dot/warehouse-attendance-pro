@@ -3,7 +3,6 @@ import { supabase } from '../lib/supabase';
 import { useOrg, canManage } from '../lib/org';
 import { Wordmark } from './ui';
 
-const SOON = ['Reports'];
 
 export default function AppShell() {
   const { orgs, current, select } = useOrg();
@@ -29,18 +28,18 @@ export default function AppShell() {
         ) : (
           <strong className="small" style={{ opacity: 0.9 }}>{current?.name}</strong>
         )}
-        <button className="btn btn-ghost small" style={{ color: 'inherit', minHeight: 40, borderColor: 'rgba(238,240,236,.35)' }} onClick={signOut}>
-          Sign out
-        </button>
+        <button className="btn btn-ghost small bar-btn wide-only" onClick={signOut}>Sign out</button>
+        {/* Phones: the bottom bar has no room for the account link, so it lives up here. */}
+        <NavLink className="btn btn-ghost small bar-btn narrow-only" to="/account">Account</NavLink>
       </header>
       <div className="body">
         <nav className="sidenav" aria-label="Main">
           <NavLink to="/" end>Today</NavLink>
           <NavLink to="/attendance">Attendance</NavLink>
           <NavLink to="/employees">Employees</NavLink>
-          {SOON.map(s => <span key={s} aria-disabled="true">{s} <span className="soon">Coming soon</span></span>)}
+          <NavLink to="/reports">Reports</NavLink>
           {canManage(current) && <NavLink to="/settings">Settings</NavLink>}
-          <NavLink to="/account"><span className="wide-only">My account</span><span className="narrow-only">Account</span></NavLink>
+          <NavLink to="/account" className="wide-only">My account</NavLink>
         </nav>
         <main className="main" id="content">
           <Outlet />

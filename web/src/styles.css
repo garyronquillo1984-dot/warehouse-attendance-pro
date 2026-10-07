@@ -376,3 +376,46 @@ button.chip[aria-pressed='true'] strong { color: inherit; }
 
 .narrow-only { display: none; }
 @media (max-width: 760px) { .wide-only { display: none; } .narrow-only { display: inline; } }
+
+/* ---------- Reports ---------- */
+.kpis { display: grid; grid-template-columns: 1.6fr repeat(6, 1fr); gap: 1px; background: var(--line); border-radius: var(--radius); overflow: hidden; }
+.kpi { background: var(--surface); padding: 16px 18px; display: grid; gap: 4px; align-content: start; }
+.kpi-label { font-size: 0.88rem; color: var(--slate); font-weight: 600; }
+.kpi-value { font-size: 1.7rem; font-weight: 700; line-height: 1.1; }
+.kpi-main { border-left: 6px solid var(--tape); }
+.kpi-main .kpi-value { font-size: 2.4rem; }
+.kpi-note { font-size: 0.85rem; color: var(--slate); }
+@media (max-width: 1100px) { .kpis { grid-template-columns: repeat(3, 1fr); } .kpi-main { grid-column: 1 / -1; } }
+@media (max-width: 480px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+
+.report-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+.report-tabs button {
+  flex: none; font: inherit; font-weight: 600; font-size: 0.95rem; min-height: 44px; padding: 8px 14px; cursor: pointer;
+  border: 1.5px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink);
+}
+.report-tabs button[aria-pressed='true'] { background: var(--ink); color: var(--concrete); border-color: var(--ink); }
+.report-tabs .count { font-weight: 500; opacity: 0.7; margin-left: 4px; }
+.report-head { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: start; }
+.export .btn { min-height: 40px; padding: 6px 14px; }
+
+.report-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.report-table th { text-align: left; font-size: 0.82rem; font-weight: 600; color: var(--slate); padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; background: var(--surface); }
+.report-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.report-table th:first-child, .report-table td:first-child { padding-left: 24px; }
+.report-table .num { text-align: right; }
+.report-table tr[data-total] td { font-weight: 700; border-top: 2px solid var(--ink); }
+.report-table td[data-status='Absent'] { color: var(--stop); font-weight: 600; }
+.report-table td[data-status='Present'] { color: var(--go); }
+.report-table td[data-status='No record'] { color: var(--slate); font-style: italic; }
+
+.bar-btn { color: var(--bar-ink); min-height: 40px; border-color: color-mix(in srgb, var(--bar-ink) 35%, transparent); }
+.bar-btn:hover:not(:disabled) { border-color: var(--bar-ink); }
+.topbar .bar-btn.narrow-only { display: none; }
+@media (max-width: 760px) {
+  .topbar .bar-btn.wide-only { display: none; }
+  .topbar .bar-btn.narrow-only { display: inline-flex; }
+  .sidenav a.wide-only { display: none; }
+  .sidenav a { font-size: 0.86rem; padding: 8px 6px; }
+}
+.narrow-only-block { display: none; }
+@media (max-width: 760px) { .narrow-only-block { display: grid; } }

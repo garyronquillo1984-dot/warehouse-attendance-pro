@@ -242,6 +242,34 @@ async def main():
         await shot(page, '09f-today-tally')
         check('Today shows the tally', True)
 
+        # ---------- Reports ----------
+        await page.get_by_role('link', name='Reports', exact=True).click()
+        await page.locator('#r-period').select_option('today')
+        await expect(page.locator('.kpi-main .kpi-value')).to_have_text('25%')
+        check('report KPIs: 1 late of 4 scheduled = 25% attendance', await page.locator('.kpi-main .kpi-note').inner_text() == '1 of 4 scheduled')
+        await shot(page, '09g-reports')
+        await page.get_by_role('button', name=re.compile('^Absences')).click()
+        await expect(page.locator('.report-table tbody tr')).to_have_count(1)
+        check('absences report lists the absence with its reason', 'No call / no show' in await page.locator('.report-table').inner_text())
+        async def grab(label):
+            async with page.expect_download() as dl:
+                await page.locator('.export').get_by_role('button', name=label).click()
+            f = await dl.value
+            path = os.path.join(SHOTS, f.suggested_filename); await f.save_as(path)
+            return path
+        csv_path = await grab('CSV')
+        check('CSV export has the row', 'Carter, James' in open(csv_path, encoding='utf-8-sig').read() and csv_path.endswith('.csv'))
+        xlsx_path = await grab('Excel')
+        wbx = openpyxl.load_workbook(xlsx_path); vals = [c for row in wbx.active.iter_rows(values_only=True) for c in row if c]
+        check('Excel export opens and has the row', 'Carter, James' in vals and 'Absences' in vals, str(vals[:12]))
+        pdf_path = await grab('PDF')
+        check('PDF export is a PDF', open(pdf_path, 'rb').read(5) == b'%PDF-')
+        await page.get_by_role('button', name=re.compile('^No record')).click()
+        await expect(page.locator('.report-table tbody tr')).to_have_count(2)
+        check('no-record report lists the unmarked people', True)
+        await page.get_by_role('button', name=re.compile('^By employee')).click()
+        await shot(page, '09h-report-by-employee')
+
         # ---------- Account: change password, sign out, sign in ----------
         await page.get_by_role('link', name='My account').click()
         await page.get_by_label('New password', exact=True).fill(PW2)
@@ -344,6 +372,9 @@ async def main():
         await expect(p3.get_by_role('heading', name='Employees')).to_be_visible()
         check('supervisor sees employees read-only', await p3.get_by_role('link', name='Add employee').count() == 0)
         await shot(p3, '15c-mobile-employees')
+        await p3.get_by_role('link', name='Reports', exact=True).click()
+        await expect(p3.locator('.kpi-main .kpi-value')).to_be_visible()
+        await shot(p3, '15d-mobile-reports')
         await p3.goto(f'{BASE}/settings')
         await expect(p3).to_have_url(re.compile(r'/$'))
         check('supervisor is sent away from Settings', True)

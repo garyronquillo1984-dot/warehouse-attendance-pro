@@ -193,6 +193,20 @@ async function tests(d) {
   await rejects('attendance: far-future dates rejected', U.supA,
     "select public.record_attendance(current_date + 30, $1::jsonb)", [entry(d.empA1, 'present')], /work_date_out_of_range/);
   await rejects('attendance: anonymous cannot call', 'anon', rec, [entry(d.empA1, 'present')], /permission denied/);
+
+  // Reports: the grid only ever contains rows the caller may see.
+  const grid = 'select public.report_grid($1, $2, $3::date, $4::date) as g';
+  const gA = (await one(U.ownerA, grid, [d.orgA, null, '2026-10-01', new Date().toISOString().slice(0, 10)])).g;
+  ok('report: owner sees records of all her warehouses', gA.some(r => r[1] === d.empA2 && r[0] === '2026-10-01' && r[3] === 'late')
+     && gA.some(r => r[1] === d.empA1b && r[3] === 'absent'), JSON.stringify(gA));
+  ok('report: "no record" rows never come before the employee existed', gA.every(r => r[3] !== 'none' || r[0] >= new Date(Date.now() - 864e5).toISOString().slice(0, 10)));
+  const gS = (await one(U.supA, grid, [d.orgA, null, '2026-10-01', '2026-10-07'])).g;
+  ok('report: supervisor only gets her warehouse', gS.length > 0 && !gS.some(r => r[1] === d.empA2), JSON.stringify(gS));
+  ok('report: A gets nothing from company B', (await one(U.ownerA, grid, [d.orgB, null, '2026-10-01', '2026-10-07'])).g.length === 0);
+  ok('report: outsider gets nothing', (await one(U.outsider, grid, [d.orgA, null, '2026-10-01', '2026-10-07'])).g.length === 0);
+  await rejects('report: range longer than 3 months refused', U.ownerA, grid, [d.orgA, null, '2026-01-01', '2026-10-07'], /range_too_long/);
+  await rejects('report: anonymous cannot call', 'anon', grid, [d.orgA, null, '2026-10-01', '2026-10-07'], /permission denied/);
+
   // ===== 1. Company A trying to reach Company B =====
   const crossReads = [
     ['employees', 'select * from employees where organization_id = $1'],

@@ -18,6 +18,7 @@ import Employees from './pages/Employees';
 import EmployeeForm from './pages/EmployeeForm';
 import ImportEmployees from './pages/ImportEmployees';
 import Attendance from './pages/Attendance';
+import Reports from './pages/Reports';
 
 // Signed-out visitors only (signed-in users go to the app).
 function PublicOnly() {
@@ -74,6 +75,7 @@ export default function App() {
           <Route path="/employees/new" element={<EmployeeForm />} />
           <Route path="/employees/import" element={<ImportEmployees />} />
           <Route path="/employees/:id" element={<EmployeeForm />} />
+          <Route path="/reports" element={<Reports />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/account" element={<Account />} />
         </Route>

@@ -63,6 +63,13 @@ export default function Account() {
           {busy ? 'Saving…' : 'Change password'}
         </button>
       </form>
+
+      <section className="panel narrow-only-block">
+        <h2>Sign out</h2>
+        <p className="muted">Sign out of this phone. Your attendance stays saved.</p>
+        <button className="btn btn-ghost" style={{ justifySelf: 'start' }}
+                onClick={async () => { await supabase.auth.signOut(); window.location.assign('/login'); }}>Sign out</button>
+      </section>
     </div>
   );
 }
