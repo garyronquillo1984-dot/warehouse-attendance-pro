@@ -1,0 +1,12 @@
+// Cloudflare Workers: serves the built web app (web/dist) as static files.
+// No server code runs here; the app talks straight to Supabase.
+{
+  "name": "warehouse-attendance-pro",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./web/dist",
+    // Any path that isn't a file (e.g. /settings, /reset-password) gets index.html,
+    // so the app's own router can show the right screen.
+    "not_found_handling": "single-page-application"
+  }
+}

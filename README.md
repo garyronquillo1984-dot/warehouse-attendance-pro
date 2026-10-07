@@ -3,7 +3,7 @@
 Multi-company attendance tracking for warehouses and staffing teams.
 Each customer company's data is fully isolated by the database itself.
 
-**Stack:** Supabase (PostgreSQL + Auth + Row Level Security + Edge Functions) · React + TypeScript (Vite) · Cloudflare Pages.
+**Stack:** Supabase (PostgreSQL + Auth + Row Level Security + Edge Functions) · React + TypeScript (Vite) · Cloudflare Workers (static assets, see `wrangler.jsonc`).
 
 ## Status
 
@@ -67,7 +67,7 @@ every permission is enforced by the database.
 cd web
 npm install
 npm run dev      # http://localhost:5173 against the Supabase project in .env.development
-npm run build    # output in web/dist (what Cloudflare Pages serves)
+npm run build    # output in web/dist (what Cloudflare serves)
 ```
 
 ### Full browser test (`tests/e2e/`)

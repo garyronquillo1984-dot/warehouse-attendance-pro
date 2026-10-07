@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "npm --prefix web ci && npm --prefix web run build",
     "db:reset": "./reset_local_db.sh",
     "test:db": "./reset_local_db.sh && node tests/isolation.test.mjs"
   },
