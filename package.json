@@ -1,0 +1,12 @@
+{
+  "name": "warehouse-attendance-pro",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "db:reset": "./reset_local_db.sh",
+    "test:db": "./reset_local_db.sh && node tests/isolation.test.mjs"
+  },
+  "devDependencies": {
+    "pg": "^8.23.1"
+  }
+}
