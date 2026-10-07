@@ -19,12 +19,23 @@ Each customer company's data is fully isolated by the database itself.
 
 ## Database
 
-Migrations live in `supabase/migrations/` and run in file-name order:
+Migrations live in `supabase/migrations/` and run in file-name order. Their names and
+versions match the history of the Supabase project `warehouse-attendance-dev`
+(`sduevxvdqlxclpjabkru`, region us-east-1):
 
-1. `..._schema.sql` – tables, constraints, indexes
-2. `..._security.sql` – grants, access functions, triggers, RLS policies
-3. `..._functions.sql` – server functions (claim license, invitations, team, super admin, Hotmart billing)
-4. `..._plans.sql` – plan catalogue (Starter / Professional / Business)
+| File | Contents | Applied to Supabase |
+| --- | --- | --- |
+| `20261007143250_schema.sql` | Tables, constraints, indexes | Yes |
+| `20261007143354_security.sql` | Grants, access functions, triggers, RLS policies | Yes |
+| `20261007143457_plans.sql` | Plan catalogue | Yes |
+| `20261007143703_functions_read_helpers.sql` | `my_organizations`, `my_license` | Yes |
+| `20261007143729_functions_claim_and_invitations.sql` | `claim_license`, invitations | Yes |
+| `20261007143757_functions_admin_and_billing.sql` | Super admin, Hotmart billing | Yes |
+| `20261007143827_functions_profiles_on_signup.sql` | Profile created on sign up | Yes |
+| `20261007150000_functions_team.sql` | Change role, remove member, transfer ownership | **Pending: paste into the Supabase SQL Editor** |
+
+The last file contains `DELETE` statements inside functions, so Supabase requires a human
+confirmation; run it from Supabase → SQL Editor → New query → paste → Run.
 
 ### Security model (summary)
 
