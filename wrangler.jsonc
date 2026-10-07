@@ -3,6 +3,9 @@
 {
   "name": "warehouse-attendance-pro",
   "compatibility_date": "2026-10-01",
+  // Public address on workers.dev, plus preview links for test branches.
+  "workers_dev": true,
+  "preview_urls": true,
   "assets": {
     "directory": "./web/dist",
     // Any path that isn't a file (e.g. /settings, /reset-password) gets index.html,
