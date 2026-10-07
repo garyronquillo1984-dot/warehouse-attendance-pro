@@ -16,6 +16,9 @@
   --stop-soft: #FBEAE8;
   --caution-soft: #FFF5D6;
   --focus: #2E6BE6;
+  /* The top bar stays charcoal in both themes: it is the app's fixed frame. */
+  --bar: #1C2321;
+  --bar-ink: #EEF0EC;
   --radius-sm: 6px;
   --radius: 10px;
   --tap: 48px;
@@ -39,6 +42,8 @@
     --stop-soft: #3A1E1B;
     --caution-soft: #3A3218;
     --focus: #7EA6FF;
+    --bar: #0C100F;
+    --bar-ink: #E9EEEA;
     color-scheme: dark;
   }
 }
@@ -146,8 +151,8 @@ input[aria-invalid='true'] { border-color: var(--stop); }
 /* ---------- App shell ---------- */
 .shell { min-height: 100%; display: grid; grid-template-rows: auto 1fr; }
 .topbar {
-  background: var(--ink);
-  color: var(--concrete);
+  background: var(--bar);
+  color: var(--bar-ink);
   display: flex;
   align-items: center;
   gap: 16px;
@@ -158,11 +163,11 @@ input[aria-invalid='true'] { border-color: var(--stop); }
   top: 0;
   z-index: 10;
 }
-.topbar .wordmark { color: var(--concrete); }
+.topbar .wordmark { color: var(--bar-ink); }
 .topbar .spacer { flex: 1; }
-.topbar select { background: transparent; color: var(--concrete); border-color: color-mix(in srgb, var(--concrete) 35%, transparent); max-width: 240px; min-height: 40px; }
+.topbar select { background: transparent; color: var(--bar-ink); border-color: color-mix(in srgb, var(--bar-ink) 35%, transparent); max-width: 240px; min-height: 40px; }
 .topbar select option { color: #1C2321; }
-.topbar a.btn-ghost { color: var(--concrete); border-color: color-mix(in srgb, var(--concrete) 35%, transparent); min-height: 40px; }
+.topbar a.btn-ghost { color: var(--bar-ink); border-color: color-mix(in srgb, var(--bar-ink) 35%, transparent); min-height: 40px; }
 
 .body { display: grid; grid-template-columns: 220px 1fr; }
 .sidenav { padding: 20px 12px; display: grid; gap: 4px; align-content: start; border-right: 1px solid var(--line); }
