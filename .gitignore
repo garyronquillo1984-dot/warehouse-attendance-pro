@@ -2,6 +2,9 @@ node_modules/
 .env
 .env.*
 !.env.example
+!web/.env.production
+!web/.env.development
 dist/
 .DS_Store
 supabase/.temp/
+tests/e2e/screenshots/

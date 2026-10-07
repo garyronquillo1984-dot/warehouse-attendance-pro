@@ -10,7 +10,7 @@ Each customer company's data is fully isolated by the database itself.
 | Block | Scope | State |
 | --- | --- | --- |
 | 1. Foundations | Schema, row-level security, server functions, Hotmart license logic, isolation tests | Done |
-| 2. Accounts & onboarding | Sign up, login, password reset, company → warehouse → shifts wizard | Next |
+| 2. Accounts & onboarding | Sign up, login, password reset, company → warehouse → shifts wizard | Done |
 | 3. Employees | List, filters, add/edit/deactivate, CSV/Excel import | |
 | 4. Attendance | Fast capture screen (no scroll jumps) | |
 | 5. Dashboard & reports | KPIs, 7 reports, CSV/Excel/PDF | |
@@ -57,3 +57,23 @@ npm run test:db
 `tests/supabase_shim.sql` recreates the Supabase pieces the migrations need (roles, `auth.uid()`, default grants) **for local testing only — never run it on a real project.**
 
 The suite impersonates real users (Owner, Admin, Supervisor of two companies, an outsider, an unconfirmed user, anonymous, the platform owner) and checks that every cross-company read, write, delete, privilege escalation and license bypass is blocked, and that legitimate work succeeds.
+
+## Web app (`web/`)
+
+React + TypeScript, built with Vite. It talks to Supabase only with the publishable key;
+every permission is enforced by the database.
+
+```bash
+cd web
+npm install
+npm run dev      # http://localhost:5173 against the Supabase project in .env.development
+npm run build    # output in web/dist (what Cloudflare Pages serves)
+```
+
+### Full browser test (`tests/e2e/`)
+
+`tests/e2e/run.sh` starts a local copy of Supabase Auth and the REST API over our migrations
+(`scripts/localstack/`), serves the app, and drives a real browser through: a Hotmart purchase
+arriving, sign up and email confirmation, the setup wizard, settings, changing and resetting the
+password, someone signing up without a purchase, inviting a supervisor, and a refund locking
+access. Emails are captured to `~/.wap-localstack/mail`. Screenshots go to `tests/e2e/screenshots/`.
