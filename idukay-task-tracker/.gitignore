@@ -5,3 +5,4 @@ dist/
 !.env.example
 tests/e2e/screenshots/
 *.tsbuildinfo
+!web/.env.production

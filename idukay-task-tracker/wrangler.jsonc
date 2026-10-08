@@ -1,0 +1,13 @@
+// Cloudflare Workers: serves the built web app (web/dist) as static files.
+// No server code runs here; the app talks straight to Supabase (project "tareas-en-casa").
+{
+  "name": "tareas-en-casa",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "preview_urls": true,
+  "assets": {
+    "directory": "./web/dist",
+    // /hoy, /archivo, /v/<token>, /admin … all load index.html; the app's router shows the screen.
+    "not_found_handling": "single-page-application"
+  }
+}
