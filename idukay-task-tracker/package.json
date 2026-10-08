@@ -1,0 +1,14 @@
+{
+  "name": "idukay-task-tracker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "db:reset": "./reset_local_db.sh",
+    "test:db": "./reset_local_db.sh && node tests/isolation.test.mjs",
+    "test:unit": "node --experimental-strip-types --no-warnings tests/unit/run.mts",
+    "build": "npm --prefix web ci && npm --prefix web run build"
+  },
+  "devDependencies": {
+    "pg": "^8.23.1"
+  }
+}
