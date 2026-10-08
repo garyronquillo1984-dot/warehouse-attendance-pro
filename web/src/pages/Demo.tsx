@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/auth';
 import { friendlyError } from '../lib/errors';
@@ -12,8 +12,20 @@ export default function Demo() {
   const [error, setError] = useState<string | null>(null);
 
   if (loading) return <Loading />;
-  // Real customers are already in their own company; guests who come back reopen their sandbox.
-  if (session && !session.user.is_anonymous) return <Navigate to="/" replace />;
+  // A signed-in customer would otherwise land in their real company: say so instead of redirecting.
+  if (session && !session.user.is_anonymous) return (
+    <AuthLayout>
+      <div className="stack">
+        <h1>You’re signed in</h1>
+        <p>You’re signed in as <strong>{session.user.email}</strong>, so this browser opens your real company.
+          To try the demo, sign out first or open this page in a private window.</p>
+      </div>
+      <button className="btn btn-primary btn-block" onClick={async () => { await supabase.auth.signOut(); }}>
+        Sign out and open the demo
+      </button>
+      <Link className="btn btn-ghost btn-block" to="/">Back to my company</Link>
+    </AuthLayout>
+  );
 
   async function open() {
     setBusy(true); setError(null);
