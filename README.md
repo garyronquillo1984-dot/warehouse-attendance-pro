@@ -98,5 +98,6 @@ Secrets (Supabase → Edge Functions → Secrets — never in the repo or chat):
 | `HOTMART_PRODUCT_IDS` | Recommended | This product's Hotmart id(s), comma-separated; events for other products are ignored. |
 | `HOTMART_PLAN_MAP` | No | JSON, offer code / plan name → `starter`, `professional` or `business`. |
 | `HOTMART_DEFAULT_PLAN` | No | Plan for purchases not in the map. Default `professional`. |
+| `HOTMART_ONE_TIME_MONTHS` | No | Months of access bought by a one-time payment. Default `12`; `1200` = lifetime. |
 
 Payload reading is tested with `node --experimental-strip-types tests/webhook/parse.test.mts`.
