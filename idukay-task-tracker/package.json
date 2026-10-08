@@ -9,6 +9,8 @@
     "build": "npm --prefix web ci && npm --prefix web run build"
   },
   "devDependencies": {
-    "pg": "^8.23.1"
+    "@supabase/supabase-js": "^2.117.3",
+    "pg": "^8.23.1",
+    "playwright-core": "^1.56.1"
   }
 }
