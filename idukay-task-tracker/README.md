@@ -1,74 +1,61 @@
-# Idukay Task Tracker
+# Tareas en Casa — free homework viewer for parents
 
-*Your child's school tasks, simplified.* A multi-user SaaS for parents: register, get a 7-day
-free trial, add children, paste tasks copied from Idukay, and see what is due today, this week
-and what is overdue. After the trial, $2.99/month through Hotmart.
+Parents open a private link and see, in seconds, what their child has to do today: how many
+assignments, which subjects, start and due dates, what is pending, completed or overdue, the
+original instructions — and in which language the homework must be done.
 
-Read **[ARCHITECTURE.md](ARCHITECTURE.md)** first: product architecture, database schema,
-authentication, trial, Hotmart integration, data isolation, Idukay input strategy, stack,
-security and roadmap, plus the legal items that need an attorney before launch.
+**Free. Read-only for parents. No accounts, no payments.** Initial class: 4.º EGB — Paralelo A.
+See **[ARCHITECTURE.md](ARCHITECTURE.md)** for roles, data model, lifecycle, language rules and security.
 
-**Stack:** Supabase (PostgreSQL + Auth + Row Level Security + Edge Functions) · React + TypeScript (Vite) · static hosting (Cloudflare or any CDN) · Hotmart.
+**Stack:** Supabase (PostgreSQL + RLS + Auth for the admin + Edge Function for sync) · React + TypeScript (Vite) · static hosting.
 
 ## Layout
 
 | Path | What |
 | --- | --- |
-| `supabase/migrations/` | Schema, RLS, sign-up/trial trigger, billing state machine, app functions, jobs |
-| `supabase/functions/_shared/payments/` | `PaymentProvider` interface + Hotmart implementation (`createCheckout`, `verifySubscription`, `processWebhook`, `getSubscriptionStatus`, `cancelSubscription`) |
-| `supabase/functions/billing/` | Edge Function the app calls (checkout / status / verify / cancel) |
-| `supabase/functions/hotmart-webhook/` | Edge Function Hotmart calls |
-| `web/` | The web app (landing, auth, onboarding, dashboard, today, week, calendar, children, add tasks, completed, overdue, settings, subscription, admin) |
-| `web/src/lib/parser/idukay.ts` | "Add Tasks from Idukay" paste parser |
-| `tests/` | Isolation/billing tests (SQL level), unit tests, browser end-to-end tests |
-| `scripts/localstack/` | Local Supabase-like stack for development and e2e |
-| `scripts/seed-demo.mjs` | Demo family (Gary, Gael, Edric) for local/staging only |
+| `supabase/migrations/` | Schema, access rules, viewer/admin/sync functions, initial class 4.º EGB "A" with subjects and languages |
+| `supabase/functions/sync-homework/` | Hourly sync through the `HomeworkSource` interface (Idukay adapter: `not_configured` until an authorized API exists) |
+| `web/src/pages/viewer/` | Parent screens: Today, Last 2 Weeks, Archive, Detail |
+| `web/src/pages/admin/` | Admin console: status & sync, homework (correct / withdraw / versions), paste from Idukay & CSV, students & links, subjects |
+| `web/src/lib/parser/idukay.ts` | Paste parser (subjects, dates, start date, teacher, separate Spanish explanation) |
+| `scripts/seed-demo.mjs` | Demo data (local/staging only) |
 
 ## Tests
 
 ```bash
 npm install && (cd web && npm install)
-npm run test:db      # 117 checks: isolation between families, trial, Hotmart events, deletion (needs local PostgreSQL on /tmp:54329)
-npm run test:unit    # 39 checks: Hotmart parsing/webhook/checkout/verify/cancel, paste parser
-tests/e2e/run.sh     # 65 checks in Chromium emulating an iPhone 13 — the 7 critical tests of the brief
+npm run test:db      # 77 checks: link scope, read-only viewers, admin rules, no deletes, versioning, dedupe, sync
+npm run test:unit    # 23 checks: paste parser, sync (not_configured, upsert, validation)
+npm run test:e2e     # 58 checks in Chromium (iPhone 13 for parents, desktop for the admin)
 ```
 
-The e2e run starts real Supabase Auth + PostgREST over these migrations, runs our Edge Function
-handlers in Node, and plays Hotmart's part by sending signed webhooks. Screenshots land in
-`tests/e2e/screenshots/`.
-
-| Brief test | Where it is proven |
-| --- | --- |
-| 1. User B never sees User A's Maria or task | `isolation.test.mjs` (40+ attacks) and e2e (UI pages + direct API calls with B's token) |
-| 2. Trial expires → premium locked | both: paywall in the UI, writes refused by the database, data kept |
-| 3. Purchase → ACTIVE only after verified payment | both: checkout link with token, forged webhook refused, signed webhook activates |
-| 4. Cancellation → inactive when the paid period ends | both: still usable until period end, then locked and `EXPIRED` |
-| 5. Two children, switching shows only that child | both |
-| 6. Ticking task #15 keeps the scroll position | e2e measures `scrollY` and the row's position before/after (and after opening/closing the task) |
-| 7. Usable on iPhone | e2e on iPhone 13 emulation: no sideways scroll on any page, 44 px touch targets, pinned bottom nav |
+The e2e run covers: free/no commercial content, admin login, honest "not configured" sync, adding a
+student, creating links, pasting homework (language detection, separate Spanish explanation,
+duplicates skipped), the parent link (token leaves the URL), Today counter and summary, language
+badges, detail page with "answer in English", personal completion mark (no scroll jump, official
+record unchanged), Last 2 Weeks, Archive (grouping, search, old items kept), two children never
+mixed, another family isolated, link revocation, direct API attempts, and admin corrections.
 
 ## Run locally
 
 ```bash
 ./scripts/localstack/setup.sh && ./scripts/localstack/start.sh && ./scripts/localstack/web-env.sh
-cd web && npx vite --mode e2e          # http://localhost:5173 ; sign-up e-mails land in ~/.itt-localstack/mail
+S=local-dev-only-jwt-secret-0123456789abcdef
+SUPABASE_URL=http://localhost:54321 SUPABASE_SERVICE_ROLE_KEY=$(LS_JWT_SECRET=$S node scripts/localstack/keys.mjs service_role) \
+  SUPABASE_ANON_KEY=$(LS_JWT_SECRET=$S node scripts/localstack/keys.mjs anon) node scripts/seed-demo.mjs   # prints the admin login and a parent link
+cd web && npx vite --mode e2e            # http://localhost:5173
 ```
 
-## Going live — checklist
+## Going live
 
-1. **Supabase project** (new, separate from Warehouse Attendance Pro): apply `supabase/migrations/` in order.
-   Auth: require e-mail confirmation, minimum password 10, leaked-password protection on, site URL = your domain,
-   redirect URLs `https://yourdomain/welcome` and `/reset-password`. Custom SMTP with your own domain.
-2. Make yourself admin: `insert into platform_admins (user_id) select id from auth.users where email = 'you@…';`
-3. **Edge Functions**: deploy `billing` (JWT on) and `hotmart-webhook` (JWT off, see `supabase/config.toml`).
-   Secrets: `HOTMART_PRODUCT_ID`, `HOTMART_CHECKOUT_URL`, `HOTMART_WEBHOOK_SECRET` (the hottok),
-   `HOTMART_CLIENT_ID`, `HOTMART_CLIENT_SECRET`, `HOTMART_BASIC`, `APP_ORIGIN`.
-4. **Hotmart**: create the $2.99/month subscription product; webhook (v2.0.0) URL
-   `https://<project>.supabase.co/functions/v1/hotmart-webhook`; enable purchase, cancellation, delay,
-   refund, chargeback and charge-date events. Test in Hotmart's sandbox — the developer-API calls
-   (verify/cancel) have not been run against Hotmart yet.
-5. **Web**: `web/.env.production` with `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_APP_NAME`,
-   `VITE_SUPPORT_EMAIL`; `npm run build`; serve `web/dist` with SPA fallback; `web/public/_headers` sets CSP.
-6. **Legal**: replace the draft Privacy/Terms and resolve the naming question (see ARCHITECTURE.md).
-
-Until step 3–4 are done, the app says payments are not connected; it never grants paid access on its own.
+1. New Supabase project → apply `supabase/migrations/` in order. Auth: **disable sign-ups**; create the
+   administrator from Authentication → Users → Invite, then
+   `insert into public.admins (user_id) select id from auth.users where email = 'you@…';`
+2. Deploy `sync-homework` (optional until an authorized Idukay API exists). To run it hourly:
+   `select cron.schedule('sync-homework', '0 * * * *', $$ select net.http_post(url := 'https://<project>.supabase.co/functions/v1/sync-homework', headers := jsonb_build_object('Authorization', 'Bearer <service role key>')) $$);`
+   (pg_cron + pg_net; keep the key in Vault).
+3. Web: set `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPPORT_EMAIL` (and optionally
+   `VITE_APP_NAME`), `npm run build`, serve `web/dist` with SPA fallback (`web/public/_headers` sets CSP).
+4. In the admin console: add the students of 4.º A (first names), create one link per family and send it
+   privately (not in groups). Publish homework by pasting from Idukay.
+5. Review the privacy notice with the school (see ARCHITECTURE.md).

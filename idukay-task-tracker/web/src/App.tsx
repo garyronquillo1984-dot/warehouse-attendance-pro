@@ -1,55 +1,53 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { AppShell, RequireAuth } from './components/AppShell';
-import { LandingPage } from './pages/Landing';
-import { ForgotPasswordPage, LoginPage, ResetPasswordPage, SignupPage } from './pages/Signup';
+import { OpenLinkPage, WelcomePage } from './pages/Welcome';
 import { ContactPage, PrivacyPage, TermsPage } from './pages/Legal';
+import { ViewerShell } from './components/ViewerShell';
 import { Spinner } from './components/ui';
 
-// The signed-in app is loaded on demand, so the public pages stay light on mobile data.
 const page = <K extends string>(load: () => Promise<Record<K, React.ComponentType>>, name: K) =>
   lazy(() => load().then(m => ({ default: m[name] })));
-const OnboardingPage = page(() => import('./pages/Onboarding'), 'OnboardingPage');
-const DashboardPage = page(() => import('./pages/Dashboard'), 'DashboardPage');
-const TodayPage = page(() => import('./pages/Lists'), 'TodayPage');
-const OverduePage = page(() => import('./pages/Lists'), 'OverduePage');
-const CompletedPage = page(() => import('./pages/Lists'), 'CompletedPage');
-const WeekPage = page(() => import('./pages/Week'), 'WeekPage');
-const CalendarPage = page(() => import('./pages/Calendar'), 'CalendarPage');
-const ChildrenPage = page(() => import('./pages/Children'), 'ChildrenPage');
-const AddTaskPage = page(() => import('./pages/AddTask'), 'AddTaskPage');
-const SettingsPage = page(() => import('./pages/Settings'), 'SettingsPage');
-const SubscriptionPage = page(() => import('./pages/Subscription'), 'SubscriptionPage');
-const AdminPage = page(() => import('./pages/Admin'), 'AdminPage');
+// Parents (VIEWER): three screens + details.
+const TodayPage = page(() => import('./pages/viewer/Today'), 'TodayPage');
+const TwoWeeksPage = page(() => import('./pages/viewer/TwoWeeks'), 'TwoWeeksPage');
+const ArchivePage = page(() => import('./pages/viewer/Archive'), 'ArchivePage');
+const DetailPage = page(() => import('./pages/viewer/Detail'), 'DetailPage');
+// Administrator (loaded only when visiting /admin).
+const AdminShell = page(() => import('./components/AdminShell'), 'AdminShell');
+const ResetPasswordPage = page(() => import('./components/AdminShell'), 'ResetPasswordPage');
+const StatusPage = page(() => import('./pages/admin/Class'), 'StatusPage');
+const StudentsPage = page(() => import('./pages/admin/Class'), 'StudentsPage');
+const SubjectsPage = page(() => import('./pages/admin/Class'), 'SubjectsPage');
+const HomeworkListPage = page(() => import('./pages/admin/Homework'), 'HomeworkListPage');
+const HomeworkEditPage = page(() => import('./pages/admin/Homework'), 'HomeworkEditPage');
+const AddHomeworkPage = page(() => import('./pages/admin/Homework'), 'AddHomeworkPage');
 
 export function App() {
   return (
     <Suspense fallback={<Spinner />}>
-    <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
-      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-      <Route path="/reset-password" element={<RequireAuth><ResetPasswordPage /></RequireAuth>} />
-      <Route path="/privacy" element={<PrivacyPage />} />
-      <Route path="/terms" element={<TermsPage />} />
-      <Route path="/contact" element={<ContactPage />} />
-      <Route path="/welcome" element={<RequireAuth><OnboardingPage /></RequireAuth>} />
-      <Route path="/app" element={<RequireAuth><AppShell /></RequireAuth>}>
-        <Route index element={<DashboardPage />} />
-        <Route path="today" element={<TodayPage />} />
-        <Route path="week" element={<WeekPage />} />
-        <Route path="calendar" element={<CalendarPage />} />
-        <Route path="children" element={<ChildrenPage />} />
-        <Route path="add" element={<AddTaskPage />} />
-        <Route path="completed" element={<CompletedPage />} />
-        <Route path="overdue" element={<OverduePage />} />
-        <Route path="settings" element={<SettingsPage />} />
-        <Route path="subscription" element={<SubscriptionPage />} />
-        <Route path="admin" element={<AdminPage />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+      <Routes>
+        <Route path="/" element={<WelcomePage />} />
+        <Route path="/v/:token" element={<OpenLinkPage />} />
+        <Route path="/privacidad" element={<PrivacyPage />} />
+        <Route path="/condiciones" element={<TermsPage />} />
+        <Route path="/contacto" element={<ContactPage />} />
+        <Route element={<ViewerShell />}>
+          <Route path="/hoy" element={<TodayPage />} />
+          <Route path="/semanas" element={<TwoWeeksPage />} />
+          <Route path="/archivo" element={<ArchivePage />} />
+          <Route path="/tarea/:id" element={<DetailPage />} />
+        </Route>
+        <Route path="/admin/restablecer" element={<ResetPasswordPage />} />
+        <Route path="/admin" element={<AdminShell />}>
+          <Route index element={<StatusPage />} />
+          <Route path="tareas" element={<HomeworkListPage />} />
+          <Route path="tareas/:id" element={<HomeworkEditPage />} />
+          <Route path="agregar" element={<AddHomeworkPage />} />
+          <Route path="estudiantes" element={<StudentsPage />} />
+          <Route path="materias" element={<SubjectsPage />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </Suspense>
   );
 }

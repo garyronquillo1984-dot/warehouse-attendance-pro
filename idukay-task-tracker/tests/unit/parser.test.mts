@@ -111,3 +111,15 @@ test('dates: month/day order when the day is above 12', () => {
 test('dates: impossible dates are ignored', () => {
   eq(extractDate('31/02/2026', today).date, null);
 });
+
+test('parser: start date and a Spanish explanation are kept apart from the original', () => {
+  const r = P(`Language Arts
+Read Chapter 4
+Fecha de publicación: oct. 6, 2026
+Fecha de entrega: oct. 9, 2026
+Read Chapter 4 and answer questions 1–5.
+Traducción: Lee el capítulo 4 y responde las preguntas 1–5.`);
+  eq(r.map(t => [t.subject, t.title, t.startDate, t.dueDate, t.description, t.parentExplanation]), [
+    ['Language Arts', 'Read Chapter 4', '2026-10-06', '2026-10-09', 'Read Chapter 4 and answer questions 1–5.', 'Lee el capítulo 4 y responde las preguntas 1–5.'],
+  ]);
+});

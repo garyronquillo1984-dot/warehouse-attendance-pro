@@ -1,6 +1,8 @@
-# Supabase CLI settings for the Edge Functions of this project.
-[functions.billing]
+# Supabase CLI settings for this project's Edge Functions.
+[functions.sync-homework]
 verify_jwt = true
 
-[functions.hotmart-webhook]
-verify_jwt = false
+[auth]
+# Parents never sign up: they open a private link. Only administrators have accounts
+# (create them from the Supabase dashboard → Authentication → Users → Invite).
+enable_signup = false

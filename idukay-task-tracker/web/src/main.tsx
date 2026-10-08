@@ -9,7 +9,6 @@ import '@fontsource/public-sans/700.css';
 import './styles.css';
 import { App } from './App';
 import { AuthProvider } from './lib/auth';
-import { AccountProvider } from './lib/account';
 import { LangProvider } from './lib/i18n';
 import { ToastProvider } from './components/ui';
 
@@ -21,11 +20,9 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <LangProvider>
         <AuthProvider>
-          <AccountProvider>
-            <ToastProvider>
-              <App />
-            </ToastProvider>
-          </AccountProvider>
+          <ToastProvider>
+            <App />
+          </ToastProvider>
         </AuthProvider>
       </LangProvider>
     </BrowserRouter>

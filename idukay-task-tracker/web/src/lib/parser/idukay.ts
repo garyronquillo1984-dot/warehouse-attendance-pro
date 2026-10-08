@@ -18,7 +18,10 @@ export interface ParsedTask {
   childId: string | null;
   subject: string;
   title: string;
-  description: string | null;
+  description: string | null;           // the ORIGINAL instructions, never translated
+  parentExplanation: string | null;     // a translation/explanation found in the text, kept separate
+  startDate: string | null;      // YYYY-MM-DD ("Fecha de publicación / asignación")
+  language?: 'en' | 'es' | 'other' | null;   // set by the caller from the subject (or a CSV column)
   dueDate: string | null;        // YYYY-MM-DD
   teacher: string | null;
   priority: 'low' | 'normal' | 'high';
@@ -141,6 +144,9 @@ const META_DUE = /^(?:fecha\s+(?:de\s+)?entrega|fecha\s+l[ií]mite|entrega|vence
 const META_TEACHER = /^(?:profesor(?:a)?|docente|maestr[oa]|teacher|tutor(?:a)?|prof\.)\s*:?\s*(.+)$/i;
 const META_ASSIGNED = /^(?:fecha\s+de\s+(?:publicaci[oó]n|asignaci[oó]n|creaci[oó]n)|publicad[oa]|asignad[oa]|assigned|posted)\s*:?\s*(.*)$/i;
 const META_DESC = /^(?:descripci[oó]n|instrucciones|instructions|description|detalle)\s*:?\s*(.*)$/i;
+// A translation or explanation for parents. Everything after it (until the card ends) is kept
+// apart from the original instructions.
+const META_EXPLAIN = /^(?:traducci[oó]n|en espa[nñ]ol|explicaci[oó]n(?:\s+para\s+(?:padres|representantes))?|para\s+padres|spanish(?:\s+translation)?|ayuda\s+para\s+padres)\s*:\s*(.*)$/i;
 const BULLET = /^\s*(?:[-–—•·*▪►✓✔☐□]|\d{1,2}[.)]|[a-z][.)])\s+/i;
 // "Subject: task" — the subject is short and has no sentence punctuation.
 const SUBJECT_COLON = /^([A-Za-zÁÉÍÓÚÑÜáéíóúñü][A-Za-zÁÉÍÓÚÑÜáéíóúñü0-9 .&/()'-]{1,44}?)\s*[:–—]\s+(.{2,})$/;
@@ -198,15 +204,17 @@ export function parseIdukayText(text: string, opts: ParseOptions): ParsedTask[] 
   // Card mode state: a subject line opened a card; following lines fill it.
   let card: ParsedTask | null = null;
   let cardDescription: string[] = [];
+  let cardExplain: string[] | null = null;
   const closeCard = () => {
     if (card) {
       if (cardDescription.length) card.description = cardDescription.join('\n');
+      if (cardExplain?.length) card.parentExplanation = cardExplain.join('\n');
       if (card.title) out.push(card);
     }
-    card = null; cardDescription = [];
+    card = null; cardDescription = []; cardExplain = null;
   };
   const newTask = (subject: string, title: string, dueDate: string | null): ParsedTask => ({
-    key: `p${++seq}`, childId: child, subject, title, description: null, dueDate, teacher: null,
+    key: `p${++seq}`, childId: child, subject, title, description: null, parentExplanation: null, startDate: null, dueDate, teacher: null,
     priority: HIGH.test(title) ? 'high' : 'normal', warnings: [],
   });
 
@@ -227,7 +235,13 @@ export function parseIdukayText(text: string, opts: ParseOptions): ParsedTask[] 
       continue;
     }
     if (target && (m = raw.match(META_TEACHER))) { target.teacher = cleanTitle(m[1]).slice(0, 120); continue; }
-    if (m = raw.match(META_ASSIGNED)) continue;
+    if (m = raw.match(META_ASSIGNED)) {
+      const { date } = extractDate(m[1] || '', opts.today);
+      if (target && date) target.startDate = date;
+      continue;
+    }
+    if (card && (m = raw.match(META_EXPLAIN))) { cardExplain = m[1] ? [m[1]] : []; continue; }
+    if (card && cardExplain && (card as ParsedTask).title) { cardExplain.push(raw); continue; }
     if (card && (m = raw.match(META_DESC))) { if (m[1]) cardDescription.push(m[1]); continue; }
 
     // A bare subject line starts a card.

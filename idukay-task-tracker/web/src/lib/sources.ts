@@ -1,7 +1,7 @@
-// Ways tasks can enter the app. Each source turns some input into draft rows that the parent
-// reviews before saving (nothing is saved automatically).
+// Ways homework can enter the app. Each source turns some input into draft rows that the
+// ADMINISTRATOR reviews before publishing (parents never write anything).
 //
-//   manual  — the task form
+//   manual  — the admin homework form
 //   paste   — text copied from Idukay → parser/idukay.ts
 //   import  — CSV file → csv.ts (a PDF adapter would extract text, then reuse the paste parser)
 //   integration — a future, AUTHORIZED school-platform API. It would run server-side and

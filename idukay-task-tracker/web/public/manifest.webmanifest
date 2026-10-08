@@ -1,7 +1,7 @@
 {
-  "name": "Idukay Task Tracker",
+  "name": "Tareas en Casa",
   "short_name": "Tareas",
-  "start_url": "/app",
+  "start_url": "/hoy",
   "display": "standalone",
   "background_color": "#f6f3ec",
   "theme_color": "#2f6b63",

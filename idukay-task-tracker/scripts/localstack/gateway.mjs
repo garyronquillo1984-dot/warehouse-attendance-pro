@@ -2,7 +2,6 @@
 //   /auth/v1/*       -> Supabase Auth (GoTrue)
 //   /rest/v1/*       -> PostgREST
 //   /functions/v1/*  -> our Edge Functions, run in Node (functions.mts)
-//   /fake-hotmart/*  -> a stand-in checkout page (the e2e test plays Hotmart's part)
 import http from 'node:http';
 
 const PORT = Number(process.env.LS_GATEWAY_PORT || 54321);
@@ -12,18 +11,13 @@ const FUNCS = Number(process.env.LS_FUNCTIONS_PORT || 54330);
 
 const cors = {
   'access-control-allow-origin': '*',
-  'access-control-allow-headers': 'authorization, x-client-info, apikey, content-type, prefer, accept-profile, content-profile, range, x-supabase-api-version, x-hotmart-hottok',
+  'access-control-allow-headers': 'authorization, x-client-info, apikey, content-type, prefer, accept-profile, content-profile, range, x-supabase-api-version',
   'access-control-allow-methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
   'access-control-expose-headers': 'content-range, x-total-count',
 };
 
 http.createServer((req, res) => {
   if (req.method === 'OPTIONS') { res.writeHead(204, cors); return res.end(); }
-  if (req.url.startsWith('/fake-hotmart/')) {
-    res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-    return res.end('<!doctype html><meta name=viewport content="width=device-width"><title>Fake Hotmart (local test)</title>'
-      + '<h1>Simulated Hotmart checkout</h1><p>LOCAL TEST ONLY. No payment happens here; the test sends the webhook Hotmart would send.</p>');
-  }
   let port, path;
   if (req.url.startsWith('/auth/v1')) { port = AUTH; path = req.url.slice('/auth/v1'.length) || '/'; }
   else if (req.url.startsWith('/verify')) { port = AUTH; path = req.url; }

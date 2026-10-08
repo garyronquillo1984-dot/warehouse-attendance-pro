@@ -1,338 +1,262 @@
-// End-to-end test in a real browser (Chromium emulating an iPhone) against the local stack:
-// real Supabase Auth + PostgREST + our migrations + our billing/webhook handlers.
-// Runs the seven critical tests of the brief. Hotmart is simulated: the test sends the
-// webhook Hotmart would send, signed with the local test token.
+// End-to-end test in a real browser against the local stack (real Supabase Auth + PostgREST +
+// our migrations + our sync handler), with the demo data from scripts/seed-demo.mjs.
+// Parents use an emulated iPhone; the administrator uses a desktop browser.
 //   tests/e2e/run.sh
 import { chromium, devices } from 'playwright-core';
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 
 const BASE = 'http://localhost:5173';
 const API = 'http://localhost:54321';
-const MAIL = path.join(os.homedir(), '.itt-localstack/mail');
 const SHOTS = process.argv[2] || 'tests/e2e/screenshots';
-const HOTTOK = 'local-test-hottok';
 const CHROME = process.env.CHROME_PATH || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 fs.mkdirSync(SHOTS, { recursive: true });
-
-const A = { email: 'parent.a@example.com', password: 'Familia-Segura-2026' };
-const B = { email: 'parent.b@example.com', password: 'Otra-Familia-2026' };
 
 const passed = [], failed = [];
 const check = (name, cond, detail = '') => (cond ? passed : failed).push(name + (!cond && detail ? ` — ${detail}` : ''));
 const psql = sql => execFileSync('psql', ['-h', '/tmp', '-p', '54329', '-U', 'postgres', '-d', 'itt_e2e', '-v', 'ON_ERROR_STOP=1', '-qAt', '-c', sql]).toString().trim();
 const anonKey = execFileSync('node', ['scripts/localstack/keys.mjs', 'anon'], { env: { ...process.env, LS_JWT_SECRET: 'local-dev-only-jwt-secret-0123456789abcdef' } }).toString().trim();
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-function mailLink(to, after, timeout = 15000) {
-  const end = Date.now() + timeout;
-  const tag = to.replace('@', '_at_');
-  while (Date.now() < end) {
-    const files = fs.readdirSync(MAIL).filter(f => f.endsWith(`_${tag}.eml`) && parseFloat(f) * 1000 > after).sort().reverse();
-    for (const f of files) {
-      const raw = fs.readFileSync(path.join(MAIL, f), 'utf8').replace(/=\r?\n/g, '').replace(/=3D/g, '=');
-      const m = raw.match(/href="([^"]*\/verify\?[^"]*)"/);
-      if (m) return m[1].replace(/&amp;/g, '&');
-    }
-    execFileSync('sleep', ['0.3']);
-  }
-  throw new Error(`no email for ${to}`);
-}
-
-async function webhook(event, data) {
-  const res = await fetch(`${API}/functions/v1/hotmart-webhook`, {
-    method: 'POST', headers: { 'content-type': 'application/json', 'x-hotmart-hottok': HOTTOK },
-    body: JSON.stringify({ id: `evt-${event}-${Date.now()}`, event, version: '2.0.0', creation_date: Date.now(), data: { product: { id: 4242 }, ...data } }),
-  });
-  return { status: res.status, body: await res.json() };
-}
-
-async function noHorizontalScroll(page, name) {
+const shot = (page, name) => page.screenshot({ path: path.join(SHOTS, `${name}.png`) });
+async function noSideScroll(page, name) {
   const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-  check(`iPhone: no sideways scrolling on ${name}`, over <= 1, `${over}px too wide`);
+  check(`iPhone: no sideways scrolling on ${name}`, over <= 1, `${over}px`);
 }
-async function shot(page, name) { await page.screenshot({ path: path.join(SHOTS, `${name}.png`), fullPage: false }); }
+const FORBIDDEN = /\b(Editar|Eliminar|Borrar|Crear tarea|Modificar|Cambiar fecha|Edit|Delete|Create Task|Modify|Change Date)\b/;
+const COMMERCIAL = /\$\s?\d|Hotmart|precio|suscrip|prueba gratis|pricing|subscription|free trial|paywall|pagar/i;
 
 const browser = await chromium.launch({ executablePath: CHROME });
 const iphone = devices['iPhone 13'];
 try {
   // =========================================================================
-  // Landing → sign up → confirm → onboarding (on an iPhone)
+  // Public page: free, no commercial content
   // =========================================================================
-  const ctxA = await browser.newContext({ ...iphone, locale: 'es-EC', timezoneId: 'America/Guayaquil' });
-  const page = await ctxA.newPage();
+  const pub = await (await browser.newContext({ ...iphone, locale: 'es-EC' })).newPage();
+  await pub.goto(BASE);
+  await pub.getByRole('heading', { level: 1 }).waitFor();
+  const pubText = await pub.textContent('body');
+  check('welcome says it is free for parents', pubText.includes('GRATIS PARA PADRES'));
+  check('no pricing, subscription, Hotmart or trial anywhere on the welcome page', !COMMERCIAL.test(pubText), pubText.match(COMMERCIAL)?.[0]);
+  check('no sign-up form for parents', (await pub.locator('input[type=password]').count()) === 0);
+  await shot(pub, '01-welcome');
+  await noSideScroll(pub, 'welcome');
+
+  // =========================================================================
+  // ADMIN (desktop): status, sync, students, links, paste homework
+  // =========================================================================
+  const admin = await (await browser.newContext({ viewport: { width: 1200, height: 900 }, locale: 'es-EC', timezoneId: 'America/Guayaquil' })).newPage();
+  admin.on('dialog', d => d.accept());
+  await admin.goto(`${BASE}/admin`);
+  await admin.getByLabel('Correo').fill('demo.admin@example.com');
+  await admin.getByLabel('Contraseña').fill('Demo-Admin-2026');
+  await admin.getByRole('button', { name: 'Ingresar' }).click();
+  await admin.getByRole('heading', { name: 'Cuarto Grado de Educación General Básica' }).waitFor();
+  check('admin sees the class 4.º EGB "A"', true);
+  await admin.getByRole('button', { name: /Sincronizar ahora/ }).click();
+  await admin.getByTestId('sync-result').waitFor();
+  check('sync reports honestly that no Idukay integration is configured', (await admin.getByTestId('sync-result').textContent()).includes('Sin configurar'));
+  await shot(admin, '10-admin-status');
+
+  await admin.goto(`${BASE}/admin/estudiantes`);
+  await admin.getByLabel('Nombre', { exact: true }).fill('Maria');
+  await admin.getByRole('button', { name: 'Agregar estudiante' }).click();
+  await admin.locator('label.check', { hasText: 'Maria' }).waitFor();
+  const makeLink = async (label, kids) => {
+    await admin.getByLabel(/Nombre del enlace/).fill(label);
+    for (const k of kids) await admin.locator('label.check', { hasText: k }).locator('input').check();
+    await admin.getByRole('button', { name: 'Crear enlace' }).click();
+    await admin.getByTestId('new-link-url').waitFor();
+    const url = (await admin.getByTestId('new-link-url').textContent()).trim();
+    await admin.reload(); await admin.getByLabel(/Nombre del enlace/).waitFor();
+    return url;
+  };
+  const linkGael = await makeLink('Familia de Gael (prueba)', ['Gael']);
+  const linkMaria = await makeLink('Familia de Maria', ['Maria']);
+  check('admin gets a private parent link', /\/v\/[A-Za-z0-9_-]{32}$/.test(linkGael), linkGael);
+  check('the link token is not stored in the database', psql(`select count(*) from public.viewer_links where token_hash = '${linkGael.split('/v/')[1]}'`) === '0');
+
+  await admin.goto(`${BASE}/admin/agregar`);
+  const paste = `Science
+Plant parts
+Fecha de entrega: ${psql("select to_char((now() at time zone 'America/Guayaquil')::date + 2, 'YYYY-MM-DD')")}
+Label the parts of a plant: root, stem, leaves and flower.
+Traducción: Señala las partes de una planta: raíz, tallo, hojas y flor.
+
+Matemática: Sumas y restas de la página 50 para mañana`;
+  await admin.getByTestId('admin-paste').fill(paste);
+  await admin.getByRole('button', { name: /Organizar tareas/ }).click();
+  await admin.getByTestId('admin-review').waitFor();
+  const reviewText = await admin.getByTestId('admin-review').innerHTML();
+  check('paste: Science detected as ENGLISH and Matemática as ESPAÑOL',
+    (await admin.locator('[data-testid=admin-review] select').nth(0).inputValue()) === 'en' && (await admin.locator('[data-testid=admin-review] select').nth(1).inputValue()) === 'es');
+  check('paste: Spanish explanation kept apart from the original', reviewText.includes('💬 Señala las partes'));
+  await shot(admin, '11-admin-review');
+  await admin.getByRole('button', { name: /Publicar 2 tareas/ }).click();
+  await admin.getByText('2 publicadas · 0 duplicadas omitidas').waitFor();
+  check('admin publishes pasted homework', true);
+  await admin.getByTestId('admin-paste').fill(paste);
+  await admin.getByRole('button', { name: /Organizar tareas/ }).click();
+  await admin.getByRole('button', { name: /Publicar 2 tareas/ }).click();
+  await admin.getByText('0 publicadas · 2 duplicadas omitidas').waitFor();
+  check('pasting the same homework again creates no duplicates', psql("select count(*) from public.homework where title = 'Plant parts'") === '1');
+
+  // =========================================================================
+  // PARENT (iPhone): open the private link
+  // =========================================================================
+  const ctx = await browser.newContext({ ...iphone, locale: 'es-EC', timezoneId: 'America/Guayaquil' });
+  const page = await ctx.newPage();
   page.on('dialog', d => d.accept());
-  const consoleErrors = [];
-  page.on('pageerror', e => consoleErrors.push(e.message));
+  const jsErrors = [];
+  page.on('pageerror', e => jsErrors.push(e.message));
+  await page.goto(linkGael);
+  await page.waitForURL('**/hoy');
+  check('the token leaves the address bar after opening', !page.url().includes('/v/'));
+  await page.getByTestId('today-counter').waitFor();
+  const counter = await page.getByTestId('today-counter').textContent();
+  const nToday = Number(counter.match(/(\d+) TAREAS?/)?.[1]);
+  check('Today shows "Gael — 4.º EGB — Paralelo A"', counter.includes('Gael — 4.º EGB — Paralelo A'), counter);
+  check('Today counter shows a number of assignments', nToday >= 4, counter);
+  check('Today shows completed / pending / overdue', /completad/.test(counter) && /pendiente/.test(counter) && /vencida/.test(counter));
+  check('one-sentence summary', (await page.getByTestId('today-summary').textContent()).startsWith(`Hoy Gael tiene ${nToday} tareas.`));
+  check('NEW homework banner', (await page.getByTestId('new-banner').textContent()).includes('Hoy se agregó tarea de'));
+  check('last updated is shown', (await page.getByTestId('last-updated').textContent()).includes('Última actualización'));
+  await shot(page, '02-today');
+  await noSideScroll(page, 'today');
 
-  await page.goto(BASE);
-  await page.getByRole('heading', { level: 1 }).waitFor();
-  check('landing headline', (await page.textContent('h1')).includes('Deja de buscar entre mensajes del colegio.'));
-  check('landing says not affiliated with Idukay', (await page.textContent('footer')).includes('No está afiliado'));
-  await shot(page, '01-landing');
-  await noHorizontalScroll(page, 'landing');
+  const bodyText = await page.textContent('body');
+  check('parents see no edit / delete / create controls', !FORBIDDEN.test(bodyText), bodyText.match(FORBIDDEN)?.[0]);
+  check('parents see nothing commercial', !COMMERCIAL.test(bodyText), bodyText.match(COMMERCIAL)?.[0]);
+  check('parent navigation is exactly Today · Last 2 Weeks · Archive', (await page.locator('.viewer-tabs a').allTextContents()).join('|') === '🏠 Hoy|📅 Últimas 2 semanas|📁 Archivo');
 
-  await page.getByRole('link', { name: /Empieza gratis por 7 días/ }).first().click();
-  await page.waitForURL('**/signup');
-  await page.getByLabel('Nombre del padre, madre o representante').fill('Parent A');
-  await page.getByLabel('Correo electrónico').fill(A.email);
-  await page.getByLabel('Teléfono').fill('+593 99 123 4567');
-  await page.getByLabel('Contraseña').fill(A.password);
-  await page.getByLabel('Nombre del hijo/a').fill('Maria');
-  await page.getByLabel('Colegio').first().fill('Colegio Uno');
-  await page.getByRole('button', { name: '+ Agregar otro hijo' }).click();
-  await page.getByLabel('Nombre del hijo/a').nth(1).fill('Lucas');
-  const pwFields = await page.locator('input[type=password]').count();
-  check('sign-up never asks for an Idukay password (one password field)', pwFields === 1, `${pwFields}`);
-  await shot(page, '02-signup');
-  await page.getByRole('checkbox').check();
-  const sentAt = Date.now() - 1000;
-  await page.getByRole('button', { name: 'Crear cuenta' }).click();
-  await page.getByTestId('check-email').waitFor();
-  check('sign-up asks to confirm e-mail', true);
+  const la = page.locator('[data-testid=hw-card]', { hasText: 'Read Chapter 4' });
+  const mat = page.locator('[data-testid=hw-card]', { hasText: 'Resolver ejercicios 15–20' });
+  check('English subject shows 🇺🇸 ENGLISH', (await la.getByTestId('lang-badge').textContent()) === '🇺🇸 ENGLISH');
+  check('Spanish subject shows 🇪🇸 ESPAÑOL', (await mat.getByTestId('lang-badge').textContent()) === '🇪🇸 ESPAÑOL');
+  check('card shows start and due dates', /Inicio: .*Entrega: /s.test(await la.textContent()));
 
-  await page.goto(mailLink(A.email, sentAt));
-  await page.getByTestId('onboarding-step-1').waitFor({ timeout: 15000 });
-  check('confirmation link opens onboarding', true);
-  await shot(page, '03-onboarding-welcome');
-  await page.getByRole('button', { name: 'Empezar' }).click();
-  await page.getByTestId('onboarding-step-2').waitFor();
-  check('children from the sign-up form are there', (await page.textContent('.onb')).includes('Maria') && (await page.textContent('.onb')).includes('Lucas'));
-  await page.getByRole('button', { name: 'Siguiente' }).click();
-  await page.getByTestId('onboarding-step-3').waitFor();
-  await page.getByRole('button', { name: 'Siguiente' }).click();
-  await page.getByTestId('onboarding-step-4').waitFor();
-  await page.getByTestId('paste-input').fill('MARIA\nMatemática: Math homework para hoy\nLucas\nLengua: leer capítulo 3 hoy\nCiencias: maqueta para mañana');
-  await page.getByRole('button', { name: /Organizar tareas/ }).click();
-  await page.getByTestId('review').waitFor();
-  const reviewRows = await page.locator('.review-row').count();
-  check('paste parser found 3 tasks to review', reviewRows === 3, `${reviewRows}`);
-  await shot(page, '04-onboarding-review');
-  await page.getByRole('button', { name: 'Guardar 3 tareas' }).click();
-  await page.getByTestId('onboarding-step-5').waitFor();
-  check('onboarding ends with the trial message', (await page.textContent('.onb')).includes('Tu prueba gratis de 7 días empieza hoy.'));
-  await page.getByRole('button', { name: 'Ir a mi panel' }).click();
-  await page.waitForURL('**/app');
-  await page.getByTestId('kid-Maria').waitFor();
-  await shot(page, '05-dashboard');
-  await noHorizontalScroll(page, 'dashboard');
-  check('trial banner shows 7 days', (await page.getByTestId('trial-banner').textContent()).includes('7 días'));
-  check('dashboard greets the parent', (await page.textContent('h1')).includes('Parent'));
-
-  // =========================================================================
-  // TEST 5 — switching children shows only that child's tasks
-  // =========================================================================
-  await page.goto(`${BASE}/app/today`);
-  await page.getByRole('tab', { name: 'Maria' }).click();
-  await page.locator('.task-title', { hasText: 'Math homework' }).waitFor();
-  check('TEST 5: Maria selected → her task shown', await page.locator('.task-title', { hasText: 'Math homework' }).isVisible());
-  check('TEST 5: Maria selected → Lucas task hidden', (await page.locator('.task-title', { hasText: 'Leer capítulo 3' }).count()) === 0);
-  await page.getByRole('tab', { name: 'Lucas' }).click();
-  await page.locator('.task-title', { hasText: 'Leer capítulo 3' }).waitFor();
-  check('TEST 5: Lucas selected → Maria task hidden', (await page.locator('.task-title', { hasText: 'Math homework' }).count()) === 0);
-  await page.getByRole('tab', { name: 'Todos los hijos' }).click();
-
-  // =========================================================================
-  // TEST 1 — User B never sees Maria or her task
-  // =========================================================================
-  const signB = await fetch(`${API}/auth/v1/signup`, { method: 'POST', headers: { apikey: anonKey, 'content-type': 'application/json' },
-    body: JSON.stringify({ email: B.email, password: B.password, data: { full_name: 'Parent B', children: [{ name: 'Pedro' }] } }) });
-  check('User B signs up', signB.ok);
-  psql(`update auth.users set email_confirmed_at = now() where email = '${B.email}'`);
-  psql(`update public.profiles set onboarded_at = now() where id = (select id from auth.users where email = '${B.email}')`);
-  const ctxB = await browser.newContext({ ...iphone, locale: 'es-EC' });
-  const pageB = await ctxB.newPage();
-  pageB.on('dialog', d => d.accept());
-  await pageB.goto(`${BASE}/login`);
-  await pageB.getByLabel('Correo electrónico').fill(B.email);
-  await pageB.getByLabel('Contraseña').fill(B.password);
-  await pageB.getByRole('button', { name: 'Ingresar' }).click();
-  await pageB.waitForURL('**/app');
-  await pageB.getByTestId('kid-Pedro').waitFor();
-  for (const p of ['/app', '/app/today', '/app/week', '/app/calendar', '/app/children', '/app/completed']) {
-    await pageB.goto(BASE + p);
-    await pageB.locator('main').waitFor();
-    await sleep(400);
-    const text = await pageB.textContent('main');
-    check(`TEST 1: User B sees no Maria / Math homework on ${p}`, !text.includes('Maria') && !text.includes('Math homework'));
-  }
-  const taskId = psql("select id from public.tasks where title = 'Math homework'");
-  const tokB = await pageB.evaluate(() => JSON.parse(Object.entries(localStorage).find(([k]) => k.includes('auth-token'))[1]).access_token);
-  const hdr = { apikey: anonKey, authorization: `Bearer ${tokB}`, 'content-type': 'application/json', prefer: 'return=representation' };
-  const peek = await (await fetch(`${API}/rest/v1/tasks?id=eq.${taskId}`, { headers: hdr })).json();
-  check('TEST 1: User B reading A\'s task id through the API gets nothing', Array.isArray(peek) && peek.length === 0, JSON.stringify(peek));
-  const poke = await (await fetch(`${API}/rest/v1/tasks?id=eq.${taskId}`, { method: 'PATCH', headers: hdr, body: JSON.stringify({ title: 'hacked' }) })).json();
-  check('TEST 1: User B changing A\'s task through the API changes nothing', Array.isArray(poke) && poke.length === 0 && psql(`select title from public.tasks where id = '${taskId}'`) === 'Math homework');
-  const kidsB = await (await fetch(`${API}/rest/v1/children?select=name`, { headers: hdr })).json();
-  check('TEST 1: User B lists only Pedro', JSON.stringify(kidsB) === '[{"name":"Pedro"}]', JSON.stringify(kidsB));
-
-  // =========================================================================
-  // TEST 6 — ticking task #15 keeps the page exactly where it was
-  // =========================================================================
-  const userA = psql(`select id from auth.users where email = '${A.email}'`);
-  const maria = psql(`select id from public.children where name = 'Maria' and user_id = '${userA}'`);
-  psql(`insert into public.tasks (user_id, child_id, subject, title, due_date, created_at)
-        select '${userA}', '${maria}', 'Lectura', 'Tarea número ' || g, (now() at time zone 'America/Guayaquil')::date, now() + g * interval '1 second'
-        from generate_series(1, 30) g`);
-  await page.goto(`${BASE}/app/today`);
-  await page.getByRole('tab', { name: 'Maria' }).click();
-  const row15 = page.locator('.task-row', { has: page.locator('.task-title', { hasText: /^Tarea número 15$/ }) });
-  await row15.waitFor();
-  await row15.scrollIntoViewIfNeeded();
-  await page.evaluate(() => window.scrollBy(0, -200));
-  await sleep(300);
-  const before = await page.evaluate(() => window.scrollY);
-  const boxBefore = await row15.boundingBox();
-  check('TEST 6: the page is scrolled down to task #15', before > 500, `scrollY ${before}`);
-  await row15.locator('button.tick').click();
-  await page.waitForFunction(() => [...document.querySelectorAll('.task-row')].some(r => r.textContent.includes('Tarea número 15') && r.querySelector('.tick[aria-pressed="true"]')));
-  await sleep(1200);   // let the server answer and React re-render
-  const after = await page.evaluate(() => window.scrollY);
-  const boxAfter = await row15.boundingBox();
-  check('TEST 6: scroll position unchanged after ticking', Math.abs(after - before) <= 1, `${before} → ${after}`);
-  check('TEST 6: task #15 did not move on screen', Math.abs(boxAfter.y - boxBefore.y) <= 1, `${boxBefore.y} → ${boxAfter.y}`);
-  check('TEST 6: task #15 saved as completed', psql("select status from public.tasks where title = 'Tarea número 15'") === 'completed');
-  await shot(page, '06-today-after-tick');
-  // un-tick and open/close the detail sheet: still no jump
-  await row15.locator('button.tick').click();
-  await sleep(800);
-  await row15.locator('button.task-main').click();
-  await page.getByRole('dialog').waitFor();
-  await shot(page, '07-task-sheet');
-  await page.getByRole('button', { name: 'En progreso' }).click();
+  // Personal completion mark — scroll position and official record unchanged
+  await mat.scrollIntoViewIfNeeded();
+  await page.evaluate(() => window.scrollBy(0, -120));
+  await sleep(200);
+  const y0 = await page.evaluate(() => window.scrollY);
+  const box0 = await mat.boundingBox();
+  await mat.getByRole('button', { name: /Marcar como completada/ }).click();
   await sleep(500);
-  await page.keyboard.press('Escape');
-  await sleep(300);
-  const afterSheet = await page.evaluate(() => window.scrollY);
-  check('TEST 6: opening and closing a task keeps the position', Math.abs(afterSheet - before) <= 1, `${before} → ${afterSheet}`);
-  check('status history recorded (pending → completed → pending → in progress)',
-    psql("select string_agg(to_status::text, ',' order by h.id) from public.task_status_history h join public.tasks t on t.id = h.task_id where t.title = 'Tarea número 15'") === 'pending,completed,pending,in_progress');
+  const y1 = await page.evaluate(() => window.scrollY);
+  const box1 = await mat.boundingBox();
+  check('marking completed keeps the scroll position', Math.abs(y1 - y0) <= 1, `${y0} → ${y1}`);
+  check('marking completed does not move the card', Math.abs(box1.y - box0.y) <= 1, `${box0.y} → ${box1.y}`);
+  check('counter updates after marking', /🟢 1 completada/.test(await page.getByTestId('today-counter').textContent()));
+  check('the official homework did not change', psql("select h.revision = 1 and not exists (select 1 from public.homework_revisions r where r.homework_id = h.id) from public.homework h where title = 'Resolver ejercicios 15–20'") === 't');
+  await page.reload();
+  await page.getByTestId('today-counter').waitFor();
+  check('the personal mark stays on this device', /🟢 1 completada/.test(await page.getByTestId('today-counter').textContent()));
 
-  // =========================================================================
-  // TEST 7 — every screen usable on an iPhone
-  // =========================================================================
-  for (const [p, name] of [['/app/week', '08-week'], ['/app/calendar', '09-calendar'], ['/app/children', '10-children'], ['/app/add', '11-add-paste'],
-    ['/app/add?tab=manual', '12-add-manual'], ['/app/completed', '13-completed'], ['/app/overdue', '14-overdue'], ['/app/settings', '15-settings'], ['/app/subscription', '16-subscription']]) {
-    await page.goto(BASE + p);
-    await page.locator('main h1').first().waitFor();
-    await sleep(300);
-    await shot(page, name);
-    await noHorizontalScroll(page, p);
-  }
-  const navBox = await page.locator('.bottom-nav').boundingBox();
-  check('TEST 7: bottom navigation pinned to the bottom of the iPhone screen', navBox && Math.abs(navBox.y + navBox.height - iphone.viewport.height) <= 1, JSON.stringify(navBox));
-  const tickBox = await page.goto(`${BASE}/app/today`).then(() => page.locator('button.tick').first().boundingBox());
-  check('TEST 7: tick targets are at least 44×44 px', tickBox.width >= 44 && tickBox.height >= 44, JSON.stringify(tickBox));
-  await page.goto(`${BASE}/app/week`);
+  // Detail page: original English homework + separate Spanish explanation
+  await la.getByRole('link', { name: 'Ver detalles' }).click();
+  await page.getByTestId('hw-detail').waitFor();
+  const detail = await page.getByTestId('hw-detail').textContent();
+  check('detail: "Tarea — EN INGLÉS" with the original instructions', detail.includes('Tarea — EN INGLÉS') && (await page.getByTestId('original').textContent()).startsWith('Read Chapter 4 of your reader'));
+  check('detail: the student must answer in English', (await page.getByTestId('english-banner').textContent()).includes('EN INGLÉS'));
+  check('detail: Spanish explanation shown separately, original not replaced', (await page.getByTestId('parent-explanation').textContent()).startsWith('Lee el capítulo 4'));
+  check('detail: start and due dates', detail.includes('Inicio') && detail.includes('Entrega'));
+  check('detail: no edit controls', !FORBIDDEN.test(detail));
+  await shot(page, '03-detail-english');
+  await noSideScroll(page, 'detail');
+  await page.getByRole('button', { name: 'Volver' }).click();
+  await page.getByTestId('today-counter').waitFor();
+
+  // Last 2 weeks
+  await page.getByRole('link', { name: /Últimas 2 semanas/ }).click();
   await page.getByTestId('week-strip').waitFor();
-  check('week view shows Monday–Friday', (await page.locator('.day-btn').count()) === 5);
-  await page.getByRole('button', { name: 'Más' }).click();
-  await page.getByRole('dialog').waitFor();
-  await shot(page, '17-more-menu');
-  await page.keyboard.press('Escape');
+  check('this week shows Monday–Friday with counts', (await page.locator('[data-testid=week-strip] .day-btn').count()) === 5);
+  const fiveAgo = psql("select ((now() at time zone 'America/Guayaquil')::date - 5)::text");
+  const dayBtn = page.locator(`[data-day="${fiveAgo}"]`);
+  await dayBtn.click();
+  await page.locator('[data-testid=hw-card]', { hasText: 'Leyendas tradicionales' }).waitFor();
+  check('a day from last week shows its homework', true);
+  check('days older than 14 are not offered', (await page.locator(`[data-day="${psql("select ((now() at time zone 'America/Guayaquil')::date - 15)::text")}"]`).count()) === 0);
+  await shot(page, '04-two-weeks');
+  await noSideScroll(page, 'last 2 weeks');
 
-  // =========================================================================
-  // TEST 2 — trial expires → premium locked, data kept
-  // =========================================================================
-  const tasksBefore = psql(`select count(*) from public.tasks where user_id = '${userA}'`);
-  psql(`update public.trial_periods set ends_at = now() - interval '1 minute' where user_id = '${userA}'`);
-  await page.goto(`${BASE}/app`);
-  await page.getByTestId('paywall').waitFor();
-  check('TEST 2: expired trial shows the paywall', (await page.textContent('[data-testid=paywall]')).includes('Tu prueba gratis de 7 días terminó.'));
-  check('TEST 2: paywall offers $2.99/month', (await page.textContent('[data-testid=paywall]')).includes('$2.99'));
-  await shot(page, '18-paywall');
-  await page.goto(`${BASE}/app/today`);
-  await page.getByTestId('paywall').waitFor();
-  check('TEST 2: every premium screen is locked', true);
-  check('TEST 2: no data was deleted', psql(`select count(*) from public.tasks where user_id = '${userA}'`) === tasksBefore);
-  const sneak = await page.evaluate(async ([api, key]) => {
-    const tok = JSON.parse(Object.entries(localStorage).find(([k]) => k.includes('auth-token'))[1]).access_token;
-    const r = await fetch(`${api}/rest/v1/tasks?title=eq.Math%20homework`, { method: 'PATCH', headers: { apikey: key, authorization: `Bearer ${tok}`, 'content-type': 'application/json', prefer: 'return=representation' }, body: JSON.stringify({ status: 'completed' }) });
-    return r.status;
-  }, [API, anonKey]);
-  check('TEST 2: the database also refuses writes from a locked account', sneak >= 400 && psql("select status from public.tasks where title = 'Math homework'") === 'pending', `HTTP ${sneak}`);
+  // Archive
+  await page.getByRole('link', { name: /Archivo/ }).click();
+  await page.getByTestId('archive-month').waitFor();
+  const months = await page.locator('[data-testid=archive-month] option').count();
+  let foundOld = false;
+  for (let i = 0; i < months && !foundOld; i++) {
+    await page.locator('[data-testid=archive-month]').selectOption({ index: i });
+    await sleep(500);
+    foundOld = (await page.locator('[data-testid=hw-card]', { hasText: 'Taller de divisiones' }).count()) > 0;
+  }
+  check('archive keeps homework older than two weeks', foundOld);
+  check('archive is grouped by week', (await page.getByTestId('archive-week').count()) >= 1 && (await page.getByTestId('archive-week').first().textContent()).startsWith('Semana del'));
+  check('archived items say Archivada', (await page.locator('[data-testid=hw-card]', { hasText: 'Taller de divisiones' }).textContent()).includes('Archivada'));
+  await page.getByTestId('archive-search').fill('divisiones');
+  await sleep(900);
+  check('archive search', (await page.locator('[data-testid=hw-card]').count()) === 1);
+  await shot(page, '05-archive');
+  await noSideScroll(page, 'archive');
+  await page.locator('[data-testid=hw-card]').first().getByRole('link', { name: 'Ver detalles' }).click();
+  await page.getByTestId('hw-detail').waitFor();
+  check('archived homework opens with its original details', (await page.getByTestId('original').textContent()).includes('Resolver 10 divisiones'));
 
-  // =========================================================================
-  // TEST 3 — verified Hotmart payment → ACTIVE
-  // =========================================================================
-  await page.goto(`${BASE}/app`);
-  await page.getByRole('button', { name: 'Continuar con Premium' }).click();
-  await page.waitForURL('**/fake-hotmart/checkout**');
-  const checkoutUrl = new URL(page.url());
-  const sck = checkoutUrl.searchParams.get('sck');
-  check('TEST 3: checkout goes to Hotmart with our token and e-mail', /^[0-9a-f]{36}$/.test(sck ?? '') && checkoutUrl.searchParams.get('email') === A.email);
-  check('TEST 3: nothing changes before Hotmart confirms', psql(`select status from public.subscriptions where user_id = '${userA}'`) === 'TRIAL');
-  const bad = await fetch(`${API}/functions/v1/hotmart-webhook`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-hotmart-hottok': 'wrong' }, body: '{}' });
-  check('TEST 3: a forged webhook is refused', bad.status === 401);
-  const nextCharge = Date.now() + 30 * 864e5;
-  const ok = await webhook('PURCHASE_APPROVED', { buyer: { email: A.email }, purchase: { transaction: 'HP-1', status: 'APPROVED', date_next_charge: nextCharge, price: { value: 2.99, currency_value: 'USD' }, origin: { sck } }, subscription: { subscriber: { code: 'SUB-A' }, status: 'ACTIVE' } });
-  check('TEST 3: webhook accepted', ok.status === 200 && ok.body.outcome === 'activated', JSON.stringify(ok));
-  await page.goto(`${BASE}/app/subscription`);
-  await page.getByTestId('sub-status').waitFor();
-  check('TEST 3: subscription shows Active', (await page.getByTestId('sub-status').textContent()).includes('Activa'));
-  await shot(page, '19-subscription-active');
-  await page.goto(`${BASE}/app`);
-  await page.getByTestId('kid-Maria').waitFor();
-  check('TEST 3: the app is unlocked', (await page.getByTestId('paywall').count()) === 0);
+  // Family link with two children: never mixed
+  const fam = await (await browser.newContext({ ...iphone, locale: 'es-EC', timezoneId: 'America/Guayaquil' })).newPage();
+  const famLink = process.env.FAMILY_LINK;
+  if (famLink) {
+    await fam.goto(famLink); await fam.waitForURL('**/hoy');
+    await fam.getByRole('tab', { name: 'Edric' }).click();
+    await sleep(800);
+    const edricText = await fam.textContent('main');
+    check('child selection: Edric sees only his homework', edricText.includes('Tablas de multiplicar (demo)') && !edricText.includes('Read Chapter 4'));
+    await fam.getByRole('tab', { name: 'Gael' }).click();
+    await sleep(800);
+    check('child selection: Gael sees only his homework', !(await fam.textContent('main')).includes('Tablas de multiplicar (demo)'));
+    await shot(fam, '06-family-two-children');
+  }
 
-  // =========================================================================
-  // TEST 4 — cancellation → access until the paid period ends, then locked
-  // =========================================================================
-  const cancel = await webhook('SUBSCRIPTION_CANCELLATION', { subscriber: { code: 'SUB-A', email: A.email }, date_next_charge: nextCharge });
-  check('TEST 4: cancellation webhook accepted', cancel.body.outcome === 'cancelled', JSON.stringify(cancel));
-  await page.goto(`${BASE}/app/subscription`);
-  await page.getByTestId('sub-status').waitFor();
-  check('TEST 4: shows Cancelled with access until the end of the period', (await page.getByTestId('sub-status').textContent()).includes('Cancelada') && (await page.textContent('[data-testid=subscription-card]')).includes('Tienes acceso hasta'));
-  await page.goto(`${BASE}/app`);
-  await page.getByTestId('kid-Maria').waitFor();
-  check('TEST 4: still usable during the paid period', (await page.getByTestId('paywall').count()) === 0);
-  psql(`update public.subscriptions set current_period_end = now() - interval '1 second' where user_id = '${userA}'`);
-  psql('select billing.expire_subscriptions()');
-  await page.goto(`${BASE}/app`);
-  await page.getByTestId('paywall').waitFor();
-  check('TEST 4: after the period ends the account is locked', (await page.textContent('[data-testid=paywall]')).includes('Tu suscripción terminó.'));
-  check('TEST 4: status is EXPIRED', psql(`select status from public.subscriptions where user_id = '${userA}'`) === 'EXPIRED');
-
-  // =========================================================================
-  // Admin dashboard (aggregates only)
-  // =========================================================================
-  psql(`insert into public.platform_admins (user_id) values ('${userA}')`);
-  await page.goto(`${BASE}/app/admin`);
-  await page.getByTestId('kpi-total_users').waitFor();
-  const adminText = await page.textContent('main');
-  check('admin dashboard shows totals', (await page.getByTestId('kpi-total_users').textContent()).startsWith('2'));
-  check('admin dashboard shows no children names or task text', !/Maria|Lucas|Pedro|Math homework/.test(adminText));
-  await shot(page, '20-admin');
-  await noHorizontalScroll(page, '/app/admin');
-  await pageB.goto(`${BASE}/app/admin`);
+  // Another family: isolation, then revocation
+  const other = await (await browser.newContext({ ...iphone, locale: 'es-EC' })).newPage();
+  await other.goto(linkMaria); await other.waitForURL('**/hoy');
+  await other.getByTestId('today-counter').waitFor();
+  const otherText = await other.textContent('body');
+  check('another family sees only their child', otherText.includes('Maria') && !otherText.includes('Gael') && !otherText.includes('Edric'));
+  check('homework is the same for every family of the class', otherText.includes('Read Chapter 4'));
+  await admin.goto(`${BASE}/admin/estudiantes`);
+  await admin.locator('.card', { hasText: 'Familia de Maria' }).getByRole('button', { name: 'Revocar' }).click();
   await sleep(600);
-  check('a normal parent cannot open the admin dashboard', (await pageB.textContent('main')).includes('solo para el dueño'));
+  await other.reload();
+  await other.getByTestId('invalid-link').waitFor();
+  check('a revoked link stops working', true);
 
-  // =========================================================================
-  // Account deletion (User B)
-  // =========================================================================
-  await pageB.goto(`${BASE}/app/settings`);
-  await pageB.getByText('Eliminar mi cuenta').first().click();
-  await pageB.getByLabel('Escribe ELIMINAR para confirmar').fill('ELIMINAR');
-  await pageB.getByRole('button', { name: 'Eliminar mi cuenta' }).click();
-  await pageB.waitForURL(u => !u.pathname.startsWith('/app'));
-  check('account deletion removes the user and their children', psql(`select count(*) from auth.users where email = '${B.email}'`) === '0' && psql("select count(*) from public.children where name = 'Pedro'") === '0');
+  // Direct API attempts with the public key
+  const h = { apikey: anonKey, 'content-type': 'application/json' };
+  const r1 = await fetch(`${API}/rest/v1/homework?select=title`, { headers: h });
+  check('the public key cannot list homework', r1.status === 401 || r1.status === 403, `HTTP ${r1.status}`);
+  const r2 = await fetch(`${API}/rest/v1/homework?title=eq.Plant%20parts`, { method: 'PATCH', headers: h, body: JSON.stringify({ title: 'hacked' }) });
+  check('the public key cannot change homework', r2.status >= 400 && psql("select title from public.homework where title like 'Plant%'") === 'Plant parts', `HTTP ${r2.status}`);
+  const r3 = await fetch(`${API}/rest/v1/rpc/viewer_homework`, { method: 'POST', headers: h, body: JSON.stringify({ p_token: 'x'.repeat(32), p_student: psql("select id from public.students where first_name = 'Gael'"), p_from: null, p_to: null }) });
+  check('a guessed token gets nothing', (await r3.text()) === 'null');
 
-  // Desktop screenshots
-  const desk = await browser.newContext({ viewport: { width: 1280, height: 860 }, locale: 'es-EC' });
-  const dp = await desk.newPage();
-  await dp.goto(BASE);
-  await dp.getByRole('heading', { level: 1 }).waitFor();
-  await dp.screenshot({ path: path.join(SHOTS, '21-landing-desktop.png') });
-  check('no JavaScript errors on the iPhone session', consoleErrors.length === 0, consoleErrors.join(' | '));
+  // Admin correction is versioned and seen by every parent
+  const laId = psql("select id from public.homework where title = 'Read Chapter 4 and answer questions 1–5'");
+  await admin.goto(`${BASE}/admin/tareas/${laId}`);
+  await admin.getByLabel(/Tarea \(título\)/).fill('Read Chapter 4 and answer questions 1–6');
+  await admin.getByRole('button', { name: 'Guardar' }).click();
+  await admin.waitForURL('**/admin/tareas');
+  check('admin correction keeps the previous version', psql(`select count(*) from public.homework_revisions where homework_id = '${laId}'`) === '1');
+  await page.goto(`${BASE}/tarea/${laId}`);
+  await page.getByTestId('hw-detail').waitFor();
+  check('parents see the corrected text and a correction note', (await page.textContent('main')).includes('1–6') && (await page.textContent('main')).includes('corrigió'));
+
+  check('no JavaScript errors in the parent app', jsErrors.length === 0, jsErrors.join(' | '));
 } catch (e) {
   failed.push(`crashed: ${e.stack || e}`);
 } finally {
   await browser.close();
 }
-
 console.log(`\n${passed.length} passed, ${failed.length} failed`);
 for (const f of failed) console.log('  ✗ ' + f);
 process.exit(failed.length ? 1 : 0);

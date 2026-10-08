@@ -1,62 +1,76 @@
-// DEMO DATA — creates the reference demo family (parent "Gary", children Gael and Edric) with
-// fictional school tasks for the current week, through the real API (so every row passes the
-// same security rules as a real parent's). For local/staging projects only; never production.
+// DEMO DATA — local/staging only, never production.
+// Creates: an administrator (demo.admin@example.com / Demo-Admin-2026), the student Gael in
+// "4.º EGB — Paralelo A", the student Edric in a clearly-labelled DEMO class (his real grade is
+// not known), one family link covering both, and fictional homework around today
+// (today, the last 2 weeks, the archive and a few upcoming) in English and Spanish subjects.
 //
-//   SUPABASE_URL=http://localhost:54321 SUPABASE_ANON_KEY=... SUPABASE_SERVICE_ROLE_KEY=... node scripts/seed-demo.mjs
-//
-// Login afterwards: demo.gary@example.com / Demo-Familia-2026
+//   SUPABASE_URL=http://localhost:54321 SUPABASE_SERVICE_ROLE_KEY=... APP_URL=http://localhost:5173 node scripts/seed-demo.mjs
 import { createClient } from '@supabase/supabase-js';
 
-const url = process.env.SUPABASE_URL;
-const anon = process.env.SUPABASE_ANON_KEY;
-const service = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!url || !anon || !service) { console.error('Set SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY'); process.exit(1); }
-if (/supabase\.co/.test(url) && !process.env.ALLOW_REMOTE_DEMO) {
-  console.error('Refusing to seed a hosted project. Set ALLOW_REMOTE_DEMO=1 for a staging project.'); process.exit(1);
-}
+const url = process.env.SUPABASE_URL, service = process.env.SUPABASE_SERVICE_ROLE_KEY, appUrl = process.env.APP_URL || 'http://localhost:5173';
+if (!url || !service) { console.error('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY'); process.exit(1); }
+if (/supabase\.co/.test(url) && !process.env.ALLOW_REMOTE_DEMO) { console.error('Refusing to seed a hosted project (set ALLOW_REMOTE_DEMO=1 for staging).'); process.exit(1); }
+const db = createClient(url, service, { auth: { persistSession: false } });
+const must = ({ data, error }) => { if (error) throw new Error(error.message); return data; };
 
-const EMAIL = 'demo.gary@example.com';
-const PASSWORD = 'Demo-Familia-2026';
-const admin = createClient(url, service, { auth: { persistSession: false } });
-const user = createClient(url, anon, { auth: { persistSession: false } });
+// Dates in the class's time zone, like the app.
+const todayLocal = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Guayaquil' }).format(new Date());
+const day = n => { const d = new Date(`${todayLocal}T12:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const ago = days => new Date(Date.now() - days * 864e5).toISOString();
 
-const { data: created, error: ce } = await admin.auth.admin.createUser({
-  email: EMAIL, password: PASSWORD, email_confirm: true,
-  user_metadata: {
-    demo: true,                                   // internal label: this is demo data
-    full_name: 'Gary (demo)', country: 'EC', locale: 'es', timezone: 'America/Guayaquil',
-    children: [{ name: 'Gael', grade: '5.º de básica', school: 'Colegio Demo' }, { name: 'Edric', grade: '3.º de básica', school: 'Colegio Demo' }],
-  },
-});
-if (ce && !/already/i.test(ce.message)) throw ce;
-if (ce) console.log('demo user already exists, adding tasks again');
-const { error: se } = await user.auth.signInWithPassword({ email: EMAIL, password: PASSWORD });
-if (se) throw se;
-await user.rpc('complete_onboarding');
+// Administrator
+const ADMIN = { email: 'demo.admin@example.com', password: 'Demo-Admin-2026' };
+let adminId;
+const created = await db.auth.admin.createUser({ email: ADMIN.email, password: ADMIN.password, email_confirm: true, user_metadata: { demo: true } });
+if (created.error) {
+  const list = must(await db.auth.admin.listUsers());
+  adminId = list.users.find(u => u.email === ADMIN.email)?.id;
+} else adminId = created.data.user.id;
+await db.from('admins').upsert({ user_id: adminId });
 
-const { data: kids } = await user.from('children').select('id, name');
-const id = name => kids.find(k => k.name === name)?.id;
-// Dates in the family's time zone (not the machine's), like the app computes them.
-const TZ = 'America/Guayaquil';
-const todayLocal = new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(new Date());   // YYYY-MM-DD
-const day = offset => { const d = new Date(`${todayLocal}T12:00:00Z`); d.setUTCDate(d.getUTCDate() + offset); return d.toISOString().slice(0, 10); };
-const monday = 1 - (new Date(`${todayLocal}T12:00:00Z`).getUTCDay() || 7);
+const c4a = must(await db.from('classes').select('id').eq('grade_short', '4.º EGB').eq('parallel', 'A').single()).id;
+let demoClass = (await db.from('classes').select('id').eq('grade_short', 'DEMO').maybeSingle()).data?.id;
+if (!demoClass) demoClass = must(await db.from('classes').insert({ grade_label: 'Clase de demostración (grado por confirmar)', grade_short: 'DEMO', parallel: '—' }).select('id').single()).id;
 
-// Fictional tasks inspired by a typical week (no real school data).
-const tasks = [
-  ['Gael', 'Matemática', 'Taller de divisiones aplicando la prueba', 'Resolver 10 divisiones del cuaderno, aplicar la prueba e indicar si es exacta o inexacta.', day(0), 'high', 'pending', 40],
-  ['Gael', 'Estudios Sociales', 'Mapa conceptual de las provincias', 'Hacer un mapa conceptual en el cuaderno.', day(1), 'normal', 'pending', 45],
-  ['Gael', 'Lengua y Literatura', 'Leyendas tradicionales', 'Lectura y preguntas de comprensión.', day(0), 'normal', 'completed', 25],
-  ['Gael', 'English', 'Spelling quiz: words 275–285', 'Study the 10 words for the quiz.', day(monday + 4), 'high', 'pending', 15],
-  ['Gael', 'Educación Cultural y Artística', 'Arte con reciclaje', 'Obra artística con materiales reciclados.', day(9), 'low', 'pending', 60],
-  ['Edric', 'Matemática', 'Tablas de multiplicar del 1 al 12', 'Repetir 3 veces las tablas en el cuaderno.', day(0), 'normal', 'in_progress', 30],
-  ['Edric', 'Science', 'Amphibians: notes and pictures', 'Copy the 3 characteristics and add a picture of a toad, a frog and a salamander. (In English.)', day(1), 'normal', 'pending', 30],
-  ['Edric', 'Language Arts', 'Spelling lesson: words 201–211', 'Review the 11 words at home.', day(monday + 3), 'high', 'pending', 15],
-  ['Edric', 'Estudios Sociales', 'Reservas naturales', 'Actividad sobre las reservas naturales.', day(-1), 'normal', 'pending', 20],
-  ['Edric', 'Educación en la Fe', 'Elaboración de una camándula', 'Traer 3 esferas de espuma flex pintadas.', day(monday + 1), 'normal', 'completed', 30],
+const student = async (cls, name) => (await db.from('students').select('id').eq('class_id', cls).eq('first_name', name).maybeSingle()).data?.id
+  ?? must(await db.from('students').insert({ class_id: cls, first_name: name }).select('id').single()).id;
+const gael = await student(c4a, 'Gael');
+const edric = await student(demoClass, 'Edric');
+
+// Fictional homework (no real school data). [subject, title, instructions, explanation, lang, start, due, createdDaysAgo]
+const hw = [
+  ['Language Arts', 'Read Chapter 4 and answer questions 1–5', 'Read Chapter 4 of your reader and answer questions 1–5 in your notebook. Use complete sentences.', 'Lee el capítulo 4 del libro de lectura y responde las preguntas 1–5 en el cuaderno, con oraciones completas.', 'en', 0, 1, 0.1],
+  ['Science', 'Complete the ecosystem worksheet', 'Complete the worksheet about ecosystems. Label the producers, consumers and decomposers.', 'Completa la hoja de trabajo sobre ecosistemas. Señala productores, consumidores y descomponedores.', 'en', 0, 2, 1],
+  ['Matemática', 'Resolver ejercicios 15–20', 'Resolver los ejercicios 15 al 20 de la página 42. Escribir los números de forma clara.', null, 'es', 0, 0, 1],
+  ['Spelling', 'Spelling words 201–211', 'Study words 201–211 for Thursday\'s spelling lesson: knowledge, landed, laws, limit, literary, local, located, lot, manager, material, mechanical.', 'Estudiar las palabras 201–211 para la lección de spelling. La lección es en inglés.', 'en', -2, 0, 3],
+  ['Estudios Sociales', 'Mapa conceptual de las provincias', 'Realizar un mapa conceptual de las provincias del Ecuador en el cuaderno.', null, 'es', -3, -1, 4],
+  ['Lengua y Literatura', 'Leyendas tradicionales', 'Leer la leyenda del libro y responder las preguntas de comprensión.', null, 'es', -6, -5, 7],
+  ['Science', 'Amphibians: notes and pictures', 'Copy the 3 characteristics of amphibians and draw a toad, a frog and a salamander. Write their names in English.', 'Copia las 3 características de los anfibios y dibuja un sapo, una rana y una salamandra. Los nombres van en inglés.', 'en', -8, -6, 9],
+  ['Educación Cultural y Artística', 'Arte con reciclaje', 'Elaborar una obra artística usando materiales reciclados.', null, 'es', -13, -9, 14],
+  ['Matemática', 'Taller de divisiones', 'Resolver 10 divisiones del cuaderno aplicando la prueba.', null, 'es', -25, -24, 26],
+  ['Language Arts', 'Book report: my favorite character', 'Write five sentences about your favorite character from the book.', 'Escribe cinco oraciones sobre tu personaje favorito del libro (en inglés).', 'en', -30, -27, 31],
+  ['Science', 'The water cycle', 'Describe the three stages of the water cycle.', 'Describe las tres etapas del ciclo del agua.', 'en', 3, 5, 0.5],
+  ['Estudios Sociales', 'Exposición sobre Quito', 'Preparar una exposición de dos minutos sobre la ciudad de Quito.', null, 'es', 5, 8, 0.5],
 ];
-const rows = tasks.map(([kid, subject, title, description, due_date, priority, status, estimated_minutes]) =>
-  ({ child_id: id(kid), subject, title, description, due_date, priority, status, estimated_minutes, notes: 'DEMO', source: 'manual' }));
-const { error: te } = await user.from('tasks').insert(rows);
-if (te) throw te;
-console.log(`Demo family ready: ${EMAIL} / ${PASSWORD} (${rows.length} tasks)`);
+const rows = hw.map(([subject, title, instructions, parent_explanation, language, s, d, createdAgo]) => ({
+  class_id: c4a, subject, title, instructions, parent_explanation, language, start_date: day(s), due_date: day(d), source: 'manual',
+  notes: 'DEMO', created_at: ago(createdAgo), created_by: adminId,
+}));
+rows.push({ class_id: demoClass, subject: 'Matemática', title: 'Tablas de multiplicar (demo)', instructions: 'Repetir las tablas del 1 al 12.', language: 'es',
+  start_date: day(0), due_date: day(1), source: 'manual', notes: 'DEMO', created_at: ago(1), created_by: adminId });
+const { error } = await db.from('homework').upsert(rows, { onConflict: 'class_id,subject,title,start_date,due_date', ignoreDuplicates: true });
+if (error && !/duplicate|unique|ON CONFLICT/i.test(error.message)) throw new Error(error.message);
+if (error) for (const r of rows) await db.from('homework').insert(r);   // the fingerprint index is an expression index: insert one by one, skipping duplicates
+
+// One link for the family (both children)
+const { data: link } = await (async () => {
+  const sessionClient = createClient(url, process.env.SUPABASE_ANON_KEY || service, { auth: { persistSession: false } });
+  if (process.env.SUPABASE_ANON_KEY) {
+    must(await sessionClient.auth.signInWithPassword(ADMIN));
+    return sessionClient.rpc('admin_create_link', { p_label: 'Familia de Gael y Edric (demo)', p_students: [gael, edric] });
+  }
+  return { data: null };
+})();
+console.log(`Admin: ${ADMIN.email} / ${ADMIN.password}`);
+if (link) console.log(`Parent link: ${appUrl}/v/${link.token}`);
+else console.log('Set SUPABASE_ANON_KEY to also create a parent link.');

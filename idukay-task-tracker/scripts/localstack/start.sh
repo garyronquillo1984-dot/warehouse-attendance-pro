@@ -17,9 +17,9 @@ env GOTRUE_API_HOST=127.0.0.1 PORT=$LS_AUTH_PORT \
   GOTRUE_SITE_URL="$LS_SITE_URL" GOTRUE_URI_ALLOW_LIST="$LS_SITE_URL/**,http://127.0.0.1:5173/**" \
   GOTRUE_JWT_SECRET="$LS_JWT_SECRET" GOTRUE_JWT_EXP=3600 GOTRUE_JWT_AUD=authenticated \
   GOTRUE_JWT_DEFAULT_GROUP_NAME=authenticated GOTRUE_JWT_ADMIN_ROLES=service_role \
-  GOTRUE_DISABLE_SIGNUP=false GOTRUE_EXTERNAL_EMAIL_ENABLED=true GOTRUE_MAILER_AUTOCONFIRM=false \
+  GOTRUE_DISABLE_SIGNUP=true GOTRUE_EXTERNAL_EMAIL_ENABLED=true GOTRUE_MAILER_AUTOCONFIRM=false \
   GOTRUE_SMTP_HOST=127.0.0.1 GOTRUE_SMTP_PORT=$LS_SMTP_PORT GOTRUE_SMTP_USER=local GOTRUE_SMTP_PASS=local \
-  GOTRUE_SMTP_ADMIN_EMAIL=noreply@local.test GOTRUE_SMTP_SENDER_NAME="Idukay Task Tracker" \
+  GOTRUE_SMTP_ADMIN_EMAIL=noreply@local.test GOTRUE_SMTP_SENDER_NAME="Tareas en Casa" \
   GOTRUE_RATE_LIMIT_EMAIL_SENT=10000 GOTRUE_PASSWORD_MIN_LENGTH=10 GOTRUE_LOG_LEVEL=warn \
   nohup "$LS_BIN/auth/auth" serve > "$LS_ROOT/logs/auth.log" 2>&1 &
 echo $! > "$LS_ROOT/auth.pid"
@@ -37,12 +37,7 @@ nohup "$LS_BIN/postgrest" "$LS_ROOT/postgrest.conf" > "$LS_ROOT/logs/postgrest.l
 echo $! > "$LS_ROOT/postgrest.pid"
 
 SERVICE_KEY="$(LS_JWT_SECRET=$LS_JWT_SECRET node keys.mjs service_role)"
-# Hotmart settings for the simulated checkout (HOTMART_CONFIGURED=0 leaves them empty to test "not configured").
-if [ "${HOTMART_CONFIGURED:-1}" = "1" ]; then
-  export HOTMART_PRODUCT_ID=4242 HOTMART_WEBHOOK_SECRET="$LS_HOTTOK" \
-         HOTMART_CHECKOUT_URL="http://localhost:$LS_GATEWAY_PORT/fake-hotmart/checkout?off=test"
-fi
-SUPABASE_URL="http://localhost:$LS_GATEWAY_PORT" SUPABASE_SERVICE_ROLE_KEY="$SERVICE_KEY" PORT=$LS_FUNCTIONS_PORT \
+SUPABASE_URL="http://localhost:$LS_GATEWAY_PORT" SUPABASE_SERVICE_ROLE_KEY="$SERVICE_KEY" SUPABASE_ANON_KEY="$(LS_JWT_SECRET=$LS_JWT_SECRET node keys.mjs anon)" PORT=$LS_FUNCTIONS_PORT \
   nohup node --experimental-strip-types --no-warnings functions.mts > "$LS_ROOT/logs/functions.log" 2>&1 &
 echo $! > "$LS_ROOT/functions.pid"
 

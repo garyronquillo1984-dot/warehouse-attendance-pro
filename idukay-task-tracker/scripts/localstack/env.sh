@@ -6,7 +6,6 @@ export PGPORT_LOCAL="${PGPORT_LOCAL:-54329}"
 export LS_DB="${LS_DB:-itt_e2e}"
 # Throwaway secrets for the local stack only. Never reuse them anywhere real.
 export LS_JWT_SECRET="local-dev-only-jwt-secret-0123456789abcdef"
-export LS_HOTTOK="local-test-hottok"
 export LS_GATEWAY_PORT=54321
 export LS_AUTH_PORT=9999
 export LS_REST_PORT=3000
