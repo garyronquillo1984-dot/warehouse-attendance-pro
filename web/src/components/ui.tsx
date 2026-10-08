@@ -26,6 +26,9 @@ export function AuthLayout({ children }: { children: ReactNode }) {
         <Wordmark to="/login" />
         {children}
       </div>
+      <nav className="legal-links small" aria-label="Legal">
+        <Link to="/terms">Terms</Link><Link to="/privacy">Privacy</Link>
+      </nav>
     </main>
   );
 }

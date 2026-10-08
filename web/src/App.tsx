@@ -5,6 +5,8 @@ import { pendingInvite, useSetupStatus } from './lib/setup';
 import { AuthLayout, Loading } from './components/ui';
 import { TwoStepChallenge } from './components/TwoStep';
 import Admin from './pages/Admin';
+import Demo from './pages/Demo';
+import { Terms, Privacy } from './pages/Legal';
 import AppShell from './components/AppShell';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -68,6 +70,9 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
       </Route>
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/demo" element={<Demo />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/privacy" element={<Privacy />} />
       <Route path="/invite" element={<OrgProvider><AcceptInvite /></OrgProvider>} />
       <Route element={<RequireAuth />}>
         <Route path="/setup" element={<Setup />} />

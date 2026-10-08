@@ -16,6 +16,8 @@ const U = {
   outsider:{ id: '00000000-0000-4000-c000-00000000000c', email: 'outsider@test.dev' },
   unconf:  { id: '00000000-0000-4000-d000-00000000000d', email: 'unconfirmed@test.dev', unconfirmed: true },
   platform:{ id: '00000000-0000-4000-e000-00000000000e', email: 'platform@test.dev' },
+  guest:   { id: '00000000-0000-4000-f000-00000000000f', email: null, anonymous: true },
+  guest2:  { id: '00000000-0000-4000-f000-0000000000f2', email: null, anonymous: true },
 };
 
 // ---------- harness ----------
@@ -34,7 +36,7 @@ async function run(actor, fn, { commit = false, aal = 'aal1' } = {}) {
     } else if (actor !== 'superuser') {
       await c.query('set local role authenticated');
       await c.query("select set_config('request.jwt.claims', $1, true)",
-        [JSON.stringify({ sub: actor.id, role: 'authenticated', email: actor.email, aal })]);
+        [JSON.stringify({ sub: actor.id, role: 'authenticated', email: actor.email, aal, is_anonymous: !!actor.anonymous })]);
     }
     const out = await fn(c);
     await c.query(commit ? 'commit' : 'rollback');
@@ -93,8 +95,8 @@ const future = new Date(Date.now() + 30 * 864e5).toISOString();
 // ---------- setup ----------
 async function setup() {
   for (const u of Object.values(U)) {
-    await q('superuser', 'insert into auth.users (id, email, email_confirmed_at) values ($1,$2,$3)',
-      [u.id, u.email, u.unconfirmed ? null : new Date().toISOString()], { commit: true });
+    await q('superuser', 'insert into auth.users (id, email, email_confirmed_at, is_anonymous) values ($1,$2,$3,$4)',
+      [u.id, u.email, u.unconfirmed || u.anonymous ? null : new Date().toISOString(), !!u.anonymous], { commit: true });
   }
   await q('superuser', 'insert into public.platform_admins (user_id) values ($1)', [U.platform.id], { commit: true });
 
@@ -233,6 +235,31 @@ async function tests(d) {
     "select public.hotmart_apply_event('x','PURCHASE_APPROVED',now(),'S',null,'a@test.dev','business',null,null)", [], /permission denied/);
   ok('the webhook entry point works for the server', (await one('service',
     "select public.hotmart_apply_event('evt-svc','PURCHASE_APPROVED',now(),'SUB-SVC',null,'svc@test.dev','professional',null,null) as o")).o === 'license_created');
+
+
+  // Live demo: each guest gets a private sandbox; real users can't create one.
+  await rejects('demo: signed-in customers cannot start a demo company', U.ownerA, 'select public.start_demo()', [], /demo_only_for_guests/);
+  await rejects('demo: anonymous API key alone cannot start one', 'anon', 'select public.start_demo()', [], /permission denied/);
+  const demoOrg = (await one(U.guest, 'select public.start_demo() as id', [], { commit: true })).id;
+  ok('demo: same guest gets the same sandbox back', (await one(U.guest, 'select public.start_demo() as id')).id === demoOrg);
+  const demo = await one(U.guest, `select (select count(*) from employees) emps, (select count(*) from attendance_records) recs,
+    (select count(*) from employees where first_attendance_date is null) not_started,
+    (select count(*) from attendance_records where status in ('absent','excused') and reason_code is null) no_reason,
+    (select is_demo from organizations) is_demo`);
+  ok('demo: sample company has 48 employees and three weeks of attendance', Number(demo.emps) === 48 && Number(demo.recs) > 300, JSON.stringify(demo));
+  ok('demo: absences carry a reason; 3 people not started yet', Number(demo.no_reason) === 0 && Number(demo.not_started) === 3 && demo.is_demo === true, JSON.stringify(demo));
+  const g2 = (await one(U.guest2, 'select public.start_demo() as id', [], { commit: true })).id;
+  await blocked('demo: one guest cannot see another guest\'s sandbox', U.guest2, 'select * from employees where organization_id = $1', [demoOrg]);
+  await blocked('demo: a guest cannot see real companies', U.guest, 'select * from employees where organization_id = $1', [d.orgA]);
+  ok('demo: guest can take attendance in the sandbox', (await one(U.guest,
+    "select public.record_attendance(current_date, jsonb_build_array(jsonb_build_object('employee_id', (select id from employees limit 1), 'status', 'present'))) as n")).n === 1);
+  await q('superuser', "update organizations set created_at = now() - interval '25 hours' where id = $1", [demoOrg], { commit: true });
+  const purged = (await one('superuser', 'select app.purge_demos() as n', [], { commit: true })).n;
+  ok('demo: sandboxes older than 24 hours are removed', purged === 1
+     && (await one('superuser', 'select count(*) c from organizations where id = $1', [demoOrg])).c === '0'
+     && (await one('superuser', 'select count(*) c from employees where organization_id = $1', [demoOrg])).c === '0'
+     && (await one('superuser', 'select count(*) c from organizations where id = $1', [g2])).c === '1');
+  await rejects('demo: customers cannot run the purge', U.ownerA, 'select app.purge_demos()', [], /permission denied/);
 
   // ===== 1. Company A trying to reach Company B =====
   const crossReads = [

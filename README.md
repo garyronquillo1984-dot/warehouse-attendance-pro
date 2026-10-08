@@ -15,7 +15,7 @@ Each customer company's data is fully isolated by the database itself.
 | 4. Attendance | Fast capture screen (no scroll jumps), badge scan, bulk present | Done |
 | 5. Dashboard & reports | KPIs, 7 reports, CSV/Excel/PDF | Done |
 | 6. Licensing & Hotmart | Webhook edge function, inactive page, super admin | Done (needs the Hotmart token as a secret) |
-| 7. Demo & launch | Demo mode, legal pages, production deploy | |
+| 7. Demo & launch | Demo mode, legal pages, production deploy | Demo and legal pages done; own email domain pending |
 
 ## Database
 
@@ -36,8 +36,10 @@ versions match the history of the Supabase project `warehouse-attendance-dev`
 | `20261007165553_functions_employees_attendance.sql` | Employee import, attendance capture | Yes |
 | `20261007171108_functions_reports.sql` | Report grid (records + scheduled days with no record) | Yes |
 | `20261007171509_report_grid_since.sql` | No Record counts from the later of hire date and date added | Yes |
-| `20261007220000_functions_team_admin_webhook.sql` | Team list, cancel invitation, admin extras, webhook entry point | Yes |
-| `20261007221000_schedule_license_expiry.sql` | Daily license expiry (pg_cron, 05:15 UTC) | Yes |
+| `20261007220147_functions_team_admin_webhook.sql` | Team list, cancel invitation, admin extras, webhook entry point | Yes |
+| `20261007220500_schedule_license_expiry.sql` | Daily license expiry (pg_cron, 05:15 UTC) | Yes |
+| `20261008021217_demo.sql` | Live demo sandboxes (`start_demo`), admin lists skip demos | Yes |
+| `20261008021300_demo_purge.sql` | Hourly removal of demos older than 24 h | Run from the SQL Editor (contains DELETE) |
 
 The last file contains `DELETE` statements inside functions, so Supabase requires a human
 confirmation; it was run by hand from Supabase → SQL Editor.

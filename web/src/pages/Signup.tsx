@@ -68,6 +68,8 @@ export default function Signup() {
                 disabled={busy || !name.trim() || !email || !password || !!pwError || confirm !== password}>
           {busy ? 'Creating account…' : 'Create account'}
         </button>
+        <p className="small muted">By creating an account you agree to the <Link to="/terms">Terms</Link> and
+          the <Link to="/privacy">Privacy Policy</Link>.</p>
       </form>
       <p className="small muted">Already have an account? <Link to="/login">Sign in</Link></p>
     </AuthLayout>

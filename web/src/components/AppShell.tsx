@@ -4,12 +4,20 @@ import { supabase } from '../lib/supabase';
 import { useOrg, canManage } from '../lib/org';
 import { Wordmark } from './ui';
 
+const BUY_URL = (import.meta.env.VITE_BUY_URL as string | undefined) || '';
+
 
 export default function AppShell() {
   const { orgs, current, select } = useOrg();
   const nav = useNavigate();
   const [platformAdmin, setPlatformAdmin] = useState(false);
   useEffect(() => { supabase.rpc('am_platform_admin').then(({ data }) => setPlatformAdmin(!!data)); }, []);
+  const [isDemo, setIsDemo] = useState(false);
+  useEffect(() => {
+    if (!current) return;
+    supabase.from('organizations').select('is_demo').eq('id', current.organization_id).maybeSingle()
+      .then(({ data }) => setIsDemo(!!data?.is_demo));
+  }, [current]);
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -35,6 +43,13 @@ export default function AppShell() {
         {/* Phones: the bottom bar has no room for the account link, so it lives up here. */}
         <NavLink className="btn btn-ghost small bar-btn narrow-only" to="/account">Account</NavLink>
       </header>
+      {isDemo && (
+        <div className="demo-bar" role="note">
+          <span><strong>Demo with sample data.</strong> Only you see it, and it’s erased after 24 hours.</span>
+          {BUY_URL && <a className="btn btn-primary small" href={BUY_URL} target="_blank" rel="noopener">Get Warehouse Attendance Pro</a>}
+          <button className="btn-link small" onClick={signOut}>Leave demo</button>
+        </div>
+      )}
       <div className="body">
         <nav className="sidenav" aria-label="Main">
           <NavLink to="/" end>Today</NavLink>

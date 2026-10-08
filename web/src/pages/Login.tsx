@@ -41,6 +41,7 @@ export default function Login() {
       <div className="stack small">
         <Link to="/forgot-password">Forgot your password?</Link>
         <span className="muted">New here? <Link to="/signup">Create an account</Link> with the email you used to buy.</span>
+        <span className="muted">Just looking? <Link to="/demo">Open the live demo</Link>, no account needed.</span>
       </div>
     </AuthLayout>
   );

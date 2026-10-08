@@ -38,6 +38,18 @@ export default function Account() {
     if (!error) { setPw(''); setPw2(''); }
   }
 
+  if (session?.user.is_anonymous) return (
+    <div className="stack-lg">
+      <div className="page-head"><h1>My account</h1></div>
+      <section className="panel">
+        <h2>You’re using the demo</h2>
+        <p>This demo has no account or password. It’s private to this browser and erased after 24 hours.</p>
+        <button className="btn btn-ghost" style={{ justifySelf: 'start' }}
+                onClick={async () => { await supabase.auth.signOut(); window.location.assign('/login'); }}>Leave demo</button>
+      </section>
+    </div>
+  );
+
   return (
     <div className="stack-lg">
       <div className="page-head">

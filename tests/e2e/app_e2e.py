@@ -459,6 +459,40 @@ async def main():
         check('owner sees the export-window note', True)
         await shot(page, '17-owner-inactive')
 
+
+        # ---------- live demo for visitors ----------
+        ctx4 = await browser.new_context(viewport={'width': 390, 'height': 844})
+        p4 = await ctx4.new_page()
+        OPEN_PAGES.append(p4)
+        await p4.goto(f'{BASE}/login')
+        await p4.get_by_role('link', name='Open the live demo').click()
+        await expect(p4.get_by_role('heading', name='Try it with sample data')).to_be_visible()
+        await shot(p4, '18-mobile-demo-start')
+        await p4.get_by_role('button', name='Open the demo').click()
+        await expect(p4.get_by_role('heading', name='Today', exact=True)).to_be_visible(timeout=15000)
+        await expect(p4.locator('.demo-bar')).to_contain_text('Demo with sample data')
+        check('demo opens a sandbox company', await p4.get_by_text('Demo Logistics').count() >= 1)
+        await shot(p4, '19-mobile-demo-today')
+        await p4.get_by_role('link', name='Reports', exact=True).click()
+        await p4.locator('#r-period').select_option('last_week')
+        await expect(p4.locator('.kpi-main .kpi-value')).not_to_have_text('—')
+        check('demo reports show sample attendance', int((await p4.locator('.kpi-note').inner_text()).split(' of ')[1].split()[0]) > 100)
+        await shot(p4, '20-mobile-demo-reports')
+        check('demo company is marked as demo and kept apart', psql("select count(*) from organizations where is_demo") == '1')
+        await p4.goto(f'{BASE}/account')
+        await expect(p4.get_by_role('heading', name='You’re using the demo')).to_be_visible()
+        await p4.locator('.panel').get_by_role('button', name='Leave demo').click()
+        await expect(p4).to_have_url(re.compile(r'/login'))
+        check('visitor can leave the demo', True)
+
+        # ---------- legal pages ----------
+        await p4.get_by_role('link', name='Terms').click()
+        await expect(p4.get_by_role('heading', name='Terms of Service')).to_be_visible()
+        await p4.get_by_role('link', name='Privacy').first.click()
+        await expect(p4.get_by_role('heading', name='Privacy Policy')).to_be_visible()
+        await shot(p4, '21-mobile-privacy')
+        check('terms and privacy pages open', True)
+
         check('no JavaScript errors', not console_errors, '; '.join(console_errors))
 
 async def run():
