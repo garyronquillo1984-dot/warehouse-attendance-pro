@@ -1,0 +1,9 @@
+{
+  "name": "Tareas escolares — Gael y Edric",
+  "short_name": "Tareas",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f3ec",
+  "theme_color": "#2f6b63",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

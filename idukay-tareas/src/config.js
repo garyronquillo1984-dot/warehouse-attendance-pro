@@ -38,6 +38,7 @@ export const config = {
     password: env.IDUKAY_PASSWORD || '',
     students: (env.STUDENTS || 'Gael,Edric').split(',').map((s) => s.trim()).filter(Boolean),
     openDetails: bool(env.IDUKAY_OPEN_DETAILS, true),
+    logoutAfter: bool(env.IDUKAY_LOGOUT_AFTER, false),
     maxDetails: Number(env.IDUKAY_MAX_DETAILS || 40),
     // Optional JSON with CSS selectors that override the automatic detection.
     selectors: parseJson(env.IDUKAY_SELECTORS, {}),

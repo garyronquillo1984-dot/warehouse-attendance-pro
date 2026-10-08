@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f6f3ec">
+  <title>Tareas escolares</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="page">
+    <div>
+      <div class="eyebrow">Idukay · Gael &amp; Edric</div>
+      <h1>Tareas escolares</h1>
+    </div>
+    <form method="post" action="/logout" id="logout-form"><button class="logout" type="submit">Salir</button></form>
+  </header>
+
+  <section class="sync" aria-live="polite">
+    <div class="rows">
+      <div>Última actualización: <strong id="last-sync">—</strong></div>
+      <div>Próxima actualización: <strong id="next-sync">—</strong></div>
+    </div>
+    <button class="btn" id="sync-btn" type="button">🔄 Actualizar ahora</button>
+    <div class="alert" id="sync-alert" hidden></div>
+  </section>
+
+  <nav class="tabs" aria-label="Secciones">
+    <button class="active" data-tab="hoy" type="button">Hoy</button>
+    <button data-tab="historial" type="button">📅 Últimas 2 semanas</button>
+    <button data-tab="archivo" type="button">📁 Archivo</button>
+    <button data-tab="diagnostico" type="button">Diagnóstico</button>
+  </nav>
+
+  <main>
+    <section class="view" id="view-hoy"><div class="empty"><span class="spin"></span>Cargando tareas…</div></section>
+    <section class="view" id="view-historial" hidden>
+      <div class="filters" id="hist-filters"></div>
+      <div id="hist-list"></div>
+    </section>
+    <section class="view" id="view-archivo" hidden>
+      <input class="search" id="arch-search" type="search" placeholder="Buscar en el archivo (materia, título…)">
+      <div class="filters" id="arch-filters"></div>
+      <div id="arch-list"></div>
+    </section>
+    <section class="view" id="view-diagnostico" hidden>
+      <div class="card" id="runs"></div>
+    </section>
+  </main>
+
+  <footer>Datos leídos automáticamente de Idukay · uso familiar · el historial se conserva aunque Idukay cambie</footer>
+
+  <div class="overlay" id="overlay" hidden><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
+  <script src="/app.js"></script>
+</body>
+</html>

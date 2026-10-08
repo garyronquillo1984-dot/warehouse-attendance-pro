@@ -10,7 +10,7 @@
     "sync": "node scripts/sync-once.js",
     "discover": "node scripts/discover.js",
     "import-artifact": "node scripts/import-artifact.js",
-    "test": "node --test test/"
+    "test": "node --test test/*.test.js"
   },
   "dependencies": {
     "better-sqlite3": "12.4.1",
