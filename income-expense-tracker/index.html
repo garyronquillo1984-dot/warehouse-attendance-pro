@@ -2,305 +2,571 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Income & Expense Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Income &amp; Expense Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
-  :root {
-    --bg: #f4f6f9;
-    --card: #ffffff;
-    --text: #1d2330;
-    --muted: #667085;
-    --border: #e3e7ee;
-    --input: #ffffff;
-    --accent: #2f6fed;
-    --accent-text: #ffffff;
-    --income: #15803d;
-    --expense: #b45309;
-    --danger: #dc2626;
-    --danger-bg: #fdecec;
-    --ok-bg: #eaf7ee;
-    --shadow: 0 1px 3px rgba(16, 24, 40, .08);
+/* Layout: a weekly pay ledger. Top: this period's net as a paycheck-stub hero.
+   Bottom tab bar on phones, top tabs on desktop. Fonts fall back to system fonts offline. */
+:root {
+  --bg: #e9eef2;
+  --surface: #ffffff;
+  --surface-2: #f3f6f8;
+  --ink: #15212c;
+  --muted: #5b6b78;
+  --line: #d5dde4;
+  --accent: #0d6e78;
+  --accent-ink: #ffffff;
+  --accent-soft: #d9eef0;
+  --income: #1d7a46;
+  --income-soft: #dcf1e4;
+  --expense: #b4480f;
+  --expense-soft: #fbe6d8;
+  --danger: #c0262d;
+  --danger-soft: #fde3e3;
+  --shadow: 0 1px 2px rgba(21, 33, 44, .06), 0 6px 20px rgba(21, 33, 44, .06);
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --radius: 14px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e151b; --surface: #16212a; --surface-2: #1c2a35; --ink: #e5edf3; --muted: #93a4b2;
+    --line: #2a3a47; --accent: #4fc1cb; --accent-ink: #062226; --accent-soft: #143840;
+    --income: #5fd18f; --income-soft: #143524; --expense: #f59a5c; --expense-soft: #3a2416;
+    --danger: #ff7a7f; --danger-soft: #3d1a1e; --shadow: none; color-scheme: dark;
   }
-  [data-theme="dark"] {
-    --bg: #0f141b;
-    --card: #18202b;
-    --text: #e6eaf0;
-    --muted: #98a2b3;
-    --border: #2a3441;
-    --input: #111821;
-    --accent: #5b8ff9;
-    --accent-text: #0b1020;
-    --income: #4ade80;
-    --expense: #fbbf24;
-    --danger: #f87171;
-    --danger-bg: #3a1a1d;
-    --ok-bg: #12301f;
-    --shadow: none;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.4;
-  }
-  header {
-    display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    padding: 14px 16px; background: var(--card); border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; z-index: 10;
-  }
-  header h1 { font-size: 1.15rem; margin: 0; }
-  .header-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-  main { max-width: 1100px; margin: 0 auto; padding: 16px; display: grid; gap: 16px; }
-  .card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-    padding: 16px; box-shadow: var(--shadow);
-  }
-  .card h2 { font-size: 1.05rem; margin: 0 0 12px; }
-  .two-col { display: grid; gap: 16px; grid-template-columns: 1fr; }
-  @media (min-width: 800px) { .two-col { grid-template-columns: 1fr 1fr; } }
+}
+:root[data-theme="dark"] {
+  --bg: #0e151b; --surface: #16212a; --surface-2: #1c2a35; --ink: #e5edf3; --muted: #93a4b2;
+  --line: #2a3a47; --accent: #4fc1cb; --accent-ink: #062226; --accent-soft: #143840;
+  --income: #5fd18f; --income-soft: #143524; --expense: #f59a5c; --expense-soft: #3a2416;
+  --danger: #ff7a7f; --danger-soft: #3d1a1e; --shadow: none; color-scheme: dark;
+}
 
-  form { display: grid; gap: 10px; }
-  label { display: grid; gap: 4px; font-size: .85rem; color: var(--muted); }
-  input, select, textarea, button { font: inherit; }
-  input[type="text"], input[type="number"], input[type="date"], select {
-    width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px;
-    background: var(--input); color: var(--text); min-height: 40px;
-  }
-  .row { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; }
-  .check { display: flex; align-items: center; gap: 8px; color: var(--text); font-size: .9rem; }
-  .check input { width: 18px; height: 18px; }
-  button {
-    border: 1px solid var(--border); background: var(--card); color: var(--text);
-    padding: 8px 12px; border-radius: 8px; cursor: pointer; min-height: 38px;
-  }
-  button:hover { filter: brightness(.96); }
-  button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 600; }
-  button.small { padding: 4px 8px; min-height: 30px; font-size: .8rem; }
-  button.danger { color: var(--danger); }
-  .hidden { display: none !important; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 15px/1.45 var(--font-body);
+  font-variant-numeric: tabular-nums;
+  padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 760px) { body { padding-bottom: 32px; } }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+[hidden] { display: none !important; }
 
-  .totals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
-  .mini { border: 1px solid var(--border); border-radius: 8px; padding: 8px; text-align: center; }
-  .mini .lbl { font-size: .75rem; color: var(--muted); }
-  .mini .val { font-weight: 700; font-size: .95rem; word-break: break-word; }
+/* ---- Top bar ---- */
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-inner {
+  max-width: 1040px; margin: 0 auto; padding: 12px 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.brand-mark {
+  width: 34px; height: 34px; border-radius: 10px; flex: none;
+  background: var(--accent); color: var(--accent-ink);
+  display: grid; place-items: center; font: 800 16px var(--font-display);
+}
+.brand h1 { font-size: 1.1rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.brand small { display: block; color: var(--muted); font-size: .78rem; }
+.tabs-top { display: none; margin-left: auto; gap: 4px; background: var(--surface); padding: 4px; border-radius: 12px; border: 1px solid var(--line); }
+.icon-btn {
+  margin-left: auto; width: 40px; height: 40px; border-radius: 10px; flex: none;
+  border: 1px solid var(--line); background: var(--surface); cursor: pointer;
+  display: grid; place-items: center;
+}
+.icon-btn svg { width: 20px; height: 20px; }
+@media (min-width: 760px) {
+  .tabs-top { display: flex; }
+  .icon-btn { margin-left: 0; }
+}
+.tab {
+  border: 0; background: transparent; padding: 8px 14px; border-radius: 9px;
+  cursor: pointer; font-weight: 600; color: var(--muted);
+}
+.tab[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
 
-  .summary { display: grid; gap: 10px; grid-template-columns: 1fr; }
-  @media (min-width: 700px) { .summary { grid-template-columns: repeat(3, 1fr); } }
-  .period { border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
-  .period h3 { margin: 0 0 8px; font-size: .9rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-  .period .line { display: flex; justify-content: space-between; padding: 3px 0; }
-  .period .net { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 6px; font-weight: 700; }
-  .period.over { background: var(--danger-bg); border-color: var(--danger); }
-  .period.over .net span:last-child, .period.over .warn { color: var(--danger); }
-  .period.good { background: var(--ok-bg); }
-  .warn { font-size: .8rem; font-weight: 600; margin-top: 4px; }
-  .income-amt { color: var(--income); }
-  .expense-amt { color: var(--expense); }
-  .neg { color: var(--danger); }
+/* ---- Bottom tab bar (phones) ---- */
+.tabs-bottom {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  background: var(--surface); border-top: 1px solid var(--line);
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+}
+@media (min-width: 760px) { .tabs-bottom { display: none; } }
+.tabs-bottom .tab {
+  display: grid; justify-items: center; gap: 2px; padding: 6px 4px; font-size: .75rem;
+}
+.tabs-bottom .tab svg { width: 22px; height: 22px; }
+.tabs-bottom .tab[aria-selected="true"] { background: var(--accent-soft); color: var(--accent); }
 
-  .chart-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
-  .chart-head h3 { margin: 0; font-size: .95rem; }
-  .chart-head select { width: auto; }
-  .chart-wrap { width: 100%; margin-top: 8px; }
-  canvas { display: block; width: 100%; }
-  .empty { color: var(--muted); font-size: .9rem; padding: 12px 0; }
+/* ---- Page ---- */
+main { max-width: 1040px; margin: 0 auto; padding: 16px; display: grid; gap: 16px; }
+.view { display: grid; gap: 16px; }
+.grid-2 { display: grid; gap: 16px; }
+@media (min-width: 760px) { .grid-2 { grid-template-columns: 1fr 1fr; align-items: start; } }
+.panel {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 18px; box-shadow: var(--shadow); min-width: 0;
+}
+.panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.panel h2 { font-size: 1.1rem; font-weight: 800; }
+.eyebrow { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.hint { color: var(--muted); font-size: .85rem; margin: 0; }
 
-  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; margin-bottom: 10px; }
-  .filters label { min-width: 140px; flex: 1; }
-  .table-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
-  th, td { padding: 8px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
-  th { font-size: .78rem; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
-  th.sortable { cursor: pointer; user-select: none; }
-  td.amt, th.amt { text-align: right; white-space: nowrap; }
-  td.date { white-space: nowrap; }
-  .badge { display: inline-block; font-size: .72rem; padding: 2px 6px; border-radius: 999px; border: 1px solid var(--border); }
-  .badge.income { color: var(--income); }
-  .badge.expense { color: var(--expense); }
-  .rec { font-size: .72rem; color: var(--muted); }
-  .history-foot { display: flex; justify-content: space-between; margin-top: 8px; font-size: .9rem; flex-wrap: wrap; gap: 8px; }
+/* ---- Segmented control ---- */
+.seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: transparent; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: .85rem; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
 
-  .rec-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-  .rec-list li { display: flex; justify-content: space-between; align-items: center; gap: 8px; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: .9rem; }
-  .rec-list .meta { color: var(--muted); font-size: .8rem; }
+/* ---- Hero (pay stub) ---- */
+.hero { position: relative; overflow: hidden; }
+.hero::after { /* perforated stub edge */
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 8px;
+  background: radial-gradient(circle at 6px 8px, var(--bg) 4px, transparent 4.5px) 0 0 / 14px 8px repeat-x;
+}
+.hero-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.hero-range { color: var(--muted); font-size: .85rem; margin-top: 2px; }
+.net-label { margin-top: 18px; }
+.net {
+  font: 800 clamp(2.4rem, 9vw, 3.6rem)/1.05 var(--font-display);
+  letter-spacing: -.02em; margin-top: 2px;
+}
+.net.neg { color: var(--danger); }
+.status-pill {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 10px;
+  font-size: .82rem; font-weight: 700; padding: 5px 10px; border-radius: 999px;
+  background: var(--income-soft); color: var(--income);
+}
+.status-pill.over { background: var(--danger-soft); color: var(--danger); }
+.status-pill.none { background: var(--surface-2); color: var(--muted); }
+.flow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; padding-bottom: 12px; }
+.flow-item { padding: 12px; border-radius: 12px; background: var(--surface-2); }
+.flow-item .amt { font: 700 1.25rem var(--font-display); margin-top: 2px; }
+.flow-item.inc .amt { color: var(--income); }
+.flow-item.exp .amt { color: var(--expense); }
+.ratio { height: 8px; border-radius: 99px; background: var(--income-soft); margin-top: 8px; overflow: hidden; }
+.ratio span { display: block; height: 100%; background: var(--expense); border-radius: 99px; width: 0; transition: width .3s; }
+.ratio.over span { background: var(--danger); }
+.ratio-cap { font-size: .78rem; color: var(--muted); margin-top: 4px; }
 
-  .toast {
-    position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
-    background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 8px;
-    font-size: .9rem; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 20;
-  }
-  .toast.show { opacity: 1; }
+/* ---- Totals table ---- */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 9px 8px; border-bottom: 1px solid var(--line); text-align: left; }
+th { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; white-space: nowrap; }
+.num { text-align: right; white-space: nowrap; }
+.totals td:first-child { font-weight: 600; }
+.totals tr:last-child td { border-bottom: 0; font-weight: 800; }
+@media (max-width: 480px) {
+  .panel { padding: 14px; }
+  .totals th, .totals td { padding: 8px 4px; font-size: .84rem; }
+  .totals td:first-child { white-space: nowrap; }
+}
+.cell-over { color: var(--danger); background: var(--danger-soft); }
+.c-inc { color: var(--income); }
+.c-exp { color: var(--expense); }
+.c-neg { color: var(--danger); }
 
-  @media (max-width: 520px) {
-    .row { grid-template-columns: 1fr; }
-    header h1 { font-size: 1rem; }
-    /* Stack table rows as cards on small phones */
-    thead { display: none; }
-    table, tbody, tr, td { display: block; width: 100%; }
-    tr { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; padding: 6px 8px; }
-    td { border: none; padding: 3px 0; display: flex; justify-content: space-between; gap: 12px; text-align: right; }
-    td::before { content: attr(data-label); color: var(--muted); font-size: .8rem; text-align: left; }
-    td.amt { text-align: right; }
-    td.no-note { display: none; }
-  }
+/* ---- Forms ---- */
+form { display: grid; gap: 12px; }
+.field { display: grid; gap: 5px; min-width: 0; }
+.field > span { font-size: .8rem; font-weight: 600; color: var(--muted); }
+input[type="text"], input[type="number"], input[type="date"], select, textarea {
+  width: 100%; min-height: 44px; padding: 10px 12px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--ink);
+}
+textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .8rem; resize: vertical; }
+.money { position: relative; }
+.money::before { content: "$"; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; }
+.money input { padding-left: 26px; font-weight: 700; }
+.row-2 { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+@media (max-width: 420px) { .row-2 { grid-template-columns: 1fr; } }
+.switch { display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 500; }
+.switch input { appearance: none; width: 42px; height: 24px; border-radius: 99px; background: var(--line); position: relative; cursor: pointer; flex: none; margin: 0; transition: background .15s; }
+.switch input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform .15s; box-shadow: 0 1px 2px rgba(0,0,0,.25); }
+.switch input:checked { background: var(--accent); }
+.switch input:checked::after { transform: translateX(18px); }
+.switch small { display: block; color: var(--muted); font-size: .78rem; font-weight: 400; }
+
+.btn {
+  min-height: 44px; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 700;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+}
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.inc { background: var(--income); border-color: var(--income); color: var(--surface); }
+.btn.exp { background: var(--expense); border-color: var(--expense); color: var(--surface); }
+.btn.small { min-height: 32px; padding: 5px 10px; font-size: .8rem; font-weight: 600; }
+.btn.danger { color: var(--danger); }
+.btn.danger.armed { background: var(--danger); border-color: var(--danger); color: var(--surface); }
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ---- FedEx pay card ---- */
+.pay-card { border-top: 4px solid var(--income); }
+.pay-card .last { font-size: .85rem; color: var(--muted); margin: -6px 0 12px; }
+
+/* ---- Category bars ---- */
+.bars { display: grid; gap: 10px; }
+.bar-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: baseline; }
+.bar-row .name { font-weight: 600; font-size: .9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-row .val { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+.bar-row .val b { color: var(--ink); font-weight: 700; }
+.bar-track { grid-column: 1 / -1; height: 10px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 99px; background: var(--expense); }
+.empty { color: var(--muted); font-size: .9rem; padding: 14px; text-align: center; border: 1px dashed var(--line); border-radius: 12px; }
+
+/* ---- Recurring list ---- */
+.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.list li { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; background: var(--surface-2); }
+.list .grow { flex: 1; min-width: 0; }
+.list .t { font-weight: 700; }
+.list .s { font-size: .8rem; color: var(--muted); }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.dot.income { background: var(--income); }
+.dot.expense { background: var(--expense); }
+
+/* ---- History ---- */
+.filters { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); margin-bottom: 12px; }
+.history th.sortable { cursor: pointer; user-select: none; }
+.history th.sortable:hover { color: var(--ink); }
+.history td { vertical-align: middle; }
+.type-chip { display: inline-block; font-size: .72rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; }
+.type-chip.income { background: var(--income-soft); color: var(--income); }
+.type-chip.expense { background: var(--expense-soft); color: var(--expense); }
+.rec-mark { font-size: .72rem; color: var(--accent); font-weight: 700; margin-left: 4px; }
+.note { color: var(--muted); font-size: .85rem; }
+.hist-foot { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: .88rem; margin-top: 12px; color: var(--muted); }
+.hist-foot b { color: var(--ink); }
+@media (max-width: 600px) {
+  .history thead { display: none; }
+  .history, .history tbody, .history tr, .history td { display: block; width: 100%; }
+  .history tr { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 4px 8px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .history td { border: 0; padding: 0; }
+  .history td.h-cat { font-weight: 700; grid-column: 1 / 3; grid-row: 1; min-width: 0; }
+  .history td.h-amt { grid-column: 3; grid-row: 1; text-align: right; font-weight: 700; }
+  .history td.h-date { grid-column: 1; grid-row: 2; color: var(--muted); font-size: .85rem; }
+  .history td.h-type { grid-column: 2; grid-row: 2; }
+  .history td.h-act { grid-column: 3; grid-row: 2; text-align: right; }
+  .history td.h-note { grid-column: 1 / -1; grid-row: 3; }
+  .history td.h-note:empty { display: none; }
+}
+
+/* ---- Toast ---- */
+.toast {
+  position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 10px);
+  background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-weight: 600;
+  opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 30; max-width: calc(100% - 32px);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+@media (min-width: 760px) { .toast { bottom: 24px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
-<header>
-  <h1>Income &amp; Expense Tracker</h1>
-  <div class="header-actions">
-    <button id="exportBtn" type="button">Export</button>
-    <button id="importBtn" type="button">Import</button>
-    <input id="importFile" type="file" accept="application/json,.json" class="hidden">
-    <button id="themeBtn" type="button" aria-label="Toggle dark mode">Dark mode</button>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">$</div>
+      <div>
+        <h1>Income &amp; Expense Tracker</h1>
+        <small id="todayLabel">Weekly pay &amp; bills</small>
+      </div>
+    </div>
+    <nav class="tabs-top" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" data-view="overview" aria-selected="true">Overview</button>
+      <button class="tab" role="tab" data-view="add" aria-selected="false">Add entry</button>
+      <button class="tab" role="tab" data-view="history" aria-selected="false">History</button>
+      <button class="tab" role="tab" data-view="settings" aria-selected="false">Backup &amp; settings</button>
+    </nav>
+    <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch to dark mode" title="Dark / light mode">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
   </div>
 </header>
 
 <main>
-  <!-- Dashboard -->
-  <section class="card" aria-labelledby="dashTitle">
-    <h2 id="dashTitle">Dashboard</h2>
-    <div class="summary" id="summary"></div>
-    <div class="chart-head">
-      <h3>Expenses by category</h3>
-      <select id="chartPeriod" aria-label="Chart period">
-        <option value="week">This week</option>
-        <option value="month" selected>This month</option>
-        <option value="all">All time</option>
-      </select>
-    </div>
-    <div class="chart-wrap">
-      <canvas id="chart" height="10"></canvas>
-      <div id="chartEmpty" class="empty hidden">No expenses in this period.</div>
-    </div>
-  </section>
+  <noscript>
+    <div class="panel"><strong>JavaScript is turned off in this viewer.</strong> Download this file and open it in Chrome, Safari, Edge or Firefox to add entries.</div>
+  </noscript>
 
-  <div class="two-col">
-    <!-- Income -->
-    <section class="card" aria-labelledby="incTitle">
-      <h2 id="incTitle">Add Income</h2>
-      <form id="incomeForm" autocomplete="off">
-        <label>Source
-          <select id="incSource"></select>
-        </label>
-        <label id="newSourceWrap" class="hidden">New source name
-          <input type="text" id="incNewSource" maxlength="60" placeholder="e.g. Side job">
-        </label>
-        <div class="row">
-          <label>Amount (USD)
-            <input type="number" id="incAmount" min="0.01" step="0.01" inputmode="decimal" required placeholder="0.00">
-          </label>
-          <label>Date received
-            <input type="date" id="incDate" required>
-          </label>
+  <!-- ================= OVERVIEW ================= -->
+  <section class="view" id="view-overview">
+    <div class="grid-2">
+      <article class="panel hero" aria-labelledby="heroTitle">
+        <div class="hero-top">
+          <div>
+            <h2 id="heroTitle">Net balance</h2>
+            <div class="hero-range" id="heroRange">This week</div>
+          </div>
+          <div class="seg" role="group" aria-label="Period">
+            <button type="button" data-period="week" aria-pressed="true">Week</button>
+            <button type="button" data-period="month" aria-pressed="false">Month</button>
+            <button type="button" data-period="all" aria-pressed="false">All time</button>
+          </div>
         </div>
-        <label>Note (optional)
-          <input type="text" id="incNote" maxlength="120">
-        </label>
-        <label class="check"><input type="checkbox" id="incRecurring"> Recurring weekly</label>
-        <button class="primary" type="submit">Add income</button>
-      </form>
-      <div class="totals">
-        <div class="mini"><div class="lbl">This week</div><div class="val income-amt" id="incWeek"></div></div>
-        <div class="mini"><div class="lbl">This month</div><div class="val income-amt" id="incMonth"></div></div>
-        <div class="mini"><div class="lbl">All time</div><div class="val income-amt" id="incAll"></div></div>
-      </div>
-    </section>
-
-    <!-- Expenses -->
-    <section class="card" aria-labelledby="expTitle">
-      <h2 id="expTitle">Add Expense</h2>
-      <form id="expenseForm" autocomplete="off">
-        <label>Category
-          <select id="expCategory"></select>
-        </label>
-        <div class="row">
-          <label>Amount (USD)
-            <input type="number" id="expAmount" min="0.01" step="0.01" inputmode="decimal" required placeholder="0.00">
-          </label>
-          <label>Date
-            <input type="date" id="expDate" required>
-          </label>
+        <div class="eyebrow net-label">Income − expenses</div>
+        <div class="net" id="heroNet">$0.00</div>
+        <div class="status-pill none" id="heroStatus">No entries yet</div>
+        <div class="flow">
+          <div class="flow-item inc">
+            <div class="eyebrow">Income</div>
+            <div class="amt" id="heroInc">$0.00</div>
+          </div>
+          <div class="flow-item exp">
+            <div class="eyebrow">Expenses</div>
+            <div class="amt" id="heroExp">$0.00</div>
+          </div>
         </div>
-        <label>Note (optional)
-          <input type="text" id="expNote" maxlength="120">
-        </label>
-        <label class="check"><input type="checkbox" id="expRecurring"> Recurring weekly</label>
-        <button class="primary" type="submit">Add expense</button>
-      </form>
-      <div class="totals">
-        <div class="mini"><div class="lbl">This week</div><div class="val expense-amt" id="expWeek"></div></div>
-        <div class="mini"><div class="lbl">This month</div><div class="val expense-amt" id="expMonth"></div></div>
-        <div class="mini"><div class="lbl">All time</div><div class="val expense-amt" id="expAll"></div></div>
+        <div class="ratio" id="heroRatio"><span></span></div>
+        <div class="ratio-cap" id="heroRatioCap">Share of income spent: 0%</div>
+      </article>
+
+      <article class="panel pay-card" aria-labelledby="payTitle">
+        <div class="panel-head">
+          <h2 id="payTitle">FedEx Weekly Pay</h2>
+          <span class="eyebrow">Default income</span>
+        </div>
+        <p class="last" id="payLast">No paycheck logged yet.</p>
+        <form id="payForm" autocomplete="off">
+          <div class="row-2">
+            <label class="field"><span>Amount received</span>
+              <div class="money"><input type="number" id="payAmount" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00" required></div>
+            </label>
+            <label class="field"><span>Date received</span>
+              <input type="date" id="payDate" required>
+            </label>
+          </div>
+          <label class="switch"><input type="checkbox" id="payRecurring">
+            <span>Repeat every week<small>Adds this pay automatically each week</small></span>
+          </label>
+          <button class="btn inc" type="submit">Add FedEx pay</button>
+        </form>
+      </article>
+    </div>
+
+    <article class="panel" aria-labelledby="totTitle">
+      <div class="panel-head">
+        <h2 id="totTitle">Totals</h2>
+        <span class="hint">Red means expenses are higher than income</span>
       </div>
-    </section>
-  </div>
+      <div class="table-wrap">
+        <table class="totals">
+          <thead><tr><th></th><th class="num">Week</th><th class="num">Month</th><th class="num">All time</th></tr></thead>
+          <tbody>
+            <tr><td>Income</td><td class="num c-inc" id="t-inc-week">$0.00</td><td class="num c-inc" id="t-inc-month">$0.00</td><td class="num c-inc" id="t-inc-all">$0.00</td></tr>
+            <tr><td>Expenses</td><td class="num c-exp" id="t-exp-week">$0.00</td><td class="num c-exp" id="t-exp-month">$0.00</td><td class="num c-exp" id="t-exp-all">$0.00</td></tr>
+            <tr><td>Net</td><td class="num" id="t-net-week">$0.00</td><td class="num" id="t-net-month">$0.00</td><td class="num" id="t-net-all">$0.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
 
-  <!-- Recurring -->
-  <section class="card" aria-labelledby="recTitle">
-    <h2 id="recTitle">Recurring Weekly Items</h2>
-    <ul class="rec-list" id="recList"></ul>
-    <div id="recEmpty" class="empty">No recurring items. Tick "Recurring weekly" when adding an entry to repeat it every 7 days.</div>
-  </section>
+    <div class="grid-2">
+      <article class="panel" aria-labelledby="catTitle">
+        <div class="panel-head">
+          <h2 id="catTitle">Expenses by category</h2>
+          <span class="hint" id="catRange">This week</span>
+        </div>
+        <div class="bars" id="bars"></div>
+        <div class="empty" id="barsEmpty">No expenses in this period.</div>
+      </article>
 
-  <!-- History -->
-  <section class="card" aria-labelledby="histTitle">
-    <h2 id="histTitle">Transaction History</h2>
-    <div class="filters">
-      <label>Period
-        <select id="fPeriod">
-          <option value="week">This week</option>
-          <option value="month">This month</option>
-          <option value="all" selected>All time</option>
-          <option value="custom">Custom range</option>
-        </select>
-      </label>
-      <label>Type
-        <select id="fType">
-          <option value="all">All</option>
-          <option value="income">Income</option>
-          <option value="expense">Expense</option>
-        </select>
-      </label>
-      <label id="fFromWrap" class="hidden">From <input type="date" id="fFrom"></label>
-      <label id="fToWrap" class="hidden">To <input type="date" id="fTo"></label>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th class="sortable" id="sortDate" aria-sort="descending">Date ▼</th>
-            <th>Type</th>
-            <th>Category / Source</th>
-            <th class="amt">Amount</th>
-            <th>Note</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="histBody"></tbody>
-      </table>
-    </div>
-    <div id="histEmpty" class="empty hidden">No transactions for this filter.</div>
-    <div class="history-foot">
-      <span id="histCount"></span>
-      <span id="histNet"></span>
+      <article class="panel" aria-labelledby="recTitle">
+        <div class="panel-head">
+          <h2 id="recTitle">Weekly recurring</h2>
+          <span class="hint">Added automatically</span>
+        </div>
+        <ul class="list" id="recList"></ul>
+        <div class="empty" id="recEmpty">Nothing repeats yet. Turn on "Repeat every week" when you add your pay or a fixed bill.</div>
+      </article>
     </div>
   </section>
 
-  <section class="card">
-    <h2>Settings</h2>
-    <div class="row">
-      <label>Week starts on
-        <select id="weekStart">
-          <option value="0">Sunday</option>
-          <option value="1">Monday</option>
-        </select>
-      </label>
+  <!-- ================= ADD ================= -->
+  <section class="view" id="view-add" hidden>
+    <div class="grid-2">
+      <article class="panel" aria-labelledby="incTitle">
+        <div class="panel-head"><h2 id="incTitle">Add income</h2></div>
+        <form id="incomeForm" autocomplete="off">
+          <label class="field"><span>Source</span>
+            <select id="incSource">
+              <option value="FedEx Weekly Pay">FedEx Weekly Pay</option>
+              <option value="__new__">+ Add a new source…</option>
+            </select>
+          </label>
+          <label class="field" id="newSourceWrap" hidden><span>New source name</span>
+            <input type="text" id="incNewSource" maxlength="60" placeholder="e.g. Side job, Tax refund">
+          </label>
+          <div class="row-2">
+            <label class="field"><span>Amount</span>
+              <div class="money"><input type="number" id="incAmount" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00" required></div>
+            </label>
+            <label class="field"><span>Date received</span>
+              <input type="date" id="incDate" required>
+            </label>
+          </div>
+          <label class="field"><span>Note (optional)</span>
+            <input type="text" id="incNote" maxlength="120">
+          </label>
+          <label class="switch"><input type="checkbox" id="incRecurring">
+            <span>Repeat every week</span>
+          </label>
+          <button class="btn inc" type="submit">Add income</button>
+        </form>
+      </article>
+
+      <article class="panel" aria-labelledby="expTitle">
+        <div class="panel-head"><h2 id="expTitle">Add expense</h2></div>
+        <form id="expenseForm" autocomplete="off">
+          <label class="field"><span>Category</span>
+            <select id="expCategory">
+              <option>School Tuition</option>
+              <option>Mortgage/Rent</option>
+              <option>Aury – Electricity</option>
+              <option>Water/Sewer/Trash</option>
+              <option>Gas/Oil</option>
+              <option>Phone AT&amp;T</option>
+              <option>Groceries</option>
+              <option>MoneyKey</option>
+              <option>Fuel</option>
+              <option>Bankard</option>
+              <option>Union Pay</option>
+            </select>
+          </label>
+          <div class="row-2">
+            <label class="field"><span>Amount</span>
+              <div class="money"><input type="number" id="expAmount" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00" required></div>
+            </label>
+            <label class="field"><span>Date</span>
+              <input type="date" id="expDate" required>
+            </label>
+          </div>
+          <label class="field"><span>Note (optional)</span>
+            <input type="text" id="expNote" maxlength="120">
+          </label>
+          <label class="switch"><input type="checkbox" id="expRecurring">
+            <span>Repeat every week</span>
+          </label>
+          <button class="btn exp" type="submit">Add expense</button>
+        </form>
+      </article>
+    </div>
+  </section>
+
+  <!-- ================= HISTORY ================= -->
+  <section class="view" id="view-history" hidden>
+    <article class="panel" aria-labelledby="histTitle">
+      <div class="panel-head"><h2 id="histTitle">Transaction history</h2></div>
+      <div class="filters">
+        <label class="field"><span>Period</span>
+          <select id="fPeriod">
+            <option value="week">This week</option>
+            <option value="month">This month</option>
+            <option value="all" selected>All time</option>
+            <option value="custom">Custom range</option>
+          </select>
+        </label>
+        <label class="field"><span>Type</span>
+          <select id="fType">
+            <option value="all">All</option>
+            <option value="income">Income</option>
+            <option value="expense">Expenses</option>
+          </select>
+        </label>
+        <label class="field" id="fFromWrap" hidden><span>From</span><input type="date" id="fFrom"></label>
+        <label class="field" id="fToWrap" hidden><span>To</span><input type="date" id="fTo"></label>
+      </div>
+      <div class="table-wrap">
+        <table class="history">
+          <thead>
+            <tr>
+              <th class="sortable" id="sortDate" aria-sort="descending" tabindex="0">Date ↓</th>
+              <th>Type</th>
+              <th>Category / source</th>
+              <th class="num">Amount</th>
+              <th>Note</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="histBody"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="histEmpty">No transactions match this filter.</div>
+      <div class="hist-foot">
+        <span id="histCount">0 transactions</span>
+        <span id="histSum">Net <b>$0.00</b></span>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= SETTINGS ================= -->
+  <section class="view" id="view-settings" hidden>
+    <div class="grid-2">
+      <article class="panel" aria-labelledby="bkTitle">
+        <div class="panel-head"><h2 id="bkTitle">Backup</h2></div>
+        <div style="display:grid;gap:12px">
+          <p class="hint">Your data is saved in this browser only. Export a backup now and then, and import it to restore or move to another device.</p>
+          <div class="btn-row">
+            <button class="btn primary" type="button" id="exportBtn">Export JSON file</button>
+            <button class="btn" type="button" id="importBtn">Import JSON file</button>
+            <input type="file" id="importFile" accept="application/json,.json" hidden>
+          </div>
+          <label class="field"><span>Backup text (copy it, or paste a backup here to restore)</span>
+            <textarea id="backupText" spellcheck="false" placeholder='Paste a backup here, then press "Restore from text".'></textarea>
+          </label>
+          <div class="btn-row">
+            <button class="btn small" type="button" id="copyBtn">Copy backup text</button>
+            <button class="btn small" type="button" id="restoreTextBtn">Restore from text</button>
+          </div>
+          <div id="importConfirm" class="empty" hidden style="text-align:left;border-style:solid">
+            <p style="margin:0 0 10px" id="importMsg"></p>
+            <div class="btn-row">
+              <button class="btn small danger armed" type="button" id="importYes">Replace my data</button>
+              <button class="btn small" type="button" id="importNo">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel" aria-labelledby="setTitle">
+        <div class="panel-head"><h2 id="setTitle">Settings</h2></div>
+        <form id="settingsForm" onsubmit="return false">
+          <label class="field"><span>Week starts on</span>
+            <select id="weekStart">
+              <option value="0">Sunday</option>
+              <option value="1">Monday</option>
+            </select>
+          </label>
+          <div class="field"><span>Income sources</span>
+            <ul class="list" id="srcList"></ul>
+          </div>
+        </form>
+      </article>
     </div>
   </section>
 </main>
+
+<nav class="tabs-bottom" role="tablist" aria-label="Sections">
+  <button class="tab" role="tab" data-view="overview" aria-selected="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>Overview</button>
+  <button class="tab" role="tab" data-view="add" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Add</button>
+  <button class="tab" role="tab" data-view="history" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>History</button>
+  <button class="tab" role="tab" data-view="settings" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Backup</button>
+</nav>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -309,155 +575,123 @@
   "use strict";
 
   // ---------- Constants ----------
-  const STORAGE_KEY = "incomeExpenseTracker.v1";
-  const THEME_KEY = "incomeExpenseTracker.theme";
-  const DEFAULT_SOURCE = "FedEx Weekly Pay";
-  const NEW_SOURCE = "__new__";
-  const EXPENSE_CATEGORIES = [
-    "School Tuition",
-    "Mortgage/Rent",
-    "Aury – Electricity",
-    "Water/Sewer/Trash",
-    "Gas/Oil",
-    "Phone AT&T",
-    "Groceries",
-    "MoneyKey",
-    "Fuel",
-    "Bankard",
-    "Union Pay"
-  ];
-  const CHART_COLORS = [
-    "#2f6fed", "#e8590c", "#2b8a3e", "#c2255c", "#7048e8", "#0b7285",
-    "#e67700", "#5c940d", "#862e9c", "#1971c2", "#a61e4d", "#495057"
-  ];
+  var STORAGE_KEY = "incomeExpenseTracker.v1";
+  var THEME_KEY = "incomeExpenseTracker.theme";
+  var DEFAULT_SOURCE = "FedEx Weekly Pay";
+  var NEW_SOURCE = "__new__";
 
-  const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
-  const fmt = cents => usd.format(cents / 100);
+  var usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+  function fmt(cents) { return usd.format(cents / 100); }
 
-  // ---------- Date helpers (local dates as "YYYY-MM-DD") ----------
-  const pad = n => String(n).padStart(2, "0");
-  const toISO = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
-  const parseISO = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
-  const todayISO = () => toISO(new Date());
-  const addDays = (iso, n) => { const d = parseISO(iso); d.setDate(d.getDate() + n); return toISO(d); };
-  const isISODate = s => typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(parseISO(s));
-  const prettyDate = iso => parseISO(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  // ---------- Storage (never crashes if the browser blocks it) ----------
+  var storageOK = true;
+  function storeGet(key) {
+    try { return window.localStorage.getItem(key); } catch (e) { storageOK = false; return null; }
+  }
+  function storeSet(key, val) {
+    try { window.localStorage.setItem(key, val); return true; } catch (e) { storageOK = false; return false; }
+  }
+
+  // ---------- Dates (local, "YYYY-MM-DD") ----------
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function toISO(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function parseISO(s) { var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function todayISO() { return toISO(new Date()); }
+  function addDays(iso, n) { var d = parseISO(iso); d.setDate(d.getDate() + n); return toISO(d); }
+  function isISODate(s) { return typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(parseISO(s).getTime()); }
+  function pretty(iso, withYear) {
+    var o = { month: "short", day: "numeric" };
+    if (withYear !== false) o.year = "numeric";
+    return parseISO(iso).toLocaleDateString("en-US", o);
+  }
 
   function periodRange(period) {
-    const today = new Date();
+    var today = new Date();
     if (period === "week") {
-      const start = new Date(today);
-      const diff = (today.getDay() - state.settings.weekStart + 7) % 7;
-      start.setDate(today.getDate() - diff);
-      const end = new Date(start);
-      end.setDate(start.getDate() + 6);
+      var start = new Date(today);
+      start.setDate(today.getDate() - ((today.getDay() - state.settings.weekStart + 7) % 7));
+      var end = new Date(start); end.setDate(start.getDate() + 6);
       return [toISO(start), toISO(end)];
     }
     if (period === "month") {
-      const start = new Date(today.getFullYear(), today.getMonth(), 1);
-      const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-      return [toISO(start), toISO(end)];
+      return [toISO(new Date(today.getFullYear(), today.getMonth(), 1)),
+              toISO(new Date(today.getFullYear(), today.getMonth() + 1, 0))];
     }
     return [null, null];
   }
-  const inRange = (iso, [from, to]) => (!from || iso >= from) && (!to || iso <= to);
+  function inRange(iso, r) { return (!r[0] || iso >= r[0]) && (!r[1] || iso <= r[1]); }
+  function rangeLabel(period) {
+    if (period === "all") return "All time";
+    var r = periodRange(period);
+    if (period === "month") return parseISO(r[0]).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    return "Week of " + pretty(r[0], false) + " – " + pretty(r[1], false);
+  }
 
   // ---------- State ----------
   function defaultState() {
     return {
       version: 1,
       incomeSources: [DEFAULT_SOURCE],
-      entries: [],     // {id, type, category, amountCents, date, note, recurringId|null}
-      recurring: [],   // {id, type, category, amountCents, note, lastDate, active}
+      entries: [],    // {id, type, category, amountCents, date, note, recurringId}
+      recurring: [],  // {id, type, category, amountCents, note, lastDate, active}
       settings: { weekStart: 0 },
       lastOpened: null
     };
   }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 
-  let state = load();
-
-  function load() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return defaultState();
-      return normalize(JSON.parse(raw));
-    } catch (e) {
-      console.error("Could not read saved data", e);
-      return defaultState();
-    }
-  }
-
-  function save() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (e) {
-      toast("Could not save: storage is full or blocked.");
-    }
-  }
-
-  // Validates and cleans any loaded or imported object. Throws on unusable input.
+  // Validates loaded or imported data; throws if it is not a tracker backup.
   function normalize(data) {
-    if (!data || typeof data !== "object" || !Array.isArray(data.entries)) {
-      throw new Error("Not a tracker backup file.");
-    }
-    const s = defaultState();
-    const sources = Array.isArray(data.incomeSources) ? data.incomeSources : [];
-    s.incomeSources = [DEFAULT_SOURCE, ...sources.filter(x => typeof x === "string" && x.trim() && x !== DEFAULT_SOURCE)];
-    s.entries = data.entries.filter(e =>
-      e && (e.type === "income" || e.type === "expense") &&
-      typeof e.category === "string" && isISODate(e.date) &&
-      Number.isFinite(e.amountCents) && e.amountCents > 0
-    ).map(e => ({
-      id: String(e.id || uid()),
-      type: e.type,
-      category: e.category,
-      amountCents: Math.round(e.amountCents),
-      date: e.date,
-      note: typeof e.note === "string" ? e.note : "",
-      recurringId: e.recurringId ? String(e.recurringId) : null
-    }));
-    // Keep income sources in sync with any entries that use them
-    s.entries.forEach(e => {
-      if (e.type === "income" && !s.incomeSources.includes(e.category)) s.incomeSources.push(e.category);
+    if (!data || typeof data !== "object" || !Array.isArray(data.entries)) throw new Error("This is not a tracker backup.");
+    var s = defaultState();
+    (Array.isArray(data.incomeSources) ? data.incomeSources : []).forEach(function (x) {
+      if (typeof x === "string" && x.trim() && s.incomeSources.indexOf(x) < 0) s.incomeSources.push(x.trim());
     });
-    s.recurring = (Array.isArray(data.recurring) ? data.recurring : []).filter(r =>
-      r && (r.type === "income" || r.type === "expense") && typeof r.category === "string" &&
-      Number.isFinite(r.amountCents) && r.amountCents > 0 && isISODate(r.lastDate)
-    ).map(r => ({
-      id: String(r.id),
-      type: r.type,
-      category: r.category,
-      amountCents: Math.round(r.amountCents),
-      note: typeof r.note === "string" ? r.note : "",
-      lastDate: r.lastDate,
-      active: r.active !== false
-    }));
-    if (data.settings && (data.settings.weekStart === 0 || data.settings.weekStart === 1)) {
-      s.settings.weekStart = data.settings.weekStart;
-    }
+    data.entries.forEach(function (e) {
+      if (!e || (e.type !== "income" && e.type !== "expense") || typeof e.category !== "string" ||
+          !isISODate(e.date) || !isFinite(e.amountCents) || e.amountCents <= 0) return;
+      s.entries.push({
+        id: String(e.id || uid()), type: e.type, category: e.category,
+        amountCents: Math.round(e.amountCents), date: e.date,
+        note: typeof e.note === "string" ? e.note : "",
+        recurringId: e.recurringId ? String(e.recurringId) : null
+      });
+      if (e.type === "income" && s.incomeSources.indexOf(e.category) < 0) s.incomeSources.push(e.category);
+    });
+    (Array.isArray(data.recurring) ? data.recurring : []).forEach(function (r) {
+      if (!r || (r.type !== "income" && r.type !== "expense") || typeof r.category !== "string" ||
+          !isFinite(r.amountCents) || r.amountCents <= 0 || !isISODate(r.lastDate)) return;
+      s.recurring.push({
+        id: String(r.id || uid()), type: r.type, category: r.category, amountCents: Math.round(r.amountCents),
+        note: typeof r.note === "string" ? r.note : "", lastDate: r.lastDate, active: r.active !== false
+      });
+    });
+    if (data.settings && (data.settings.weekStart === 0 || data.settings.weekStart === 1)) s.settings.weekStart = data.settings.weekStart;
     s.lastOpened = isISODate(data.lastOpened) ? data.lastOpened : null;
     return s;
   }
 
-  function uid() {
-    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  var state = defaultState();
+  try {
+    var raw = storeGet(STORAGE_KEY);
+    if (raw) state = normalize(JSON.parse(raw));
+  } catch (e) { state = defaultState(); }
+
+  function save() {
+    if (!storeSet(STORAGE_KEY, JSON.stringify(state))) {
+      toast("This browser is not saving data. Open the file directly in Chrome or Safari, or export a backup.");
+    }
   }
 
-  // ---------- Recurring generation ----------
-  // For every active recurring item, add one entry per missed week up to today.
+  // Adds one entry per missed week for every active recurring item, up to today.
   function generateRecurring() {
-    const today = todayISO();
-    let added = 0;
-    state.recurring.forEach(r => {
+    var today = todayISO(), added = 0;
+    state.recurring.forEach(function (r) {
       if (!r.active) return;
-      let next = addDays(r.lastDate, 7);
+      var next = addDays(r.lastDate, 7);
       while (next <= today) {
-        state.entries.push({
-          id: uid(), type: r.type, category: r.category, amountCents: r.amountCents,
-          date: next, note: r.note, recurringId: r.id
-        });
-        r.lastDate = next;
-        added++;
+        state.entries.push({ id: uid(), type: r.type, category: r.category, amountCents: r.amountCents, date: next, note: r.note, recurringId: r.id });
+        r.lastDate = next; added++;
         next = addDays(next, 7);
       }
     });
@@ -466,388 +700,346 @@
     return added;
   }
 
-  // ---------- DOM ----------
-  const $ = id => document.getElementById(id);
-  const el = {
-    incSource: $("incSource"), newSourceWrap: $("newSourceWrap"), incNewSource: $("incNewSource"),
-    incAmount: $("incAmount"), incDate: $("incDate"), incNote: $("incNote"), incRecurring: $("incRecurring"),
-    expCategory: $("expCategory"), expAmount: $("expAmount"), expDate: $("expDate"),
-    expNote: $("expNote"), expRecurring: $("expRecurring"),
-    summary: $("summary"), chart: $("chart"), chartEmpty: $("chartEmpty"), chartPeriod: $("chartPeriod"),
-    fPeriod: $("fPeriod"), fType: $("fType"), fFrom: $("fFrom"), fTo: $("fTo"),
-    fFromWrap: $("fFromWrap"), fToWrap: $("fToWrap"),
-    histBody: $("histBody"), histEmpty: $("histEmpty"), histCount: $("histCount"), histNet: $("histNet"),
-    sortDate: $("sortDate"), recList: $("recList"), recEmpty: $("recEmpty"),
-    weekStart: $("weekStart"), themeBtn: $("themeBtn"), toast: $("toast")
-  };
-  let sortDesc = true;
-
-  function escapeHTML(s) {
-    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  // ---------- DOM helpers ----------
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; });
   }
-
-  let toastTimer;
+  var toastTimer;
   function toast(msg) {
-    el.toast.textContent = msg;
-    el.toast.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.toast.classList.remove("show"), 2600);
+    var t = $("toast"); t.textContent = msg; t.classList.add("show");
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2800);
+  }
+  // Two-tap confirm: first tap arms the button, second tap within 3s runs the action.
+  function armOrRun(btn, label, action) {
+    if (btn.classList.contains("armed")) { action(); return; }
+    var original = btn.textContent;
+    btn.classList.add("armed"); btn.textContent = label;
+    setTimeout(function () { if (btn.isConnected) { btn.classList.remove("armed"); btn.textContent = original; } }, 3000);
   }
 
-  function fillSelect(select, items, extra) {
-    const current = select.value;
-    select.innerHTML = "";
-    items.forEach(item => select.add(new Option(item, item)));
-    if (extra) select.add(new Option(extra.label, extra.value));
-    if ([...select.options].some(o => o.value === current)) select.value = current;
+  // ---------- Navigation ----------
+  function showView(name) {
+    ["overview", "add", "history", "settings"].forEach(function (v) { $("view-" + v).hidden = v !== name; });
+    document.querySelectorAll(".tab[data-view]").forEach(function (b) { b.setAttribute("aria-selected", String(b.dataset.view === name)); });
+    if (name === "settings") $("backupText").value = JSON.stringify(state, null, 2);
+    window.scrollTo(0, 0);
   }
-
-  function renderSources() {
-    fillSelect(el.incSource, state.incomeSources, { label: "+ Add new source…", value: NEW_SOURCE });
-    toggleNewSource();
-  }
-  function toggleNewSource() {
-    const isNew = el.incSource.value === NEW_SOURCE;
-    el.newSourceWrap.classList.toggle("hidden", !isNew);
-    el.incNewSource.required = isNew;
-  }
+  document.querySelectorAll(".tab[data-view]").forEach(function (b) {
+    b.addEventListener("click", function () { showView(b.dataset.view); });
+  });
 
   // ---------- Totals ----------
   function totals(period) {
-    const range = periodRange(period);
-    let income = 0, expense = 0;
-    state.entries.forEach(e => {
-      if (!inRange(e.date, range)) return;
-      if (e.type === "income") income += e.amountCents; else expense += e.amountCents;
+    var r = periodRange(period), inc = 0, exp = 0;
+    state.entries.forEach(function (e) {
+      if (!inRange(e.date, r)) return;
+      if (e.type === "income") inc += e.amountCents; else exp += e.amountCents;
     });
-    return { income, expense, net: income - expense };
+    return { inc: inc, exp: exp, net: inc - exp };
   }
 
-  function renderSummary() {
-    const periods = [["week", "This Week"], ["month", "This Month"], ["all", "All Time"]];
-    const t = {};
-    el.summary.innerHTML = periods.map(([key, title]) => {
-      const x = t[key] = totals(key);
-      const over = x.expense > x.income;
-      const cls = over ? "over" : (x.income > 0 ? "good" : "");
-      return `<div class="period ${cls}">
-        <h3>${title}</h3>
-        <div class="line"><span>Income</span><span class="income-amt">${fmt(x.income)}</span></div>
-        <div class="line"><span>Expenses</span><span class="expense-amt">${fmt(x.expense)}</span></div>
-        <div class="line net"><span>Net balance</span><span class="${x.net < 0 ? "neg" : ""}">${fmt(x.net)}</span></div>
-        ${over ? `<div class="warn">⚠ Expenses exceed income</div>` : ""}
-      </div>`;
+  var heroPeriod = "week";
+  function renderOverview() {
+    // Totals table
+    ["week", "month", "all"].forEach(function (p) {
+      var t = totals(p), over = t.exp > t.inc;
+      $("t-inc-" + p).textContent = fmt(t.inc);
+      $("t-exp-" + p).textContent = fmt(t.exp);
+      var n = $("t-net-" + p);
+      n.textContent = fmt(t.net);
+      n.className = "num" + (t.net < 0 ? " c-neg" : "");
+      [$("t-exp-" + p), n].forEach(function (c) { c.classList.toggle("cell-over", over); });
+    });
+
+    // Hero
+    var t = totals(heroPeriod), over = t.exp > t.inc;
+    $("heroRange").textContent = rangeLabel(heroPeriod);
+    $("heroNet").textContent = fmt(t.net);
+    $("heroNet").classList.toggle("neg", t.net < 0);
+    $("heroInc").textContent = fmt(t.inc);
+    $("heroExp").textContent = fmt(t.exp);
+    var pill = $("heroStatus");
+    if (!t.inc && !t.exp) { pill.className = "status-pill none"; pill.textContent = "No entries in this period"; }
+    else if (over) { pill.className = "status-pill over"; pill.textContent = "⚠ Expenses exceed income by " + fmt(t.exp - t.inc); }
+    else { pill.className = "status-pill"; pill.textContent = "✓ You kept " + fmt(t.net); }
+    var pct = t.inc ? Math.round(t.exp / t.inc * 100) : (t.exp ? 100 : 0);
+    $("heroRatio").classList.toggle("over", over);
+    $("heroRatio").firstElementChild.style.width = Math.min(pct, 100) + "%";
+    $("heroRatioCap").textContent = t.inc ? "Share of income spent: " + pct + "%" : (t.exp ? "No income recorded for this period" : "Share of income spent: 0%");
+
+    // Category bars
+    var r = periodRange(heroPeriod), by = {};
+    state.entries.forEach(function (e) {
+      if (e.type === "expense" && inRange(e.date, r)) by[e.category] = (by[e.category] || 0) + e.amountCents;
+    });
+    var cats = Object.keys(by).sort(function (a, b) { return by[b] - by[a]; });
+    var max = cats.length ? by[cats[0]] : 1, sum = cats.reduce(function (s, c) { return s + by[c]; }, 0);
+    $("catRange").textContent = rangeLabel(heroPeriod);
+    $("bars").innerHTML = cats.map(function (c) {
+      return '<div class="bar-row"><span class="name">' + esc(c) + '</span>' +
+        '<span class="val"><b>' + fmt(by[c]) + '</b> · ' + Math.round(by[c] / sum * 100) + '%</span>' +
+        '<div class="bar-track"><div class="bar-fill" style="width:' + Math.max(by[c] / max * 100, 2) + '%"></div></div></div>';
     }).join("");
-    $("incWeek").textContent = fmt(t.week.income);
-    $("incMonth").textContent = fmt(t.month.income);
-    $("incAll").textContent = fmt(t.all.income);
-    $("expWeek").textContent = fmt(t.week.expense);
-    $("expMonth").textContent = fmt(t.month.expense);
-    $("expAll").textContent = fmt(t.all.expense);
-  }
+    $("barsEmpty").hidden = cats.length > 0;
 
-  // ---------- Chart (plain canvas horizontal bars, works offline) ----------
-  function renderChart() {
-    const range = periodRange(el.chartPeriod.value);
-    const byCat = new Map();
-    state.entries.forEach(e => {
-      if (e.type !== "expense" || !inRange(e.date, range)) return;
-      byCat.set(e.category, (byCat.get(e.category) || 0) + e.amountCents);
-    });
-    const data = [...byCat.entries()].sort((a, b) => b[1] - a[1]);
-    const canvas = el.chart;
-    if (!data.length) {
-      canvas.classList.add("hidden");
-      el.chartEmpty.classList.remove("hidden");
-      return;
-    }
-    canvas.classList.remove("hidden");
-    el.chartEmpty.classList.add("hidden");
+    // Last FedEx pay
+    var last = state.entries.filter(function (e) { return e.type === "income" && e.category === DEFAULT_SOURCE; })
+      .sort(function (a, b) { return b.date.localeCompare(a.date); })[0];
+    $("payLast").textContent = last ? "Last paycheck: " + fmt(last.amountCents) + " on " + pretty(last.date) : "No paycheck logged yet.";
 
-    const css = getComputedStyle(document.documentElement);
-    const textColor = css.getPropertyValue("--text").trim();
-    const mutedColor = css.getPropertyValue("--muted").trim();
-    const borderColor = css.getPropertyValue("--border").trim();
-
-    const width = canvas.clientWidth || canvas.parentElement.clientWidth;
-    const rowH = 34, topPad = 4;
-    const height = topPad + data.length * rowH + 4;
-    const dpr = window.devicePixelRatio || 1;
-    canvas.style.height = height + "px";
-    canvas.width = Math.round(width * dpr);
-    canvas.height = Math.round(height * dpr);
-    const ctx = canvas.getContext("2d");
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, width, height);
-    ctx.font = "13px system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
-    ctx.textBaseline = "middle";
-
-    const total = data.reduce((s, d) => s + d[1], 0);
-    const labelW = Math.min(Math.max(...data.map(d => ctx.measureText(d[0]).width)) + 12, width * 0.38);
-    const valueTexts = data.map(d => `${fmt(d[1])} (${Math.round(d[1] / total * 100)}%)`);
-    const valueW = Math.max(...valueTexts.map(v => ctx.measureText(v).width)) + 10;
-    const barMax = Math.max(width - labelW - valueW, 20);
-    const max = data[0][1];
-
-    data.forEach(([cat, cents], i) => {
-      const y = topPad + i * rowH;
-      const mid = y + rowH / 2;
-      // label (truncate if too long)
-      let label = cat;
-      while (ctx.measureText(label).width > labelW - 12 && label.length > 3) label = label.slice(0, -2) + "…";
-      ctx.fillStyle = textColor;
-      ctx.textAlign = "left";
-      ctx.fillText(label, 0, mid);
-      // track + bar
-      ctx.fillStyle = borderColor;
-      ctx.fillRect(labelW, y + 8, barMax, rowH - 16);
-      ctx.fillStyle = CHART_COLORS[EXPENSE_CATEGORIES.indexOf(cat) >= 0 ? EXPENSE_CATEGORIES.indexOf(cat) : (i % CHART_COLORS.length)];
-      ctx.fillRect(labelW, y + 8, Math.max(barMax * cents / max, 2), rowH - 16);
-      // value
-      ctx.fillStyle = mutedColor;
-      ctx.textAlign = "right";
-      ctx.fillText(valueTexts[i], width, mid);
-    });
+    // Recurring
+    var active = state.recurring.filter(function (x) { return x.active; });
+    $("recEmpty").hidden = active.length > 0;
+    $("recList").innerHTML = active.map(function (x) {
+      return '<li><span class="dot ' + x.type + '"></span><div class="grow"><div class="t">' + esc(x.category) +
+        ' · <span class="' + (x.type === "income" ? "c-inc" : "c-exp") + '">' + fmt(x.amountCents) + '</span></div>' +
+        '<div class="s">Next: ' + pretty(addDays(x.lastDate, 7)) + '</div></div>' +
+        '<button class="btn small danger" type="button" data-stop="' + esc(x.id) + '">Stop</button></li>';
+    }).join("");
   }
 
   // ---------- History ----------
-  function historyRange() {
-    const p = el.fPeriod.value;
-    if (p === "custom") return [el.fFrom.value || null, el.fTo.value || null];
-    return periodRange(p);
-  }
-
+  var sortDesc = true;
   function renderHistory() {
-    const range = historyRange();
-    const type = el.fType.value;
-    const rows = state.entries
-      .filter(e => inRange(e.date, range) && (type === "all" || e.type === type))
-      .sort((a, b) => {
-        const c = a.date.localeCompare(b.date) || a.id.localeCompare(b.id);
-        return sortDesc ? -c : c;
-      });
-
-    el.sortDate.textContent = "Date " + (sortDesc ? "▼" : "▲");
-    el.sortDate.setAttribute("aria-sort", sortDesc ? "descending" : "ascending");
-
-    el.histBody.innerHTML = rows.map(e => `
-      <tr>
-        <td class="date" data-label="Date">${prettyDate(e.date)}</td>
-        <td data-label="Type"><span class="badge ${e.type}">${e.type === "income" ? "Income" : "Expense"}</span></td>
-        <td data-label="Category / Source">${escapeHTML(e.category)}${e.recurringId ? ' <span class="rec" title="Recurring weekly">↻</span>' : ""}</td>
-        <td class="amt ${e.type === "income" ? "income-amt" : "expense-amt"}" data-label="Amount">${e.type === "expense" ? "−" : ""}${fmt(e.amountCents)}</td>
-        <td data-label="Note"${e.note ? "" : ' class="no-note"'}>${escapeHTML(e.note || "")}</td>
-        <td data-label=""><button class="small danger" type="button" data-del="${escapeHTML(e.id)}">Delete</button></td>
-      </tr>`).join("");
-
-    el.histEmpty.classList.toggle("hidden", rows.length > 0);
-    let inc = 0, exp = 0;
-    rows.forEach(e => { if (e.type === "income") inc += e.amountCents; else exp += e.amountCents; });
-    el.histCount.textContent = `${rows.length} transaction${rows.length === 1 ? "" : "s"}`;
-    const net = inc - exp;
-    el.histNet.innerHTML = `Income ${fmt(inc)} · Expenses ${fmt(exp)} · Net <strong class="${net < 0 ? "neg" : ""}">${fmt(net)}</strong>`;
+    var p = $("fPeriod").value, type = $("fType").value;
+    var r = p === "custom" ? [$("fFrom").value || null, $("fTo").value || null] : periodRange(p);
+    var rows = state.entries.filter(function (e) { return inRange(e.date, r) && (type === "all" || e.type === type); })
+      .sort(function (a, b) { var c = a.date.localeCompare(b.date) || a.id.localeCompare(b.id); return sortDesc ? -c : c; });
+    $("sortDate").textContent = "Date " + (sortDesc ? "↓" : "↑");
+    $("sortDate").setAttribute("aria-sort", sortDesc ? "descending" : "ascending");
+    $("histBody").innerHTML = rows.map(function (e) {
+      var inc = e.type === "income";
+      return '<tr>' +
+        '<td class="h-date">' + pretty(e.date) + '</td>' +
+        '<td class="h-type"><span class="type-chip ' + e.type + '">' + (inc ? "Income" : "Expense") + '</span></td>' +
+        '<td class="h-cat">' + esc(e.category) + (e.recurringId ? '<span class="rec-mark" title="Repeats weekly">↻</span>' : "") + '</td>' +
+        '<td class="num h-amt ' + (inc ? "c-inc" : "c-exp") + '">' + (inc ? "+" : "−") + fmt(e.amountCents) + '</td>' +
+        '<td class="note h-note">' + esc(e.note || "") + '</td>' +
+        '<td class="num h-act"><button class="btn small danger" type="button" data-del="' + esc(e.id) + '">Delete</button></td>' +
+        '</tr>';
+    }).join("");
+    $("histEmpty").hidden = rows.length > 0;
+    var inc = 0, exp = 0;
+    rows.forEach(function (e) { if (e.type === "income") inc += e.amountCents; else exp += e.amountCents; });
+    $("histCount").textContent = rows.length + " transaction" + (rows.length === 1 ? "" : "s");
+    $("histSum").innerHTML = "Income " + fmt(inc) + " · Expenses " + fmt(exp) + " · Net <b" + (inc - exp < 0 ? ' class="c-neg"' : "") + ">" + fmt(inc - exp) + "</b>";
   }
 
-  // ---------- Recurring list ----------
-  function renderRecurring() {
-    const active = state.recurring.filter(r => r.active);
-    el.recEmpty.classList.toggle("hidden", active.length > 0);
-    el.recList.innerHTML = active.map(r => `
-      <li>
-        <div>
-          <div><strong>${escapeHTML(r.category)}</strong> · <span class="${r.type === "income" ? "income-amt" : "expense-amt"}">${fmt(r.amountCents)}</span></div>
-          <div class="meta">${r.type === "income" ? "Income" : "Expense"} · next on ${prettyDate(addDays(r.lastDate, 7))}${r.note ? " · " + escapeHTML(r.note) : ""}</div>
-        </div>
-        <button class="small danger" type="button" data-stop="${escapeHTML(r.id)}">Stop</button>
-      </li>`).join("");
+  // ---------- Sources ----------
+  function renderSources() {
+    var sel = $("incSource"), current = sel.value;
+    sel.innerHTML = "";
+    state.incomeSources.forEach(function (s) { sel.add(new Option(s, s)); });
+    sel.add(new Option("+ Add a new source…", NEW_SOURCE));
+    sel.value = state.incomeSources.indexOf(current) >= 0 ? current : DEFAULT_SOURCE;
+    toggleNewSource();
+    $("srcList").innerHTML = state.incomeSources.map(function (s) {
+      var used = state.entries.some(function (e) { return e.type === "income" && e.category === s; }) ||
+                 state.recurring.some(function (r) { return r.active && r.type === "income" && r.category === s; });
+      var btn = s === DEFAULT_SOURCE ? '<span class="s">Default</span>'
+        : used ? '<span class="s">In use</span>'
+        : '<button class="btn small danger" type="button" data-src="' + esc(s) + '">Remove</button>';
+      return '<li><span class="dot income"></span><div class="grow t">' + esc(s) + '</div>' + btn + '</li>';
+    }).join("");
+  }
+  function toggleNewSource() {
+    var isNew = $("incSource").value === NEW_SOURCE;
+    $("newSourceWrap").hidden = !isNew;
+    $("incNewSource").required = isNew;
   }
 
-  function renderAll() {
-    renderSummary();
-    renderChart();
-    renderHistory();
-    renderRecurring();
-  }
+  function renderAll() { renderOverview(); renderHistory(); renderSources(); }
 
   // ---------- Adding entries ----------
-  function parseAmount(input) {
-    const v = parseFloat(input.value);
-    if (!Number.isFinite(v) || v <= 0) return null;
-    return Math.round(v * 100);
+  function cents(input) {
+    var v = parseFloat(input.value);
+    return isFinite(v) && v > 0 ? Math.round(v * 100) : 0;
   }
-
-  function addEntry({ type, category, amountCents, date, note, recurring }) {
-    let recurringId = null;
-    if (recurring) {
+  function addEntry(o) {
+    var recurringId = null;
+    if (o.recurring) {
       recurringId = uid();
-      state.recurring.push({ id: recurringId, type, category, amountCents, note, lastDate: date, active: true });
+      state.recurring.push({ id: recurringId, type: o.type, category: o.category, amountCents: o.amountCents, note: o.note, lastDate: o.date, active: true });
     }
-    state.entries.push({ id: uid(), type, category, amountCents, date, note, recurringId });
-    // A recurring entry dated in the past back-fills the weeks since then.
-    const added = recurring ? generateRecurring() : 0;
+    state.entries.push({ id: uid(), type: o.type, category: o.category, amountCents: o.amountCents, date: o.date, note: o.note, recurringId: recurringId });
+    var added = o.recurring ? generateRecurring() : 0;
     save();
     renderAll();
-    toast(`${type === "income" ? "Income" : "Expense"} added` + (added ? ` (+${added} recurring week${added === 1 ? "" : "s"})` : ""));
+    toast((o.type === "income" ? "Income" : "Expense") + " of " + fmt(o.amountCents) + " added" +
+      (added ? " (+" + added + " past week" + (added === 1 ? "" : "s") + ")" : ""));
   }
 
-  $("incomeForm").addEventListener("submit", ev => {
+  $("payForm").addEventListener("submit", function (ev) {
     ev.preventDefault();
-    const amountCents = parseAmount(el.incAmount);
-    if (!amountCents) return toast("Enter an amount greater than $0.");
-    if (!isISODate(el.incDate.value)) return toast("Pick a date.");
-    let source = el.incSource.value;
+    var c = cents($("payAmount"));
+    if (!c) return toast("Enter the amount of your paycheck.");
+    if (!isISODate($("payDate").value)) return toast("Pick the date you were paid.");
+    addEntry({ type: "income", category: DEFAULT_SOURCE, amountCents: c, date: $("payDate").value, note: "", recurring: $("payRecurring").checked });
+    $("payAmount").value = ""; $("payRecurring").checked = false;
+  });
+
+  $("incomeForm").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var c = cents($("incAmount"));
+    if (!c) return toast("Enter an amount greater than $0.");
+    if (!isISODate($("incDate").value)) return toast("Pick a date.");
+    var source = $("incSource").value;
     if (source === NEW_SOURCE) {
-      source = el.incNewSource.value.trim();
-      if (!source) return toast("Enter a name for the new source.");
-      const existing = state.incomeSources.find(s => s.toLowerCase() === source.toLowerCase());
+      source = $("incNewSource").value.trim();
+      if (!source) return toast("Type a name for the new source.");
+      var existing = state.incomeSources.filter(function (s) { return s.toLowerCase() === source.toLowerCase(); })[0];
       if (existing) source = existing; else state.incomeSources.push(source);
-      renderSources();
-      el.incSource.value = source;
-      el.incNewSource.value = "";
-      toggleNewSource();
+      $("incNewSource").value = "";
     }
-    addEntry({
-      type: "income", category: source, amountCents, date: el.incDate.value,
-      note: el.incNote.value.trim(), recurring: el.incRecurring.checked
-    });
-    el.incAmount.value = "";
-    el.incNote.value = "";
-    el.incRecurring.checked = false;
+    addEntry({ type: "income", category: source, amountCents: c, date: $("incDate").value, note: $("incNote").value.trim(), recurring: $("incRecurring").checked });
+    $("incSource").value = source; toggleNewSource();
+    $("incAmount").value = ""; $("incNote").value = ""; $("incRecurring").checked = false;
   });
 
-  $("expenseForm").addEventListener("submit", ev => {
+  $("expenseForm").addEventListener("submit", function (ev) {
     ev.preventDefault();
-    const amountCents = parseAmount(el.expAmount);
-    if (!amountCents) return toast("Enter an amount greater than $0.");
-    if (!isISODate(el.expDate.value)) return toast("Pick a date.");
-    addEntry({
-      type: "expense", category: el.expCategory.value, amountCents, date: el.expDate.value,
-      note: el.expNote.value.trim(), recurring: el.expRecurring.checked
-    });
-    el.expAmount.value = "";
-    el.expNote.value = "";
-    el.expRecurring.checked = false;
+    var c = cents($("expAmount"));
+    if (!c) return toast("Enter an amount greater than $0.");
+    if (!isISODate($("expDate").value)) return toast("Pick a date.");
+    addEntry({ type: "expense", category: $("expCategory").value, amountCents: c, date: $("expDate").value, note: $("expNote").value.trim(), recurring: $("expRecurring").checked });
+    $("expAmount").value = ""; $("expNote").value = ""; $("expRecurring").checked = false;
   });
 
-  el.incSource.addEventListener("change", () => {
+  $("incSource").addEventListener("change", function () {
     toggleNewSource();
-    if (el.incSource.value === NEW_SOURCE) el.incNewSource.focus();
+    if ($("incSource").value === NEW_SOURCE) $("incNewSource").focus();
   });
 
-  // ---------- Table / recurring actions ----------
-  el.histBody.addEventListener("click", ev => {
-    const btn = ev.target.closest("[data-del]");
-    if (!btn) return;
-    const entry = state.entries.find(e => e.id === btn.dataset.del);
-    if (!entry) return;
-    if (!confirm(`Delete ${entry.category} ${fmt(entry.amountCents)} on ${prettyDate(entry.date)}?`)) return;
-    state.entries = state.entries.filter(e => e !== entry);
-    save();
-    renderAll();
-    toast("Entry deleted");
+  // ---------- Row actions ----------
+  document.addEventListener("click", function (ev) {
+    var del = ev.target.closest("[data-del]");
+    if (del) {
+      armOrRun(del, "Tap to confirm", function () {
+        state.entries = state.entries.filter(function (e) { return e.id !== del.dataset.del; });
+        save(); renderAll(); toast("Entry deleted");
+      });
+      return;
+    }
+    var stop = ev.target.closest("[data-stop]");
+    if (stop) {
+      armOrRun(stop, "Confirm stop", function () {
+        state.recurring.forEach(function (r) { if (r.id === stop.dataset.stop) r.active = false; });
+        save(); renderAll(); toast("It will no longer repeat. Past entries were kept.");
+      });
+      return;
+    }
+    var src = ev.target.closest("[data-src]");
+    if (src) {
+      state.incomeSources = state.incomeSources.filter(function (s) { return s !== src.dataset.src; });
+      save(); renderSources(); toast("Source removed");
+    }
   });
 
-  el.recList.addEventListener("click", ev => {
-    const btn = ev.target.closest("[data-stop]");
-    if (!btn) return;
-    const r = state.recurring.find(x => x.id === btn.dataset.stop);
-    if (!r || !confirm(`Stop repeating "${r.category}" weekly? Past entries are kept.`)) return;
-    r.active = false;
-    save();
-    renderAll();
-    toast("Recurring item stopped");
+  document.querySelectorAll(".seg [data-period]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      heroPeriod = b.dataset.period;
+      document.querySelectorAll(".seg [data-period]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      renderOverview();
+    });
   });
 
-  el.sortDate.addEventListener("click", () => { sortDesc = !sortDesc; renderHistory(); });
-  el.fPeriod.addEventListener("change", () => {
-    const custom = el.fPeriod.value === "custom";
-    el.fFromWrap.classList.toggle("hidden", !custom);
-    el.fToWrap.classList.toggle("hidden", !custom);
+  function toggleSort() { sortDesc = !sortDesc; renderHistory(); }
+  $("sortDate").addEventListener("click", toggleSort);
+  $("sortDate").addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleSort(); } });
+  $("fPeriod").addEventListener("change", function () {
+    var custom = $("fPeriod").value === "custom";
+    $("fFromWrap").hidden = !custom; $("fToWrap").hidden = !custom;
     renderHistory();
   });
-  [el.fType, el.fFrom, el.fTo].forEach(x => x.addEventListener("change", renderHistory));
-  el.chartPeriod.addEventListener("change", renderChart);
-  el.weekStart.addEventListener("change", () => {
-    state.settings.weekStart = Number(el.weekStart.value);
-    save();
+  ["fType", "fFrom", "fTo"].forEach(function (id) { $(id).addEventListener("change", renderHistory); });
+  $("weekStart").addEventListener("change", function () {
+    state.settings.weekStart = Number($("weekStart").value);
+    save(); renderAll();
+  });
+
+  // ---------- Backup ----------
+  $("exportBtn").addEventListener("click", function () {
+    var json = JSON.stringify(state, null, 2);
+    $("backupText").value = json;
+    try {
+      var url = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+      var a = document.createElement("a");
+      a.href = url; a.download = "income-expense-backup-" + todayISO() + ".json";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+      toast("Backup exported. If no file appeared, use \"Copy backup text\" below.");
+    } catch (e) {
+      toast("Download blocked here. Copy the backup text below instead.");
+    }
+  });
+  $("copyBtn").addEventListener("click", function () {
+    var ta = $("backupText");
+    ta.value = JSON.stringify(state, null, 2);
+    function fallback() { ta.focus(); ta.select(); toast("Text selected. Press Copy on your keyboard or menu."); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(ta.value).then(function () { toast("Backup copied"); }, fallback);
+    } else fallback();
+  });
+
+  var pendingImport = null;
+  function offerImport(text, sourceName) {
+    try { pendingImport = normalize(JSON.parse(text)); }
+    catch (e) { pendingImport = null; return toast("Could not read that backup: " + (e.message || "invalid file")); }
+    $("importMsg").textContent = "Replace everything you have now (" + state.entries.length + " entries) with " +
+      pendingImport.entries.length + " entries from " + sourceName + "?";
+    $("importConfirm").hidden = false;
+  }
+  $("importBtn").addEventListener("click", function () { $("importFile").click(); });
+  $("importFile").addEventListener("change", function (ev) {
+    var f = ev.target.files[0]; ev.target.value = "";
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function () { offerImport(reader.result, '"' + f.name + '"'); };
+    reader.onerror = function () { toast("Could not open that file."); };
+    reader.readAsText(f);
+  });
+  $("restoreTextBtn").addEventListener("click", function () { offerImport($("backupText").value, "the pasted text"); });
+  $("importNo").addEventListener("click", function () { pendingImport = null; $("importConfirm").hidden = true; });
+  $("importYes").addEventListener("click", function () {
+    if (!pendingImport) return;
+    state = pendingImport; pendingImport = null;
+    $("importConfirm").hidden = true;
+    var added = generateRecurring();
+    $("weekStart").value = String(state.settings.weekStart);
+    $("backupText").value = JSON.stringify(state, null, 2);
     renderAll();
-  });
-
-  let resizeTimer;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(renderChart, 120);
-  });
-
-  // ---------- Export / Import ----------
-  $("exportBtn").addEventListener("click", () => {
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `income-expense-backup-${todayISO()}.json`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    toast("Backup downloaded");
-  });
-
-  $("importBtn").addEventListener("click", () => $("importFile").click());
-  $("importFile").addEventListener("change", ev => {
-    const file = ev.target.files[0];
-    ev.target.value = "";
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      let imported;
-      try {
-        imported = normalize(JSON.parse(reader.result));
-      } catch (e) {
-        return toast("Import failed: " + (e.message || "invalid file"));
-      }
-      if (!confirm(`Replace all current data with ${imported.entries.length} entries from "${file.name}"?`)) return;
-      state = imported;
-      const added = generateRecurring();
-      el.weekStart.value = String(state.settings.weekStart);
-      renderSources();
-      renderAll();
-      toast("Data restored" + (added ? ` (+${added} recurring)` : ""));
-    };
-    reader.onerror = () => toast("Could not read the file.");
-    reader.readAsText(file);
+    toast("Data restored" + (added ? " (+" + added + " recurring)" : ""));
   });
 
   // ---------- Theme ----------
-  function applyTheme(theme) {
-    document.documentElement.setAttribute("data-theme", theme);
-    el.themeBtn.textContent = theme === "dark" ? "Light mode" : "Dark mode";
-  }
-  function initialTheme() {
-    try {
-      const saved = localStorage.getItem(THEME_KEY);
-      if (saved === "dark" || saved === "light") return saved;
-    } catch (e) { /* ignore */ }
+  function currentTheme() {
+    var t = document.documentElement.getAttribute("data-theme");
+    if (t) return t;
     return window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
-  el.themeBtn.addEventListener("click", () => {
-    const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
-    applyTheme(next);
-    try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* ignore */ }
-    renderChart();
+  function setThemeLabel() {
+    $("themeBtn").setAttribute("aria-label", currentTheme() === "dark" ? "Switch to light mode" : "Switch to dark mode");
+  }
+  var savedTheme = storeGet(THEME_KEY);
+  if (savedTheme === "dark" || savedTheme === "light") document.documentElement.setAttribute("data-theme", savedTheme);
+  setThemeLabel();
+  $("themeBtn").addEventListener("click", function () {
+    var next = currentTheme() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    storeSet(THEME_KEY, next);
+    setThemeLabel();
   });
 
-  // ---------- Init ----------
-  applyTheme(initialTheme());
-  fillSelect(el.expCategory, EXPENSE_CATEGORIES);
-  renderSources();
-  el.incSource.value = DEFAULT_SOURCE;
-  el.incDate.value = todayISO();
-  el.expDate.value = todayISO();
-  el.weekStart.value = String(state.settings.weekStart);
-  const generated = generateRecurring();
+  // ---------- Start ----------
+  var today = todayISO();
+  ["payDate", "incDate", "expDate"].forEach(function (id) { $(id).value = today; });
+  $("weekStart").value = String(state.settings.weekStart);
+  $("todayLabel").textContent = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
+  var generated = generateRecurring();
   renderAll();
-  if (generated) toast(`Added ${generated} recurring entr${generated === 1 ? "y" : "ies"} for missed weeks`);
+  if (!storageOK) toast("This viewer can't save data. Open the file in Chrome or Safari to keep your entries.");
+  else if (generated) toast("Added " + generated + " recurring entr" + (generated === 1 ? "y" : "ies") + " for missed weeks");
 })();
 </script>
 </body>
