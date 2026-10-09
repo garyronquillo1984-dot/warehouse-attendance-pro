@@ -186,6 +186,8 @@ input[type="text"], input[type="number"], input[type="date"], select, textarea {
   width: 100%; min-height: 44px; padding: 10px 12px; border-radius: 10px;
   border: 1px solid var(--line); background: var(--surface-2); color: var(--ink);
 }
+input[type="date"] { -webkit-appearance: none; appearance: none; display: block; min-width: 0; max-width: 100%; text-align: left; }
+input[type="date"]::-webkit-date-and-time-value { text-align: left; }
 textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .8rem; resize: vertical; }
 .money { position: relative; }
 .money::before { content: "$"; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; }
@@ -350,7 +352,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
           <label class="switch"><input type="checkbox" id="payRecurring">
             <span>Repeat every week<small>Adds this pay automatically each week</small></span>
           </label>
-          <button class="btn inc" type="submit">Add FedEx pay</button>
+          <button class="btn inc" type="button" data-submit="payForm">Add FedEx pay</button>
         </form>
       </article>
     </div>
@@ -422,7 +424,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
           <label class="switch"><input type="checkbox" id="incRecurring">
             <span>Repeat every week</span>
           </label>
-          <button class="btn inc" type="submit">Add income</button>
+          <button class="btn inc" type="button" data-submit="incomeForm">Add income</button>
         </form>
       </article>
 
@@ -458,7 +460,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
           <label class="switch"><input type="checkbox" id="expRecurring">
             <span>Repeat every week</span>
           </label>
-          <button class="btn exp" type="submit">Add expense</button>
+          <button class="btn exp" type="button" data-submit="expenseForm">Add expense</button>
         </form>
       </article>
     </div>
@@ -516,7 +518,8 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       <article class="panel" aria-labelledby="bkTitle">
         <div class="panel-head"><h2 id="bkTitle">Backup</h2></div>
         <div style="display:grid;gap:12px">
-          <p class="hint">Your data is saved in this browser only. Export a backup now and then, and import it to restore or move to another device.</p>
+          <p class="hint" id="saveStatus">Saved in this browser only.</p>
+          <p class="hint">Export a backup now and then, and import it to restore or move to another device.</p>
           <div class="btn-row">
             <button class="btn primary" type="button" id="exportBtn">Export JSON file</button>
             <button class="btn" type="button" id="importBtn">Import JSON file</button>
@@ -677,10 +680,82 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     if (raw) state = normalize(JSON.parse(raw));
   } catch (e) { state = defaultState(); }
 
-  function save() {
-    if (!storeSet(STORAGE_KEY, JSON.stringify(state))) {
-      toast("This browser is not saving data. Open the file directly in Chrome or Safari, or export a backup.");
+  // ---------- Account storage (only when opened as a Claude artifact) ----------
+  // Data is split into one document per year of entries plus a "meta" document,
+  // so no single document grows past the store's size limit.
+  var cloud = null;         // { db, base } once connected
+  var cloudWritten = {};    // doc id -> last JSON written
+  var cloudChain = Promise.resolve();
+  var cloudTimer = null;
+
+  function cloudDocs() {
+    var docs = { meta: { json: JSON.stringify({ version: state.version, incomeSources: state.incomeSources, recurring: state.recurring, settings: state.settings, lastOpened: state.lastOpened }) } };
+    var years = {};
+    state.entries.forEach(function (e) { (years[e.date.slice(0, 4)] = years[e.date.slice(0, 4)] || []).push(e); });
+    Object.keys(cloudWritten).forEach(function (id) { if (id.indexOf("entries-") === 0) years[id.slice(8)] = years[id.slice(8)] || []; });
+    Object.keys(years).forEach(function (y) { docs["entries-" + y] = { json: JSON.stringify(years[y]) }; });
+    return docs;
+  }
+  function cloudFlush() {
+    if (!cloud) return;
+    var docs = cloudDocs();
+    Object.keys(docs).forEach(function (id) {
+      if (cloudWritten[id] === docs[id].json) return;
+      var json = docs[id].json;
+      cloudChain = cloudChain.then(function () {
+        return cloud.db.doc(cloud.base + "/" + id).set({ json: json, updatedAt: new Date().toISOString() });
+      }).then(function () { cloudWritten[id] = json; setSaveStatus("account"); }, function (e) {
+        setSaveStatus("error");
+        toast(e && e.code === "quota_exceeded" ? "Your saved data is full. Export a backup and delete old entries." : "Could not save to your account. Your entries are still on screen; try again.");
+      });
+    });
+  }
+  function cloudSave() { clearTimeout(cloudTimer); cloudTimer = setTimeout(cloudFlush, 400); }
+
+  async function connectCloud() {
+    if (!window.claude || typeof window.claude.use !== "function") return false;
+    try {
+      var db = await window.claude.use("db");
+      var user = await window.claude.use("user");
+      var uid = user && await user.id();
+      if (!db || !uid) return false;
+      var base = "data/users/" + uid;
+      var snap = await db.collection(base).get();
+      var meta = null, entries = [];
+      snap.docs.forEach(function (d) {
+        var body = d.data(); if (!body || typeof body.json !== "string") return;
+        cloudWritten[d.id] = body.json;
+        if (d.id === "meta") meta = JSON.parse(body.json);
+        else if (d.id.indexOf("entries-") === 0) entries = entries.concat(JSON.parse(body.json));
+      });
+      cloud = { db: db, base: base };
+      if (meta) {
+        meta.entries = entries;
+        state = normalize(meta);
+        storeSet(STORAGE_KEY, JSON.stringify(state));
+      }
+      // No account data yet: whatever this browser had is uploaded by the next save.
+      return true;
+    } catch (e) {
+      cloud = null;
+      return false;
     }
+  }
+
+  var saveStatus = "local";
+  function setSaveStatus(s) {
+    saveStatus = s;
+    var el = $("saveStatus"); if (!el) return;
+    el.textContent = s === "account" ? "Saved to your Claude account. It shows up wherever you open this page."
+      : s === "error" ? "Last change was not saved to your account. Check your connection."
+      : storageOK ? "Saved in this browser only."
+      : "Not saved: this viewer blocks storage. Export a backup before closing.";
+  }
+
+  function save() {
+    var local = storeSet(STORAGE_KEY, JSON.stringify(state));
+    if (cloud) cloudSave();
+    else if (!local) toast("This viewer can't save data. Open the file in Chrome or Safari, or export a backup.");
   }
 
   // Adds one entry per missed week for every active recurring item, up to today.
@@ -870,17 +945,18 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       (added ? " (+" + added + " past week" + (added === 1 ? "" : "s") + ")" : ""));
   }
 
-  $("payForm").addEventListener("submit", function (ev) {
-    ev.preventDefault();
+  // Some viewers (like the Claude app) block the form "submit" event, so the
+  // buttons and the Enter key call these handlers directly.
+  var handlers = {};
+  handlers.payForm = function () {
     var c = cents($("payAmount"));
     if (!c) return toast("Enter the amount of your paycheck.");
     if (!isISODate($("payDate").value)) return toast("Pick the date you were paid.");
     addEntry({ type: "income", category: DEFAULT_SOURCE, amountCents: c, date: $("payDate").value, note: "", recurring: $("payRecurring").checked });
     $("payAmount").value = ""; $("payRecurring").checked = false;
-  });
+  };
 
-  $("incomeForm").addEventListener("submit", function (ev) {
-    ev.preventDefault();
+  handlers.incomeForm = function () {
     var c = cents($("incAmount"));
     if (!c) return toast("Enter an amount greater than $0.");
     if (!isISODate($("incDate").value)) return toast("Pick a date.");
@@ -895,15 +971,22 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     addEntry({ type: "income", category: source, amountCents: c, date: $("incDate").value, note: $("incNote").value.trim(), recurring: $("incRecurring").checked });
     $("incSource").value = source; toggleNewSource();
     $("incAmount").value = ""; $("incNote").value = ""; $("incRecurring").checked = false;
-  });
+  };
 
-  $("expenseForm").addEventListener("submit", function (ev) {
-    ev.preventDefault();
+  handlers.expenseForm = function () {
     var c = cents($("expAmount"));
     if (!c) return toast("Enter an amount greater than $0.");
     if (!isISODate($("expDate").value)) return toast("Pick a date.");
     addEntry({ type: "expense", category: $("expCategory").value, amountCents: c, date: $("expDate").value, note: $("expNote").value.trim(), recurring: $("expRecurring").checked });
     $("expAmount").value = ""; $("expNote").value = ""; $("expRecurring").checked = false;
+  };
+  Object.keys(handlers).forEach(function (id) {
+    var form = $(id);
+    form.addEventListener("submit", function (ev) { ev.preventDefault(); });
+    form.querySelector("[data-submit]").addEventListener("click", function () { handlers[id](); });
+    form.addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter" && ev.target.tagName === "INPUT" && ev.target.type !== "checkbox") { ev.preventDefault(); handlers[id](); }
+    });
   });
 
   $("incSource").addEventListener("change", function () {
@@ -1038,8 +1121,20 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
   $("todayLabel").textContent = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
   var generated = generateRecurring();
   renderAll();
-  if (!storageOK) toast("This viewer can't save data. Open the file in Chrome or Safari to keep your entries.");
-  else if (generated) toast("Added " + generated + " recurring entr" + (generated === 1 ? "y" : "ies") + " for missed weeks");
+  setSaveStatus("local");
+  if (generated) toast("Added " + generated + " recurring entr" + (generated === 1 ? "y" : "ies") + " for missed weeks");
+  connectCloud().then(function (ok) {
+    if (!ok) {
+      setSaveStatus("local");
+      if (!storageOK) toast("This viewer can't save data. Open the file in Chrome or Safari to keep your entries.");
+      return;
+    }
+    var added = generateRecurring();   // also uploads local data on first connect
+    $("weekStart").value = String(state.settings.weekStart);
+    renderAll();
+    setSaveStatus("account");
+    if (added) toast("Added " + added + " recurring entr" + (added === 1 ? "y" : "ies") + " for missed weeks");
+  });
 })();
 </script>
 </body>
