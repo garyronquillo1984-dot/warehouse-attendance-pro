@@ -447,7 +447,11 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
               <option>School Tuition</option>
               <option>Union Pay</option>
               <option>Water/Sewer/Trash</option>
+              <option value="__new__">+ Add a new category…</option>
             </select>
+          </label>
+          <label class="field" id="newCatWrap" hidden><span>New category name</span>
+            <input type="text" id="expNewCat" maxlength="60" placeholder="e.g. Car insurance, Doctor">
           </label>
           <div class="row-2">
             <label class="field"><span>Amount</span>
@@ -557,6 +561,10 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
           <div class="field"><span>Income sources</span>
             <ul class="list" id="srcList"></ul>
           </div>
+          <div class="field"><span>Your expense categories</span>
+            <ul class="list" id="catList"></ul>
+            <p class="hint" id="catListEmpty">Categories you create with "+ Add a new category…" show up here.</p>
+          </div>
         </form>
       </article>
     </div>
@@ -638,6 +646,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     return {
       version: 1,
       incomeSources: [DEFAULT_SOURCE],
+      expenseCategories: [],  // categories the user created; the built-in list lives in the HTML
       entries: [],    // {id, type, category, amountCents, date, note, recurringId}
       recurring: [],  // {id, type, category, amountCents, note, lastDate, active}
       settings: { weekStart: 0 },
@@ -652,6 +661,9 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     var s = defaultState();
     (Array.isArray(data.incomeSources) ? data.incomeSources : []).forEach(function (x) {
       if (typeof x === "string" && x.trim() && s.incomeSources.indexOf(x) < 0) s.incomeSources.push(x.trim());
+    });
+    (Array.isArray(data.expenseCategories) ? data.expenseCategories : []).forEach(function (x) {
+      if (typeof x === "string" && x.trim() && s.expenseCategories.indexOf(x.trim()) < 0) s.expenseCategories.push(x.trim());
     });
     data.entries.forEach(function (e) {
       if (!e || (e.type !== "income" && e.type !== "expense") || typeof e.category !== "string" ||
@@ -692,7 +704,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
   var cloudTimer = null;
 
   function cloudDocs() {
-    var docs = { meta: { json: JSON.stringify({ version: state.version, incomeSources: state.incomeSources, recurring: state.recurring, settings: state.settings, lastOpened: state.lastOpened }) } };
+    var docs = { meta: { json: JSON.stringify({ version: state.version, incomeSources: state.incomeSources, expenseCategories: state.expenseCategories, recurring: state.recurring, settings: state.settings, lastOpened: state.lastOpened }) } };
     var years = {};
     state.entries.forEach(function (e) { (years[e.date.slice(0, 4)] = years[e.date.slice(0, 4)] || []).push(e); });
     Object.keys(cloudWritten).forEach(function (id) { if (id.indexOf("entries-") === 0) years[id.slice(8)] = years[id.slice(8)] || []; });
@@ -927,7 +939,38 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     $("incNewSource").required = isNew;
   }
 
-  function renderAll() { renderOverview(); renderHistory(); renderSources(); }
+  // ---------- Expense categories ----------
+  var BUILTIN_CATEGORIES = Array.prototype.map.call(document.querySelectorAll("#expCategory option"), function (o) { return o.value; })
+    .filter(function (v) { return v !== NEW_SOURCE; });
+  function sameName(a, b) { return a.toLowerCase() === b.toLowerCase(); }
+  function allCategories() {
+    var list = BUILTIN_CATEGORIES.slice();
+    state.expenseCategories.forEach(function (c) { if (!list.some(function (x) { return sameName(x, c); })) list.push(c); });
+    return list.sort(function (a, b) { return a.localeCompare(b, "en", { sensitivity: "base" }); });
+  }
+  function renderCategories() {
+    var sel = $("expCategory"), current = sel.value, list = allCategories();
+    sel.innerHTML = "";
+    list.forEach(function (c) { sel.add(new Option(c, c)); });
+    sel.add(new Option("+ Add a new category…", NEW_SOURCE));
+    sel.value = list.indexOf(current) >= 0 || current === NEW_SOURCE ? current : list[0];
+    toggleNewCat();
+    var mine = state.expenseCategories.slice().sort(function (a, b) { return a.localeCompare(b, "en", { sensitivity: "base" }); });
+    $("catListEmpty").hidden = mine.length > 0;
+    $("catList").innerHTML = mine.map(function (c) {
+      var used = state.entries.some(function (e) { return e.type === "expense" && e.category === c; }) ||
+                 state.recurring.some(function (r) { return r.active && r.type === "expense" && r.category === c; });
+      var btn = used ? '<span class="s">In use</span>'
+        : '<button class="btn small danger" type="button" data-cat="' + esc(c) + '">Remove</button>';
+      return '<li><span class="dot expense"></span><div class="grow t">' + esc(c) + '</div>' + btn + '</li>';
+    }).join("");
+  }
+  function toggleNewCat() {
+    var isNew = $("expCategory").value === NEW_SOURCE;
+    $("newCatWrap").hidden = !isNew;
+  }
+
+  function renderAll() { renderOverview(); renderHistory(); renderSources(); renderCategories(); }
 
   // ---------- Adding entries ----------
   function cents(input) {
@@ -980,7 +1023,16 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     var c = cents($("expAmount"));
     if (!c) return toast("Enter an amount greater than $0.");
     if (!isISODate($("expDate").value)) return toast("Pick a date.");
-    addEntry({ type: "expense", category: $("expCategory").value, amountCents: c, date: $("expDate").value, note: $("expNote").value.trim(), recurring: $("expRecurring").checked });
+    var cat = $("expCategory").value;
+    if (cat === NEW_SOURCE) {
+      cat = $("expNewCat").value.trim();
+      if (!cat) return toast("Type a name for the new category.");
+      var existing = allCategories().filter(function (x) { return sameName(x, cat); })[0];
+      if (existing) cat = existing; else state.expenseCategories.push(cat);
+      $("expNewCat").value = "";
+    }
+    addEntry({ type: "expense", category: cat, amountCents: c, date: $("expDate").value, note: $("expNote").value.trim(), recurring: $("expRecurring").checked });
+    $("expCategory").value = cat; toggleNewCat();
     $("expAmount").value = ""; $("expNote").value = ""; $("expRecurring").checked = false;
   };
   Object.keys(handlers).forEach(function (id) {
@@ -990,6 +1042,11 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     form.addEventListener("keydown", function (ev) {
       if (ev.key === "Enter" && ev.target.tagName === "INPUT" && ev.target.type !== "checkbox") { ev.preventDefault(); handlers[id](); }
     });
+  });
+
+  $("expCategory").addEventListener("change", function () {
+    toggleNewCat();
+    if ($("expCategory").value === NEW_SOURCE) $("expNewCat").focus();
   });
 
   $("incSource").addEventListener("change", function () {
@@ -1019,6 +1076,12 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     if (src) {
       state.incomeSources = state.incomeSources.filter(function (s) { return s !== src.dataset.src; });
       save(); renderSources(); toast("Source removed");
+      return;
+    }
+    var catBtn = ev.target.closest("[data-cat]");
+    if (catBtn) {
+      state.expenseCategories = state.expenseCategories.filter(function (c) { return c !== catBtn.dataset.cat; });
+      save(); renderCategories(); toast("Category removed");
     }
   });
 
