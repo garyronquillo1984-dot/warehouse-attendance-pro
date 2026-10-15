@@ -26,6 +26,12 @@
   --expense-soft: #fbe6d8;
   --danger: #c0262d;
   --danger-soft: #fde3e3;
+  --warn: #9a5800;
+  --warn-soft: #fcefd6;
+  --c-chk: #0d6e78;
+  --c-sav: #1d7a46;
+  --c-inv: #3d4fc4;
+  --c-fun: #b23c76;
   --shadow: 0 1px 2px rgba(21, 33, 44, .06), 0 6px 20px rgba(21, 33, 44, .06);
   --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
   --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -38,6 +44,7 @@
     --line: #2a3a47; --accent: #4fc1cb; --accent-ink: #062226; --accent-soft: #143840;
     --income: #5fd18f; --income-soft: #143524; --expense: #f59a5c; --expense-soft: #3a2416;
     --danger: #ff7a7f; --danger-soft: #3d1a1e; --shadow: none; color-scheme: dark;
+    --warn: #f5b84a; --warn-soft: #3a2c10; --c-chk: #4fc1cb; --c-sav: #5fd18f; --c-inv: #95a1ff; --c-fun: #f28fc0;
   }
 }
 :root[data-theme="dark"] {
@@ -45,6 +52,7 @@
   --line: #2a3a47; --accent: #4fc1cb; --accent-ink: #062226; --accent-soft: #143840;
   --income: #5fd18f; --income-soft: #143524; --expense: #f59a5c; --expense-soft: #3a2416;
   --danger: #ff7a7f; --danger-soft: #3d1a1e; --shadow: none; color-scheme: dark;
+    --warn: #f5b84a; --warn-soft: #3a2c10; --c-chk: #4fc1cb; --c-sav: #5fd18f; --c-inv: #95a1ff; --c-fun: #f28fc0;
 }
 
 * { box-sizing: border-box; }
@@ -101,7 +109,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
   background: var(--surface); border-top: 1px solid var(--line);
   padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px;
 }
 @media (min-width: 760px) { .tabs-bottom { display: none; } }
 .tabs-bottom .tab {
@@ -263,6 +271,78 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
   .history td.h-note:empty { display: none; }
 }
 
+/* ---- Bank accounts ---- */
+.subnav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.subnav::-webkit-scrollbar { display: none; }
+.subnav button { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--muted); padding: 7px 12px; border-radius: 99px; font-weight: 600; font-size: .85rem; cursor: pointer; }
+.subnav button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.sub { display: grid; gap: 16px; }
+.stats { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.stat { padding: 12px; border-radius: 12px; background: var(--surface-2); min-width: 0; }
+.stat .v { font: 800 1.2rem var(--font-display); margin-top: 2px; overflow-wrap: anywhere; }
+.stat .k { font-size: .76rem; color: var(--muted); margin-top: 2px; }
+.stat.hl { background: var(--accent-soft); }
+.stat.bad .v { color: var(--danger); }
+.dist { display: flex; height: 14px; border-radius: 99px; overflow: hidden; background: var(--surface-2); margin-top: 16px; }
+.dist span { height: 100%; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px; font-size: .8rem; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.acct-grid { display: grid; gap: 16px; }
+@media (min-width: 760px) { .acct-grid { grid-template-columns: 1fr 1fr; } }
+.acct { border-top: 4px solid var(--c); display: grid; gap: 12px; align-content: start; }
+.acct-head { display: flex; gap: 10px; align-items: center; }
+.acct-icon { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; background: var(--surface-2); color: var(--c); flex: none; }
+.acct-icon svg { width: 20px; height: 20px; }
+.acct-name { font: 800 1.05rem var(--font-display); }
+.acct-purpose { font-size: .8rem; color: var(--c); font-weight: 700; }
+.acct-bal { font: 800 1.8rem/1.1 var(--font-display); overflow-wrap: anywhere; }
+.acct-bal.neg { color: var(--danger); }
+.acct-src { font-size: .78rem; color: var(--muted); }
+.kv { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: .9rem; margin: 0; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; text-align: right; font-weight: 700; }
+.meter { height: 8px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+.meter span { display: block; height: 100%; width: 0; background: var(--c, var(--accent)); border-radius: 99px; }
+.meter.warn span { background: var(--warn); }
+.meter.bad span { background: var(--danger); }
+.meter-cap { font-size: .8rem; color: var(--muted); margin-top: 4px; }
+.mini-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: .85rem; }
+.mini-list li { display: flex; justify-content: space-between; gap: 8px; }
+.mini-list .d { color: var(--muted); }
+.chip { display: inline-block; font-size: .72rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
+.chip.ok { background: var(--income-soft); color: var(--income); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.bad { background: var(--danger-soft); color: var(--danger); }
+.chip.info { background: var(--accent-soft); color: var(--accent); }
+.alerts { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.alerts li { padding: 10px 12px; border-radius: 10px; background: var(--surface-2); border-left: 4px solid var(--muted); font-size: .9rem; }
+.alerts li.bad { border-left-color: var(--danger); background: var(--danger-soft); }
+.alerts li.warn { border-left-color: var(--warn); background: var(--warn-soft); }
+.alerts li.ok { border-left-color: var(--income); background: var(--income-soft); }
+.alerts li b { display: block; }
+.recs { margin: 0; padding-left: 20px; display: grid; gap: 8px; font-size: .92rem; }
+.answer { padding: 12px; border-radius: 10px; font-weight: 600; }
+.answer.ok { background: var(--income-soft); color: var(--income); }
+.answer.warn { background: var(--warn-soft); color: var(--warn); }
+.answer.bad { background: var(--danger-soft); color: var(--danger); }
+.void td { text-decoration: line-through; color: var(--muted); }
+.void td:last-child { text-decoration: none; }
+.mbars { display: grid; gap: 8px; }
+.mrow { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: .85rem; }
+.mtrack { height: 10px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+.mfill { height: 100%; border-radius: 99px; background: var(--income); }
+.mfill.neg { background: var(--danger); }
+.mfill.sav { background: var(--c-sav); }
+.ov-strip { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; }
+.ov-strip .v { font: 800 1.35rem var(--font-display); }
+.ov-strip .v.neg { color: var(--danger); }
+.ov-strip .btn { margin-left: auto; }
+.setup-acct { display: grid; gap: 10px; padding: 14px; border-radius: 12px; background: var(--surface-2); border-left: 4px solid var(--c); }
+.setup-acct + .setup-acct { margin-top: 12px; }
+.setup-acct input[type="text"], .setup-acct input[type="number"], .setup-acct input[type="date"] { background: var(--surface); }
+.hv { width: 110px !important; min-height: 34px !important; padding: 5px 8px !important; }
+.plan-note { font-size: .85rem; color: var(--muted); margin: 8px 0 0; }
+
 /* ---- Toast ---- */
 .toast {
   position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 10px);
@@ -287,6 +367,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     </div>
     <nav class="tabs-top" role="tablist" aria-label="Sections">
       <button class="tab" role="tab" data-view="overview" aria-selected="true">Overview</button>
+      <button class="tab" role="tab" data-view="accounts" aria-selected="false">Accounts</button>
       <button class="tab" role="tab" data-view="add" aria-selected="false">Add entry</button>
       <button class="tab" role="tab" data-view="history" aria-selected="false">History</button>
       <button class="tab" role="tab" data-view="settings" aria-selected="false">Backup &amp; settings</button>
@@ -304,6 +385,12 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
 
   <!-- ================= OVERVIEW ================= -->
   <section class="view" id="view-overview">
+    <article class="panel ov-strip" aria-label="Accounts snapshot">
+      <div><div class="eyebrow">Free in Checking after bills</div><div class="v" id="ovChk">$0.00</div></div>
+      <div><div class="eyebrow">Safe to spend on fun</div><div class="v" id="ovFun">$0.00</div></div>
+      <div><div class="eyebrow">Total money in banks</div><div class="v" id="ovBanks">$0.00</div></div>
+      <button class="btn small" type="button" data-goto="cards">My accounts</button>
+    </article>
     <div class="grid-2">
       <article class="panel hero" aria-labelledby="heroTitle">
         <div class="hero-top">
@@ -353,6 +440,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
             <span>Repeat every week<small>Adds this pay automatically each week</small></span>
           </label>
           <button class="btn inc" type="button" data-submit="payForm">Add FedEx pay</button>
+          <p class="hint" id="payAcctNote">Goes into BofA Checking.</p>
         </form>
       </article>
     </div>
@@ -395,6 +483,226 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     </div>
   </section>
 
+  <!-- ================= ACCOUNTS ================= -->
+  <section class="view" id="view-accounts" hidden>
+    <nav class="subnav" aria-label="Account sections">
+      <button type="button" data-sub="cards" aria-pressed="true">My accounts</button>
+      <button type="button" data-sub="paycheck" aria-pressed="false">Paycheck split</button>
+      <button type="button" data-sub="transfers" aria-pressed="false">Transfers</button>
+      <button type="button" data-sub="bills" aria-pressed="false">Bills</button>
+      <button type="button" data-sub="savings" aria-pressed="false">Savings goals</button>
+      <button type="button" data-sub="invest" aria-pressed="false">Investments</button>
+      <button type="button" data-sub="fun" aria-pressed="false">Fun budget</button>
+      <button type="button" data-sub="progress" aria-pressed="false">Month by month</button>
+      <button type="button" data-sub="setup" aria-pressed="false">Setup</button>
+    </nav>
+
+    <div class="sub" id="sub-cards">
+      <article class="panel">
+        <div class="panel-head"><h2>Where my money is</h2><span class="hint">Balances you enter yourself. No bank is connected.</span></div>
+        <div class="stats" id="acctStats"></div>
+        <div class="dist" id="distBar" aria-hidden="true"></div>
+        <div class="legend" id="distLegend"></div>
+      </article>
+      <div class="acct-grid" id="acctCards"></div>
+      <div class="grid-2">
+        <article class="panel"><div class="panel-head"><h2>Alerts</h2></div><ul class="alerts" id="alertList"></ul></article>
+        <article class="panel"><div class="panel-head"><h2>Can I afford it?</h2><span class="hint">Checks your fun budget and your bills</span></div>
+          <form id="affordForm" autocomplete="off">
+            <label class="field"><span>Price of the purchase</span><div class="money"><input type="number" id="affordAmt" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div></label>
+            <button class="btn primary" type="button" data-submit="affordForm">Check</button>
+            <div class="answer" id="affordAnswer" hidden></div>
+          </form>
+        </article>
+      </div>
+      <article class="panel"><div class="panel-head"><h2>Recommendations</h2></div><ul class="recs" id="adviceList"></ul></article>
+    </div>
+
+    <div class="sub" id="sub-paycheck" hidden>
+      <article class="panel">
+        <div class="panel-head"><h2>Split my next paycheck</h2><span class="hint" id="payWhen"></span></div>
+        <form id="splitForm" autocomplete="off">
+          <div class="row-2">
+            <label class="field"><span>Net pay (what lands in the bank)</span><div class="money"><input type="number" id="splitPay" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div></label>
+            <label class="switch" style="align-self:end"><input type="checkbox" id="splitIncluded">
+              <span>Already in BofA Checking<small>Turn on if this pay is already recorded</small></span></label>
+          </div>
+          <button class="btn primary" type="button" data-submit="splitForm">Calculate split</button>
+        </form>
+      </article>
+      <div class="sub" id="splitOut"></div>
+    </div>
+
+    <div class="sub" id="sub-transfers" hidden>
+      <article class="panel">
+        <div class="panel-head"><h2>Move money between my accounts</h2><span class="hint">Transfers are not income or expenses</span></div>
+        <form id="xferForm" autocomplete="off">
+          <div class="row-2">
+            <label class="field"><span>From</span><select id="xFrom" class="acct-select"><option value="chk">BofA Checking</option><option value="sav">BofA Savings</option><option value="inv">Chase</option><option value="fun">US Bank</option></select></label>
+            <label class="field"><span>To</span><select id="xTo" class="acct-select"><option value="chk">BofA Checking</option><option value="sav">BofA Savings</option><option value="inv">Chase</option><option value="fun">US Bank</option></select></label>
+          </div>
+          <div class="row-2">
+            <label class="field"><span>Amount</span><div class="money"><input type="number" id="xAmt" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div></label>
+            <label class="field"><span>Date</span><input type="date" id="xDate"></label>
+          </div>
+          <label class="field"><span>Purpose</span><input type="text" id="xPurpose" maxlength="80" placeholder="Savings"></label>
+          <button class="btn primary" type="button" data-submit="xferForm" id="xBtn">Record transfer</button>
+        </form>
+      </article>
+      <article class="panel">
+        <div class="panel-head"><h2>Transfer log</h2><span class="hint">Cancelled transfers stay in the log, crossed out</span></div>
+        <div class="table-wrap"><table><thead><tr><th>Date</th><th>From → To</th><th>Purpose</th><th class="num">Amount</th><th>Recorded</th><th></th></tr></thead><tbody id="xBody"></tbody></table></div>
+        <div class="empty" id="xEmpty">No transfers yet.</div>
+      </article>
+    </div>
+
+    <div class="sub" id="sub-bills" hidden>
+      <article class="panel">
+        <div class="panel-head"><h2>Bills paid from BofA Checking</h2><span class="hint" id="billsSummary"></span></div>
+        <div class="table-wrap"><table><thead><tr><th>Due</th><th>Bill</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead><tbody id="billBody"></tbody></table></div>
+        <div class="empty" id="billEmpty">No bills yet. Add rent, utilities, phone, insurance, loans and cards below.</div>
+      </article>
+      <div class="grid-2">
+        <article class="panel">
+          <div class="panel-head"><h2>Add a bill</h2></div>
+          <form id="billForm" autocomplete="off">
+            <div class="row-2">
+              <label class="field"><span>Name</span><input type="text" id="bName" maxlength="60" placeholder="e.g. Rent"></label>
+              <label class="field"><span>Amount</span><div class="money"><input type="number" id="bAmt" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div></label>
+            </div>
+            <div class="row-2">
+              <label class="field"><span>Expense category</span><select id="bCat"></select></label>
+              <label class="field"><span>How often</span><select id="bFreq"><option value="monthly">Monthly</option><option value="weekly">Weekly</option></select></label>
+            </div>
+            <label class="field" id="bDayWrap"><span>Day of the month it is due</span><input type="number" id="bDay" min="1" max="31" step="1" value="1" inputmode="numeric"></label>
+            <label class="field" id="bWdayWrap" hidden><span>Day of the week it is due</span>
+              <select id="bWday"><option value="0">Sunday</option><option value="1">Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option><option value="6">Saturday</option></select></label>
+            <button class="btn primary" type="button" data-submit="billForm">Add bill</button>
+          </form>
+        </article>
+        <article class="panel"><div class="panel-head"><h2>My bills</h2></div><ul class="list" id="billList"></ul><div class="empty" id="billListEmpty">No bills saved.</div></article>
+      </div>
+    </div>
+
+    <div class="sub" id="sub-savings" hidden>
+      <article class="panel" style="--c:var(--c-sav)">
+        <div class="panel-head"><h2 id="savTitle">BofA Savings</h2><span class="hint" id="savSrc"></span></div>
+        <div class="stats" id="savStats"></div>
+        <div style="margin-top:12px"><div class="meter" id="savMeter"><span></span></div><div class="meter-cap" id="savMeterCap"></div></div>
+      </article>
+      <article class="panel" style="--c:var(--c-sav)">
+        <div class="panel-head"><h2>Savings goals</h2><span class="hint">Your savings balance fills the goals from the top down</span></div>
+        <ul class="list" id="goalList"></ul>
+        <div class="empty" id="goalEmpty">No goals yet. A good first goal is an emergency fund.</div>
+        <form id="goalForm" autocomplete="off" style="margin-top:12px">
+          <div class="row-2">
+            <label class="field"><span>Goal name</span><input type="text" id="gName" maxlength="60" placeholder="e.g. Emergency fund"></label>
+            <label class="field"><span>Target amount</span><div class="money"><input type="number" id="gAmt" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div></label>
+          </div>
+          <button class="btn primary" type="button" data-submit="goalForm">Add goal</button>
+        </form>
+      </article>
+      <article class="panel"><div class="panel-head"><h2>Savings balance at the end of each month</h2></div><div class="mbars" id="savChart"></div></article>
+    </div>
+
+    <div class="sub" id="sub-invest" hidden>
+      <article class="panel" style="--c:var(--c-inv)">
+        <div class="panel-head"><h2 id="invTitle">Chase</h2><span class="hint" id="invSrc"></span></div>
+        <div class="stats" id="invStats"></div>
+        <div style="margin-top:12px"><div class="meter" id="invMeter"><span></span></div><div class="meter-cap" id="invMeterCap"></div></div>
+      </article>
+      <article class="panel">
+        <div class="panel-head"><h2>My investments</h2><span class="hint">Update the value from your Chase statement or app</span></div>
+        <div class="table-wrap"><table><thead><tr><th>Investment</th><th class="num">Put in</th><th class="num">Value now</th><th class="num">Gain</th><th>New value</th></tr></thead><tbody id="holdBody"></tbody></table></div>
+        <div class="empty" id="holdEmpty">No investments recorded. Money in Chase counts as cash until you record a purchase.</div>
+      </article>
+      <div class="grid-2">
+        <article class="panel">
+          <div class="panel-head"><h2>Record a buy or sell</h2></div>
+          <form id="tradeForm" autocomplete="off">
+            <div class="row-2">
+              <label class="field"><span>Type</span><select id="tType"><option value="buy">Buy: cash → investment</option><option value="sell">Sell: investment → cash</option></select></label>
+              <label class="field"><span>Investment</span><select id="tHold"><option value="__new__">+ New investment…</option></select></label>
+            </div>
+            <label class="field" id="tNewWrap"><span>New investment name</span><input type="text" id="tNew" maxlength="60" placeholder="e.g. S&amp;P 500 index fund"></label>
+            <div class="row-2">
+              <label class="field"><span>Amount</span><div class="money"><input type="number" id="tAmt" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div></label>
+              <label class="field"><span>Date</span><input type="date" id="tDate"></label>
+            </div>
+            <button class="btn primary" type="button" data-submit="tradeForm" id="tBtn">Record</button>
+            <p class="plan-note">A buy moves money from Chase cash into the investment. It is not income or an expense.</p>
+          </form>
+        </article>
+        <article class="panel"><div class="panel-head"><h2>Buy and sell log</h2></div>
+          <div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Investment</th><th class="num">Amount</th><th></th></tr></thead><tbody id="tradeBody"></tbody></table></div>
+          <div class="empty" id="tradeEmpty">No buys or sells yet.</div>
+        </article>
+      </div>
+    </div>
+
+    <div class="sub" id="sub-fun" hidden>
+      <article class="panel" style="--c:var(--c-fun)">
+        <div class="panel-head"><h2 id="funTitle">US Bank fun budget</h2><span class="hint" id="funMonth"></span></div>
+        <div class="stats" id="funStats"></div>
+        <div style="margin-top:12px"><div class="meter" id="funMeter"><span></span></div><div class="meter-cap" id="funMeterCap"></div></div>
+        <p class="plan-note">Record fun spending in Add entry: pick a category under "Personal spending" and "Paid from: US Bank".</p>
+      </article>
+      <div class="grid-2">
+        <article class="panel"><div class="panel-head"><h2>This month by category</h2></div><div class="bars" id="funBars"></div><div class="empty" id="funBarsEmpty">No fun spending recorded this month.</div></article>
+        <article class="panel"><div class="panel-head"><h2>Recent fun spending</h2></div><ul class="mini-list" id="funRecent"></ul><div class="empty" id="funRecentEmpty">Nothing yet.</div></article>
+      </div>
+    </div>
+
+    <div class="sub" id="sub-progress" hidden>
+      <article class="panel">
+        <div class="panel-head"><h2>Am I doing better month to month?</h2></div>
+        <p class="hint" id="progVerdict" style="margin-bottom:12px"></p>
+        <div class="table-wrap"><table><thead><tr><th>Month</th><th class="num">Income</th><th class="num">Expenses</th><th class="num">Net</th><th class="num">Saved</th><th class="num">To Chase</th><th class="num">In banks at month end</th></tr></thead><tbody id="progBody"></tbody></table></div>
+      </article>
+      <article class="panel"><div class="panel-head"><h2>Income minus expenses</h2></div><div class="mbars" id="progChart"></div></article>
+    </div>
+
+    <div class="sub" id="sub-setup" hidden>
+      <article class="panel">
+        <div class="panel-head"><h2>My accounts</h2></div>
+        <p class="hint" style="margin-bottom:12px">Type the balance your bank app shows right now. Anything you record after you save it (pay, expenses, bills, transfers) updates the balance for you. Do not enter account numbers or passwords.</p>
+        <div id="setupAccts"></div>
+      </article>
+      <div class="grid-2">
+        <article class="panel"><div class="panel-head"><h2>Monthly targets</h2></div>
+          <form id="planForm" autocomplete="off">
+            <label class="field"><span>Save per month (BofA Savings)</span><div class="money"><input type="number" id="pSav" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div></label>
+            <label class="field"><span>Invest per month (Chase)</span><div class="money"><input type="number" id="pInv" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div></label>
+            <label class="field"><span>Fun budget per month (US Bank)</span><div class="money"><input type="number" id="pFun" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div></label>
+            <label class="field"><span>Essentials per week (groceries, fuel and other must-haves not listed as bills)</span><div class="money"><input type="number" id="pEss" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div></label>
+            <label class="field"><span>Always keep at least this much in BofA Checking</span><div class="money"><input type="number" id="pCush" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div></label>
+            <button class="btn primary" type="button" data-submit="planForm">Save targets</button>
+          </form>
+        </article>
+        <article class="panel"><div class="panel-head"><h2>Debts</h2><span class="hint">Used for your net worth</span></div>
+          <ul class="list" id="debtList"></ul>
+          <div class="empty" id="debtEmpty">No debts recorded.</div>
+          <form id="debtForm" autocomplete="off" style="margin-top:12px">
+            <div class="row-2">
+              <label class="field"><span>Debt name</span><input type="text" id="dName" maxlength="60" placeholder="e.g. Car loan"></label>
+              <label class="field"><span>Amount owed today</span><div class="money"><input type="number" id="dAmt" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div></label>
+            </div>
+            <button class="btn primary" type="button" data-submit="debtForm">Save debt</button>
+          </form>
+        </article>
+      </div>
+      <article class="panel" id="migratePanel">
+        <div class="panel-head"><h2>Entries without an account</h2></div>
+        <p class="hint" id="migrateText"></p>
+        <div class="row-2" style="margin-top:10px">
+          <label class="field"><span>Put past income in</span><select id="migInc" class="acct-select"><option value="chk">BofA Checking</option><option value="sav">BofA Savings</option><option value="inv">Chase</option><option value="fun">US Bank</option></select></label>
+          <label class="field"><span>Put past expenses in</span><select id="migExp" class="acct-select"><option value="chk">BofA Checking</option><option value="sav">BofA Savings</option><option value="inv">Chase</option><option value="fun">US Bank</option></select></label>
+        </div>
+        <button class="btn" type="button" id="migrateBtn" style="margin-top:10px">Assign them</button>
+      </article>
+    </div>
+  </section>
+
   <!-- ================= ADD ================= -->
   <section class="view" id="view-add" hidden>
     <div class="grid-2">
@@ -409,6 +717,11 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
           </label>
           <label class="field" id="newSourceWrap" hidden><span>New source name</span>
             <input type="text" id="incNewSource" maxlength="60" placeholder="e.g. Side job, Tax refund">
+          </label>
+          <label class="field"><span>Deposited into</span>
+            <select id="incAccount" class="acct-select">
+              <option value="chk">BofA Checking</option><option value="sav">BofA Savings</option><option value="inv">Chase</option><option value="fun">US Bank</option>
+            </select>
           </label>
           <div class="row-2">
             <label class="field"><span>Amount</span>
@@ -433,6 +746,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
         <form id="expenseForm" autocomplete="off">
           <label class="field"><span>Category</span>
             <select id="expCategory">
+              <optgroup label="Bills &amp; household">
               <option>Aury</option>
               <option>Bankard</option>
               <option>Electricity</option>
@@ -447,11 +761,24 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
               <option>School Tuition</option>
               <option>Union Pay</option>
               <option>Water/Sewer/Trash</option>
+              </optgroup>
+              <optgroup label="Personal spending (US Bank)">
+              <option>Clothing</option>
+              <option>Other personal spending</option>
+              <option>Outings &amp; entertainment</option>
+              <option>Personal items</option>
+              <option>Restaurants</option>
+              </optgroup>
               <option value="__new__">+ Add a new category…</option>
             </select>
           </label>
           <label class="field" id="newCatWrap" hidden><span>New category name</span>
             <input type="text" id="expNewCat" maxlength="60" placeholder="e.g. Car insurance, Doctor">
+          </label>
+          <label class="field"><span>Paid from</span>
+            <select id="expAccount" class="acct-select">
+              <option value="chk">BofA Checking</option><option value="sav">BofA Savings</option><option value="inv">Chase</option><option value="fun">US Bank</option>
+            </select>
           </label>
           <div class="row-2">
             <label class="field"><span>Amount</span>
@@ -491,6 +818,13 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
             <option value="all">All</option>
             <option value="income">Income</option>
             <option value="expense">Expenses</option>
+          </select>
+        </label>
+        <label class="field"><span>Account</span>
+          <select id="fAccount">
+            <option value="all">All accounts</option>
+            <option value="chk">BofA Checking</option><option value="sav">BofA Savings</option><option value="inv">Chase</option><option value="fun">US Bank</option>
+            <option value="none">No account</option>
           </select>
         </label>
         <label class="field" id="fFromWrap" hidden><span>From</span><input type="date" id="fFrom"></label>
@@ -574,6 +908,8 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
 <nav class="tabs-bottom" role="tablist" aria-label="Sections">
   <button class="tab" role="tab" data-view="overview" aria-selected="true">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>Overview</button>
+  <button class="tab" role="tab" data-view="accounts" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6M5 10v8M10 10v8M14 10v8M19 10v8M3 20h18"/></svg>Accounts</button>
   <button class="tab" role="tab" data-view="add" aria-selected="false">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Add</button>
   <button class="tab" role="tab" data-view="history" aria-selected="false">
@@ -593,6 +929,14 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
   var THEME_KEY = "incomeExpenseTracker.theme";
   var DEFAULT_SOURCE = "FedEx Weekly Pay";
   var NEW_SOURCE = "__new__";
+  var ACCT_IDS = ["chk", "sav", "inv", "fun"];
+  var ACCT_DEFAULTS = {
+    chk: { name: "BofA Checking", purpose: "Paycheck and bills" },
+    sav: { name: "BofA Savings", purpose: "Savings and safety net" },
+    inv: { name: "Chase", purpose: "Investing" },
+    fun: { name: "US Bank", purpose: "Fun money: dining, outings, shopping" }
+  };
+  function isAcct(x) { return ACCT_IDS.indexOf(x) >= 0; }
 
   var usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
   function fmt(cents) { return usd.format(cents / 100); }
@@ -650,7 +994,18 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       entries: [],    // {id, type, category, amountCents, date, note, recurringId}
       recurring: [],  // {id, type, category, amountCents, note, lastDate, active}
       settings: { weekStart: 0 },
-      lastOpened: null
+      lastOpened: null,
+      // Bank accounts. A balance is what the bank showed on `asOf`; later movements are added to it.
+      accounts: ACCT_IDS.map(function (id) {
+        return { id: id, name: ACCT_DEFAULTS[id].name, purpose: ACCT_DEFAULTS[id].purpose, balanceCents: 0, asOf: null, updatedAt: null };
+      }),
+      transfers: [],  // {id, from, to, amountCents, date, purpose, createdAt, voidedAt}
+      bills: [],      // {id, name, category, amountCents, freq: monthly|weekly, day, active}
+      goals: [],      // {id, name, targetCents} in priority order
+      holdings: [],   // {id, name, valuationCents, valuationDate}
+      invMoves: [],   // {id, holdingId, type: buy|sell, amountCents, date, createdAt, voidedAt}
+      debts: [],      // {id, name, balanceCents}
+      plan: { savingsMonthlyCents: 0, investMonthlyCents: 0, funMonthlyCents: 0, essentialsWeeklyCents: 0, cushionCents: 0 }
     };
   }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
@@ -672,7 +1027,11 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
         id: String(e.id || uid()), type: e.type, category: e.category,
         amountCents: Math.round(e.amountCents), date: e.date,
         note: typeof e.note === "string" ? e.note : "",
-        recurringId: e.recurringId ? String(e.recurringId) : null
+        recurringId: e.recurringId ? String(e.recurringId) : null,
+        accountId: isAcct(e.accountId) ? e.accountId : null,
+        billId: e.billId ? String(e.billId) : null,
+        billKey: typeof e.billKey === "string" ? e.billKey : null,
+        createdAt: typeof e.createdAt === "string" ? e.createdAt : null
       });
       if (e.type === "income" && s.incomeSources.indexOf(e.category) < 0) s.incomeSources.push(e.category);
     });
@@ -681,12 +1040,60 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
           !isFinite(r.amountCents) || r.amountCents <= 0 || !isISODate(r.lastDate)) return;
       s.recurring.push({
         id: String(r.id || uid()), type: r.type, category: r.category, amountCents: Math.round(r.amountCents),
-        note: typeof r.note === "string" ? r.note : "", lastDate: r.lastDate, active: r.active !== false
+        note: typeof r.note === "string" ? r.note : "", lastDate: r.lastDate, active: r.active !== false,
+        accountId: isAcct(r.accountId) ? r.accountId : null
       });
     });
+    normalizeAccounts(data, s);
     if (data.settings && (data.settings.weekStart === 0 || data.settings.weekStart === 1)) s.settings.weekStart = data.settings.weekStart;
     s.lastOpened = isISODate(data.lastOpened) ? data.lastOpened : null;
     return s;
+  }
+
+  function posCents(x) { return isFinite(x) && x > 0 ? Math.round(x) : 0; }
+  function str(x, max) { return typeof x === "string" ? x.trim().slice(0, max || 80) : ""; }
+  function arr(x) { return Array.isArray(x) ? x : []; }
+  function normalizeAccounts(data, s) {
+    arr(data.accounts).forEach(function (src) {
+      var a = src && s.accounts.filter(function (x) { return x.id === src.id; })[0];
+      if (!a) return;
+      if (str(src.name, 40)) a.name = str(src.name, 40);
+      if (typeof src.purpose === "string") a.purpose = str(src.purpose, 80);
+      if (isFinite(src.balanceCents)) a.balanceCents = Math.round(src.balanceCents);
+      a.asOf = isISODate(src.asOf) ? src.asOf : null;
+      a.updatedAt = typeof src.updatedAt === "string" ? src.updatedAt : null;
+    });
+    arr(data.transfers).forEach(function (t) {
+      if (!t || !isAcct(t.from) || !isAcct(t.to) || t.from === t.to || !isISODate(t.date) || !posCents(t.amountCents)) return;
+      s.transfers.push({ id: String(t.id || uid()), from: t.from, to: t.to, amountCents: posCents(t.amountCents), date: t.date,
+        purpose: str(t.purpose), createdAt: typeof t.createdAt === "string" ? t.createdAt : null, voidedAt: typeof t.voidedAt === "string" ? t.voidedAt : null });
+    });
+    arr(data.bills).forEach(function (b) {
+      if (!b || !str(b.name, 60) || !posCents(b.amountCents)) return;
+      var weekly = b.freq === "weekly", day = Math.round(Number(b.day));
+      if (weekly ? !(day >= 0 && day <= 6) : !(day >= 1 && day <= 31)) return;
+      s.bills.push({ id: String(b.id || uid()), name: str(b.name, 60), category: str(b.category, 60) || str(b.name, 60),
+        amountCents: posCents(b.amountCents), freq: weekly ? "weekly" : "monthly", day: day, active: b.active !== false });
+    });
+    arr(data.goals).forEach(function (g) {
+      if (g && str(g.name, 60) && posCents(g.targetCents)) s.goals.push({ id: String(g.id || uid()), name: str(g.name, 60), targetCents: posCents(g.targetCents) });
+    });
+    arr(data.holdings).forEach(function (h) {
+      if (!h || !str(h.name, 60)) return;
+      s.holdings.push({ id: String(h.id || uid()), name: str(h.name, 60), valuationCents: isFinite(h.valuationCents) && h.valuationCents >= 0 ? Math.round(h.valuationCents) : 0,
+        valuationDate: isISODate(h.valuationDate) ? h.valuationDate : null });
+    });
+    arr(data.invMoves).forEach(function (m) {
+      if (!m || (m.type !== "buy" && m.type !== "sell") || !posCents(m.amountCents) || !isISODate(m.date)) return;
+      if (!s.holdings.some(function (h) { return h.id === m.holdingId; })) return;
+      s.invMoves.push({ id: String(m.id || uid()), holdingId: m.holdingId, type: m.type, amountCents: posCents(m.amountCents), date: m.date,
+        createdAt: typeof m.createdAt === "string" ? m.createdAt : null, voidedAt: typeof m.voidedAt === "string" ? m.voidedAt : null });
+    });
+    arr(data.debts).forEach(function (d) {
+      if (d && str(d.name, 60) && posCents(d.balanceCents)) s.debts.push({ id: String(d.id || uid()), name: str(d.name, 60), balanceCents: posCents(d.balanceCents) });
+    });
+    var p = data.plan || {};
+    Object.keys(s.plan).forEach(function (k) { if (isFinite(p[k]) && p[k] >= 0) s.plan[k] = Math.round(p[k]); });
   }
 
   var state = defaultState();
@@ -704,11 +1111,17 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
   var cloudTimer = null;
 
   function cloudDocs() {
-    var docs = { meta: { json: JSON.stringify({ version: state.version, incomeSources: state.incomeSources, expenseCategories: state.expenseCategories, recurring: state.recurring, settings: state.settings, lastOpened: state.lastOpened }) } };
-    var years = {};
-    state.entries.forEach(function (e) { (years[e.date.slice(0, 4)] = years[e.date.slice(0, 4)] || []).push(e); });
-    Object.keys(cloudWritten).forEach(function (id) { if (id.indexOf("entries-") === 0) years[id.slice(8)] = years[id.slice(8)] || []; });
-    Object.keys(years).forEach(function (y) { docs["entries-" + y] = { json: JSON.stringify(years[y]) }; });
+    var meta = {};
+    Object.keys(state).forEach(function (k) { if (k !== "entries" && k !== "transfers") meta[k] = state[k]; });
+    var docs = { meta: { json: JSON.stringify(meta) } };
+    function byYear(list, prefix) {
+      var years = {};
+      list.forEach(function (e) { (years[e.date.slice(0, 4)] = years[e.date.slice(0, 4)] || []).push(e); });
+      Object.keys(cloudWritten).forEach(function (id) { if (id.indexOf(prefix) === 0) years[id.slice(prefix.length)] = years[id.slice(prefix.length)] || []; });
+      Object.keys(years).forEach(function (y) { docs[prefix + y] = { json: JSON.stringify(years[y]) }; });
+    }
+    byYear(state.entries, "entries-");
+    byYear(state.transfers, "transfers-");
     return docs;
   }
   function cloudFlush() {
@@ -736,16 +1149,18 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       if (!db || !uid) return false;
       var base = "data/users/" + uid;
       var snap = await db.collection(base).get();
-      var meta = null, entries = [];
+      var meta = null, entries = [], transfers = [];
       snap.docs.forEach(function (d) {
         var body = d.data(); if (!body || typeof body.json !== "string") return;
         cloudWritten[d.id] = body.json;
         if (d.id === "meta") meta = JSON.parse(body.json);
         else if (d.id.indexOf("entries-") === 0) entries = entries.concat(JSON.parse(body.json));
+        else if (d.id.indexOf("transfers-") === 0) transfers = transfers.concat(JSON.parse(body.json));
       });
       cloud = { db: db, base: base };
       if (meta) {
         meta.entries = entries;
+        meta.transfers = transfers;
         state = normalize(meta);
         storeSet(STORAGE_KEY, JSON.stringify(state));
       }
@@ -780,7 +1195,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       if (!r.active) return;
       var next = addDays(r.lastDate, 7);
       while (next <= today) {
-        state.entries.push({ id: uid(), type: r.type, category: r.category, amountCents: r.amountCents, date: next, note: r.note, recurringId: r.id });
+        state.entries.push({ id: uid(), type: r.type, category: r.category, amountCents: r.amountCents, date: next, note: r.note, recurringId: r.id, accountId: r.accountId || null, createdAt: new Date().toISOString() });
         r.lastDate = next; added++;
         next = addDays(next, 7);
       }
@@ -810,7 +1225,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
 
   // ---------- Navigation ----------
   function showView(name) {
-    ["overview", "add", "history", "settings"].forEach(function (v) { $("view-" + v).hidden = v !== name; });
+    ["overview", "accounts", "add", "history", "settings"].forEach(function (v) { $("view-" + v).hidden = v !== name; });
     document.querySelectorAll(".tab[data-view]").forEach(function (b) { b.setAttribute("aria-selected", String(b.dataset.view === name)); });
     if (name === "settings") $("backupText").value = JSON.stringify(state, null, 2);
     window.scrollTo(0, 0);
@@ -892,16 +1307,19 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
   // ---------- History ----------
   var sortDesc = true;
   function renderHistory() {
-    var p = $("fPeriod").value, type = $("fType").value;
+    var p = $("fPeriod").value, type = $("fType").value, fa = $("fAccount").value;
     var r = p === "custom" ? [$("fFrom").value || null, $("fTo").value || null] : periodRange(p);
-    var rows = state.entries.filter(function (e) { return inRange(e.date, r) && (type === "all" || e.type === type); })
+    var rows = state.entries.filter(function (e) {
+      return inRange(e.date, r) && (type === "all" || e.type === type) &&
+        (fa === "all" || (fa === "none" ? !e.accountId : e.accountId === fa));
+    })
       .sort(function (a, b) { var c = a.date.localeCompare(b.date) || a.id.localeCompare(b.id); return sortDesc ? -c : c; });
     $("sortDate").textContent = "Date " + (sortDesc ? "↓" : "↑");
     $("sortDate").setAttribute("aria-sort", sortDesc ? "descending" : "ascending");
     $("histBody").innerHTML = rows.map(function (e) {
       var inc = e.type === "income";
       return '<tr>' +
-        '<td class="h-date">' + pretty(e.date) + '</td>' +
+        '<td class="h-date">' + pretty(e.date) + (e.accountId ? ' · ' + esc(acctName(e.accountId)) : '') + '</td>' +
         '<td class="h-type"><span class="type-chip ' + e.type + '">' + (inc ? "Income" : "Expense") + '</span></td>' +
         '<td class="h-cat">' + esc(e.category) + (e.recurringId ? '<span class="rec-mark" title="Repeats weekly">↻</span>' : "") + '</td>' +
         '<td class="num h-amt ' + (inc ? "c-inc" : "c-exp") + '">' + (inc ? "+" : "−") + fmt(e.amountCents) + '</td>' +
@@ -940,20 +1358,29 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
   }
 
   // ---------- Expense categories ----------
-  var BUILTIN_CATEGORIES = Array.prototype.map.call(document.querySelectorAll("#expCategory option"), function (o) { return o.value; })
-    .filter(function (v) { return v !== NEW_SOURCE; });
+  function optionValues(sel) { return Array.prototype.map.call(document.querySelectorAll(sel), function (o) { return o.value; }); }
+  var BUILTIN_CATEGORIES = optionValues("#expCategory optgroup:first-of-type option");
+  var FUN_CATEGORIES = optionValues("#expCategory optgroup:last-of-type option");
   function sameName(a, b) { return a.toLowerCase() === b.toLowerCase(); }
-  function allCategories() {
-    var list = BUILTIN_CATEGORIES.slice();
+  function allCategories(withFun) {
+    var list = BUILTIN_CATEGORIES.concat(withFun ? FUN_CATEGORIES : []);
     state.expenseCategories.forEach(function (c) { if (!list.some(function (x) { return sameName(x, c); })) list.push(c); });
     return list.sort(function (a, b) { return a.localeCompare(b, "en", { sensitivity: "base" }); });
   }
   function renderCategories() {
     var sel = $("expCategory"), current = sel.value, list = allCategories();
     sel.innerHTML = "";
-    list.forEach(function (c) { sel.add(new Option(c, c)); });
+    var g1 = document.createElement("optgroup"); g1.label = "Bills & household";
+    list.forEach(function (c) { g1.appendChild(new Option(c, c)); });
+    var g2 = document.createElement("optgroup"); g2.label = "Personal spending (US Bank)";
+    FUN_CATEGORIES.forEach(function (c) { g2.appendChild(new Option(c, c)); });
+    sel.appendChild(g1); sel.appendChild(g2);
     sel.add(new Option("+ Add a new category…", NEW_SOURCE));
-    sel.value = list.indexOf(current) >= 0 || current === NEW_SOURCE ? current : list[0];
+    sel.value = list.indexOf(current) >= 0 || FUN_CATEGORIES.indexOf(current) >= 0 || current === NEW_SOURCE ? current : list[0];
+    var bc = $("bCat"), bcur = bc.value;
+    bc.innerHTML = "";
+    list.forEach(function (c) { bc.add(new Option(c, c)); });
+    if (list.indexOf(bcur) >= 0) bc.value = bcur;
     toggleNewCat();
     var mine = state.expenseCategories.slice().sort(function (a, b) { return a.localeCompare(b, "en", { sensitivity: "base" }); });
     $("catListEmpty").hidden = mine.length > 0;
@@ -970,7 +1397,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     $("newCatWrap").hidden = !isNew;
   }
 
-  function renderAll() { renderOverview(); renderHistory(); renderSources(); renderCategories(); }
+  function renderAll() { renderAccountSelects(); renderOverview(); renderHistory(); renderSources(); renderCategories(); renderAccounts(); }
 
   // ---------- Adding entries ----------
   function cents(input) {
@@ -981,9 +1408,10 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     var recurringId = null;
     if (o.recurring) {
       recurringId = uid();
-      state.recurring.push({ id: recurringId, type: o.type, category: o.category, amountCents: o.amountCents, note: o.note, lastDate: o.date, active: true });
+      state.recurring.push({ id: recurringId, type: o.type, category: o.category, amountCents: o.amountCents, note: o.note, lastDate: o.date, active: true, accountId: o.accountId || null });
     }
-    state.entries.push({ id: uid(), type: o.type, category: o.category, amountCents: o.amountCents, date: o.date, note: o.note, recurringId: recurringId });
+    state.entries.push({ id: uid(), type: o.type, category: o.category, amountCents: o.amountCents, date: o.date, note: o.note, recurringId: recurringId,
+      accountId: o.accountId || null, billId: o.billId || null, billKey: o.billKey || null, createdAt: new Date().toISOString() });
     var added = o.recurring ? generateRecurring() : 0;
     save();
     renderAll();
@@ -998,7 +1426,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     var c = cents($("payAmount"));
     if (!c) return toast("Enter the amount of your paycheck.");
     if (!isISODate($("payDate").value)) return toast("Pick the date you were paid.");
-    addEntry({ type: "income", category: DEFAULT_SOURCE, amountCents: c, date: $("payDate").value, note: "", recurring: $("payRecurring").checked });
+    addEntry({ type: "income", category: DEFAULT_SOURCE, amountCents: c, date: $("payDate").value, note: "", recurring: $("payRecurring").checked, accountId: "chk" });
     $("payAmount").value = ""; $("payRecurring").checked = false;
   };
 
@@ -1014,7 +1442,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       if (existing) source = existing; else state.incomeSources.push(source);
       $("incNewSource").value = "";
     }
-    addEntry({ type: "income", category: source, amountCents: c, date: $("incDate").value, note: $("incNote").value.trim(), recurring: $("incRecurring").checked });
+    addEntry({ type: "income", category: source, amountCents: c, date: $("incDate").value, note: $("incNote").value.trim(), recurring: $("incRecurring").checked, accountId: $("incAccount").value });
     $("incSource").value = source; toggleNewSource();
     $("incAmount").value = ""; $("incNote").value = ""; $("incRecurring").checked = false;
   };
@@ -1027,14 +1455,839 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     if (cat === NEW_SOURCE) {
       cat = $("expNewCat").value.trim();
       if (!cat) return toast("Type a name for the new category.");
-      var existing = allCategories().filter(function (x) { return sameName(x, cat); })[0];
+      var existing = allCategories(true).filter(function (x) { return sameName(x, cat); })[0];
       if (existing) cat = existing; else state.expenseCategories.push(cat);
       $("expNewCat").value = "";
     }
-    addEntry({ type: "expense", category: cat, amountCents: c, date: $("expDate").value, note: $("expNote").value.trim(), recurring: $("expRecurring").checked });
+    addEntry({ type: "expense", category: cat, amountCents: c, date: $("expDate").value, note: $("expNote").value.trim(), recurring: $("expRecurring").checked, accountId: $("expAccount").value });
     $("expCategory").value = cat; toggleNewCat();
     $("expAmount").value = ""; $("expNote").value = ""; $("expRecurring").checked = false;
   };
+
+  // ================= BANK ACCOUNTS =================
+  // Every number here is derived from state: account balances you entered, plus the
+  // entries, transfers and investment buys/sells recorded after each balance date.
+  // Transfers and buys/sells move money between your own pockets, so they never
+  // count as income or expenses.
+  var ACCT_COLOR = { chk: "var(--c-chk)", sav: "var(--c-sav)", inv: "var(--c-inv)", fun: "var(--c-fun)" };
+  var ACCT_ICON = {
+    chk: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>',
+    sav: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+    inv: '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+    fun: '<path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/>'
+  };
+  var SUBS = ["cards", "paycheck", "transfers", "bills", "savings", "invest", "fun", "progress", "setup"];
+
+  function acct(id) { return state.accounts.filter(function (a) { return a.id === id; })[0]; }
+  function acctName(id) { var a = acct(id); return a ? a.name : "No account"; }
+  function hasBalance(id) { return !!acct(id).asOf; }
+  function daysBetween(a, b) { return Math.round((parseISO(b) - parseISO(a)) / 864e5); }
+  function monthBounds(offset) {
+    var t = new Date();
+    return [toISO(new Date(t.getFullYear(), t.getMonth() + offset, 1)), toISO(new Date(t.getFullYear(), t.getMonth() + offset + 1, 0))];
+  }
+  function minISO(a, b) { return a < b ? a : b; }
+  function sum(list, f) { return list.reduce(function (s, x) { return s + f(x); }, 0); }
+  function money(c) { return '<span class="' + (c < 0 ? "c-neg" : "") + '">' + fmt(c) + "</span>"; }
+  function holding(id) { return state.holdings.filter(function (h) { return h.id === id; })[0]; }
+
+  // Movements that change an account's cash.
+  function movements(id) {
+    var out = [];
+    state.entries.forEach(function (e) {
+      if (e.accountId === id) out.push({ date: e.date, cents: e.type === "income" ? e.amountCents : -e.amountCents, label: e.category, kind: e.type, created: e.createdAt });
+    });
+    state.transfers.forEach(function (t) {
+      if (t.voidedAt) return;
+      if (t.from === id) out.push({ date: t.date, cents: -t.amountCents, label: "Transfer to " + acctName(t.to), kind: "transfer", created: t.createdAt });
+      if (t.to === id) out.push({ date: t.date, cents: t.amountCents, label: "Transfer from " + acctName(t.from), kind: "transfer", created: t.createdAt });
+    });
+    if (id === "inv") state.invMoves.forEach(function (m) {
+      if (m.voidedAt) return;
+      var h = holding(m.holdingId);
+      out.push({ date: m.date, cents: m.type === "buy" ? -m.amountCents : m.amountCents, label: (m.type === "buy" ? "Bought " : "Sold ") + (h ? h.name : "investment"), kind: "trade", created: m.createdAt });
+    });
+    return out;
+  }
+  // A movement is already inside the balance you typed if it is dated before that day,
+  // or dated that same day but recorded before you saved the balance.
+  function afterBase(a, m) {
+    return !a.asOf || m.date > a.asOf || (m.date === a.asOf && !!m.created && !!a.updatedAt && m.created > a.updatedAt);
+  }
+  // Balance at the end of a day. Before the "as of" date it works backwards from it.
+  function balanceAt(id, iso) {
+    var a = acct(id), b = a.asOf ? a.balanceCents : 0;
+    movements(id).forEach(function (m) {
+      if (afterBase(a, m)) { if (m.date <= iso) b += m.cents; }
+      else if (m.date > iso) b -= m.cents;
+    });
+    return b;
+  }
+  function bal(id) { return balanceAt(id, todayISO()); }
+
+  // Money that entered or left an account from outside (not buys/sells inside Chase).
+  function flowsIn(id, r) {
+    var c = 0;
+    state.transfers.forEach(function (t) {
+      if (t.voidedAt || !inRange(t.date, r)) return;
+      if (t.to === id) c += t.amountCents;
+      if (t.from === id) c -= t.amountCents;
+    });
+    state.entries.forEach(function (e) {
+      if (e.accountId === id && inRange(e.date, r)) c += e.type === "income" ? e.amountCents : -e.amountCents;
+    });
+    return c;
+  }
+  function changeIn(id, r) { return balanceAt(id, minISO(r[1], todayISO())) - balanceAt(id, addDays(r[0], -1)); }
+
+  function holdingStats(h) {
+    var put = 0, after = 0;
+    state.invMoves.forEach(function (m) {
+      if (m.voidedAt || m.holdingId !== h.id) return;
+      var c = m.type === "buy" ? m.amountCents : -m.amountCents;
+      put += c;
+      if (!h.valuationDate || m.date > h.valuationDate) after += c;
+    });
+    var value = Math.max(0, (h.valuationDate ? h.valuationCents : 0) + after);
+    return { put: put, value: value, gain: value - put };
+  }
+  function investedValue() { return sum(state.holdings, function (h) { return holdingStats(h).value; }); }
+
+  // ---------- Payday and bills ----------
+  function nextPayday() {
+    var today = todayISO();
+    var rec = state.recurring.filter(function (r) { return r.active && r.type === "income"; })
+      .map(function (r) { return addDays(r.lastDate, 7); }).sort()[0];
+    if (rec) return { date: rec, how: "from your weekly repeating pay" };
+    var last = state.entries.filter(function (e) { return e.type === "income" && e.category === DEFAULT_SOURCE; })
+      .map(function (e) { return e.date; }).sort().pop();
+    if (last) {
+      var d = addDays(last, 7);
+      while (d < today) d = addDays(d, 7);
+      return { date: d, how: "7 days after your last FedEx pay" };
+    }
+    return { date: addDays(today, 7), how: "estimated, no pay recorded yet" };
+  }
+  function billOccurrences(b, from, to) {
+    var out = [], d;
+    if (b.freq === "weekly") {
+      d = from;
+      for (var g = 0; g < 7 && parseISO(d).getDay() !== b.day; g++) d = addDays(d, 1);
+      for (; d <= to; d = addDays(d, 7)) out.push({ due: d, key: d });
+    } else {
+      var f = parseISO(from), y = f.getFullYear(), m = f.getMonth();
+      for (var i = 0; i < 36; i++) {
+        var due = toISO(new Date(y, m, Math.min(b.day, new Date(y, m + 1, 0).getDate())));
+        if (due > to) break;
+        if (due >= from) out.push({ due: due, key: due.slice(0, 7) });
+        if (++m > 11) { m = 0; y++; }
+      }
+    }
+    return out;
+  }
+  function billPayment(b, key) { return state.entries.filter(function (e) { return e.billId === b.id && e.billKey === key; })[0]; }
+  // Due dates from the start of the current cycle (so missed bills show as overdue) up to `to`.
+  function billSchedule(to) {
+    var today = todayISO(), soon = addDays(today, 7), list = [];
+    state.bills.forEach(function (b) {
+      if (!b.active) return;
+      var from = b.freq === "weekly" ? periodRange("week")[0] : periodRange("month")[0];
+      billOccurrences(b, from, to).forEach(function (o) {
+        var paid = billPayment(b, o.key);
+        list.push({ bill: b, due: o.due, key: o.key, paid: paid,
+          status: paid ? "paid" : o.due < today ? "overdue" : o.due <= soon ? "soon" : "upcoming" });
+      });
+    });
+    return list.sort(function (a, b) { return a.due.localeCompare(b.due) || a.bill.name.localeCompare(b.bill.name); });
+  }
+  function monthlyBillsTotal() {
+    return sum(state.bills.filter(function (b) { return b.active; }), function (b) { return b.freq === "weekly" ? Math.round(b.amountCents * 52 / 12) : b.amountCents; });
+  }
+
+  // What BofA Checking must hold until `until` (default: next payday).
+  function checkingReserve(until) {
+    var pd = nextPayday(), to = until || pd.date, today = todayISO();
+    var due = billSchedule(to).filter(function (o) { return o.status !== "paid"; });
+    var bills = sum(due, function (o) { return o.bill.amountCents; });
+    var essentials = Math.round(state.plan.essentialsWeeklyCents * Math.max(0, daysBetween(today, to)) / 7);
+    var balance = bal("chk"), reserved = bills + essentials + state.plan.cushionCents;
+    return { payday: pd, until: to, due: due, bills: bills, essentials: essentials, cushion: state.plan.cushionCents,
+      reserved: reserved, balance: balance, available: balance - reserved };
+  }
+
+  // ---------- Savings, investing, fun ----------
+  function savingsInfo() {
+    var m = monthBounds(0), goal = state.plan.savingsMonthlyCents, b = bal("sav");
+    var saved = changeIn("sav", m);
+    var rate = Math.round((b - balanceAt("sav", addDays(todayISO(), -90))) / 3);
+    var left = Math.max(0, b), cum = 0;
+    var goals = state.goals.map(function (g) {
+      var have = Math.min(left, g.targetCents); left -= have; cum += g.targetCents - have;
+      return { goal: g, have: have, need: g.targetCents - have, monthsToGo: g.targetCents - have <= 0 ? 0 : rate > 0 ? Math.ceil(cum / rate) : null };
+    });
+    return { balance: b, monthGoal: goal, savedThisMonth: saved, ratePerMonth: rate, goals: goals };
+  }
+  function investInfo() {
+    var m = monthBounds(0), cash = bal("inv"), invested = investedValue();
+    var put = sum(state.holdings, function (h) { return holdingStats(h).put; });
+    var contributedAll = flowsIn("inv", [null, todayISO()]);
+    return { cash: cash, invested: invested, put: put, gain: invested - put, total: cash + invested,
+      monthGoal: state.plan.investMonthlyCents, thisMonth: flowsIn("inv", m), contributedAll: contributedAll };
+  }
+  function funSpent(r) {
+    return sum(state.entries.filter(function (e) { return e.type === "expense" && e.accountId === "fun" && inRange(e.date, r); }), function (e) { return e.amountCents; });
+  }
+  function funInfo(chk) {
+    var m = monthBounds(0), budget = state.plan.funMonthlyCents, spent = funSpent(m), b = bal("fun");
+    var left = budget ? budget - spent : null;
+    var pct = budget ? Math.round(spent / budget * 100) : null;
+    var weeksSoFar = Math.max(1, new Date().getDate() / 7);
+    var prev = [1, 2, 3].map(function (i) { return funSpent(monthBounds(-i)); });
+    var room = budget ? Math.min(left, b) : b;
+    var shortfall = Math.max(0, -(chk || checkingReserve()).available);
+    return { budget: budget, spent: spent, left: left, pct: pct, balance: b, room: Math.max(0, room),
+      safe: Math.max(0, room - shortfall), shortfall: shortfall,
+      weeklyAvg: Math.round(spent / weeksSoFar), monthlyAvg: Math.round(sum(prev, function (x) { return x; }) / 3) };
+  }
+  function funLevel(pct) { return pct === null ? "" : pct >= 100 ? "bad" : pct >= 75 ? "warn" : ""; }
+
+  function summary() {
+    var c = checkingReserve(), f = funInfo(c), inv = investInfo();
+    var banks = sum(ACCT_IDS, bal), debts = sum(state.debts, function (d) { return d.balanceCents; });
+    return { chk: c, fun: f, inv: inv, banks: banks, savings: bal("sav"), invested: inv.invested,
+      wealth: banks + inv.invested, debts: debts, net: banks + inv.invested - debts };
+  }
+
+  // ---------- Paycheck split ----------
+  function paydaysLeftThisMonth(from) {
+    var end = monthBounds(0)[1], n = 0;
+    for (var d = from; d <= end; d = addDays(d, 7)) n++;
+    return Math.max(1, n);
+  }
+  function splitPaycheck(pay, included) {
+    var pd = nextPayday(), today = todayISO();
+    // Pay already in Checking must last until the next payday; pay still coming must last one week past it.
+    var until = included ? pd.date : addDays(pd.date, 7);
+    var res = checkingReserve(until);
+    var base = included ? res.balance - pay : res.balance;
+    var need = Math.max(0, res.reserved - base);
+    var out = { pay: pay, res: res, base: base, need: need, rows: [], short: 0, extra: 0 };
+    if (need >= pay) {
+      out.short = need - pay;
+      out.rows.push({ id: "chk", cents: pay, why: "Bills and essentials" });
+      return out;
+    }
+    var leftover = pay - need;
+    var n = paydaysLeftThisMonth(included ? today : pd.date);
+    var s = savingsInfo(), iv = investInfo(), f = funInfo(res);
+    var targets = {
+      sav: Math.round(Math.max(0, s.monthGoal - s.savedThisMonth) / n),
+      inv: Math.round(Math.max(0, iv.monthGoal - iv.thisMonth) / n),
+      fun: f.budget ? Math.round(Math.max(0, f.budget - f.spent - Math.max(0, f.balance)) / n) : 0
+    };
+    var totalT = targets.sav + targets.inv + targets.fun, give = { sav: 0, inv: 0, fun: 0 };
+    if (totalT <= leftover) {
+      give = targets;
+      out.extra = leftover - totalT;
+    } else {
+      var used = 0;
+      ["sav", "inv", "fun"].forEach(function (k) { give[k] = Math.floor(targets[k] * leftover / totalT); used += give[k]; });
+      give.sav += leftover - used;  // rounding cents go to savings
+    }
+    out.targets = targets;
+    out.rows.push({ id: "chk", cents: need, why: "Bills and essentials until " + pretty(until, false) });
+    out.rows.push({ id: "sav", cents: give.sav + out.extra, why: give.sav && out.extra ? "Savings target + " + fmt(out.extra) + " left over" : out.extra ? "Left over after your targets" : "Savings target" });
+    out.rows.push({ id: "inv", cents: give.inv, why: "Investing target" });
+    out.rows.push({ id: "fun", cents: give.fun, why: f.budget ? "Fun budget for this week" : "No fun budget set" });
+    return out;
+  }
+  var lastSplit = null;
+  function resetSplitForm() {
+    var last = state.entries.filter(function (e) { return e.type === "income" && e.category === DEFAULT_SOURCE; })
+      .sort(function (a, b) { return b.date.localeCompare(a.date); })[0];
+    if (last && !$("splitPay").value) $("splitPay").value = (last.amountCents / 100).toFixed(2);
+    $("splitIncluded").checked = !!(last && last.accountId === "chk" && last.date >= addDays(todayISO(), -3) && last.date <= todayISO());
+    lastSplit = null;
+    renderSplit();
+  }
+  function renderSplit() {
+    var pd = nextPayday();
+    $("payWhen").textContent = "Next payday " + pretty(pd.date, false) + " (" + pd.how + ")";
+    var pay = cents($("splitPay"));
+    if (!pay) { $("splitOut").innerHTML = '<div class="empty">Enter your net pay to see how to split it.</div>'; return; }
+    var sp = splitPaycheck(pay, $("splitIncluded").checked), r = sp.res;
+    lastSplit = sp;
+    var h = '<article class="panel"><div class="panel-head"><h2>What BofA Checking needs first</h2><span class="hint">Until ' + pretty(r.until) + '</span></div><dl class="kv">' +
+      '<dt>Bills due (' + r.due.length + ')</dt><dd>' + fmt(r.bills) + '</dd>' +
+      '<dt>Essentials (' + fmt(state.plan.essentialsWeeklyCents) + '/week)</dt><dd>' + fmt(r.essentials) + '</dd>' +
+      '<dt>Minimum to keep</dt><dd>' + fmt(r.cushion) + '</dd>' +
+      '<dt>Already in Checking without this pay</dt><dd>− ' + money(sp.base) + '</dd>' +
+      '<dt><b>Needed from this pay</b></dt><dd>' + fmt(sp.need) + '</dd></dl></article>';
+    h += '<article class="panel"><div class="panel-head"><h2>Suggested split of ' + fmt(pay) + '</h2></div>';
+    if (sp.short) {
+      h += '<div class="answer bad">This pay is ' + fmt(sp.short) + ' short of what your bills and essentials need. Keep all of it in BofA Checking and do not move money to Savings, Chase or US Bank this time.</div>' +
+        '<ul class="recs" style="margin-top:12px"><li>Pay the bills that are overdue or due soonest first.</li><li>Lower the "essentials per week" amount only if you can really spend less.</li><li>Pause fun spending until Checking is covered.</li><li>If a bill cannot be paid on time, call the company before the due date to ask for an extension.</li></ul>';
+    } else {
+      h += '<div class="table-wrap"><table><thead><tr><th>Account</th><th>Why</th><th class="num">Amount</th><th class="num">%</th></tr></thead><tbody>' +
+        sp.rows.map(function (row) {
+          return '<tr><td><b style="color:' + ACCT_COLOR[row.id] + '">' + esc(acctName(row.id)) + '</b></td><td class="note">' + esc(row.why) + '</td><td class="num">' + fmt(row.cents) + '</td><td class="num">' + Math.round(row.cents / pay * 100) + '%</td></tr>';
+        }).join("") + '</tbody></table></div>';
+      var noTargets = !state.plan.savingsMonthlyCents && !state.plan.investMonthlyCents && !state.plan.funMonthlyCents;
+      if (noTargets) h += '<p class="plan-note">You have no monthly targets yet, so everything left after bills goes to Savings. Set targets in Setup to split it your way.</p>';
+      else if (sp.extra) h += '<p class="plan-note">Your targets are covered. The ' + fmt(sp.extra) + ' left over is added to Savings.</p>';
+      else h += '<p class="plan-note">Not enough for all targets, so each one gets the same share of what is left after bills.</p>';
+      if (!sp.short && sp.rows.some(function (x) { return x.id !== "chk" && x.cents > 0; }))
+        h += '<div class="btn-row" style="margin-top:12px"><button class="btn primary" type="button" id="splitRecord">Record these transfers from Checking</button></div>';
+    }
+    h += '</article>';
+    $("splitOut").innerHTML = h;
+  }
+
+  // ---------- Alerts and advice ----------
+  function buildAlerts(S) {
+    var list = [], today = todayISO(), c = S.chk, f = S.fun;
+    if (!ACCT_IDS.some(hasBalance)) list.push({ lvl: "info", t: "Enter your account balances", d: "Go to Setup and type what each bank app shows today." });
+    billSchedule(addDays(today, 7)).forEach(function (o) {
+      if (o.status === "overdue") list.push({ lvl: "bad", t: o.bill.name + " is overdue", d: fmt(o.bill.amountCents) + " was due " + pretty(o.due, false) + "." });
+      else if (o.status === "soon") list.push({ lvl: "warn", t: o.bill.name + " is due " + (o.due === today ? "today" : pretty(o.due, false)), d: fmt(o.bill.amountCents) + " from " + acctName("chk") + "." });
+    });
+    if (c.available < 0) list.push({ lvl: "bad", t: acctName("chk") + " is short " + fmt(-c.available), d: "It has " + fmt(c.balance) + " but needs " + fmt(c.reserved) + " for bills and essentials before payday (" + pretty(c.payday.date, false) + ")." });
+    var dom = new Date().getDate(), dim = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+    var s = savingsInfo(), iv = S.inv;
+    if (s.monthGoal && s.savedThisMonth < Math.round(s.monthGoal * dom / dim))
+      list.push({ lvl: "warn", t: "Savings are behind this month", d: "Saved " + fmt(Math.max(0, s.savedThisMonth)) + " of your " + fmt(s.monthGoal) + " goal." });
+    if (iv.monthGoal && iv.thisMonth < Math.round(iv.monthGoal * dom / dim))
+      list.push({ lvl: "warn", t: "Investing is behind this month", d: "Moved " + fmt(Math.max(0, iv.thisMonth)) + " to " + acctName("inv") + " of your " + fmt(iv.monthGoal) + " goal." });
+    if (f.pct !== null && f.pct >= 75)
+      list.push({ lvl: f.pct >= 100 ? "bad" : "warn", t: "Fun budget " + (f.pct >= 100 ? "used up" : f.pct + "% used"), d: "Spent " + fmt(f.spent) + " of " + fmt(f.budget) + " this month." });
+    var t = totals("month");
+    if (t.exp > t.inc) list.push({ lvl: "bad", t: "Spending is higher than income this month", d: "Expenses " + fmt(t.exp) + ", income " + fmt(t.inc) + "." });
+    if (!list.length) list.push({ lvl: "ok", t: "Everything is on track", d: "No bills overdue and no budgets over their limit." });
+    return list;
+  }
+  function buildAdvice(S) {
+    var out = [], c = S.chk, f = S.fun, s = savingsInfo(), iv = S.inv;
+    if (c.available < 0) out.push("Cover " + acctName("chk") + " first: it needs " + fmt(-c.available) + " more before " + pretty(c.payday.date, false) + ". Do not send money to Savings, Chase or US Bank until it is covered.");
+    var t = totals("month"), m = periodRange("month"), by = {};
+    state.entries.forEach(function (e) { if (e.type === "expense" && inRange(e.date, m)) by[e.category] = (by[e.category] || 0) + e.amountCents; });
+    var top = Object.keys(by).sort(function (a, b) { return by[b] - by[a]; }).slice(0, 2);
+    if (t.exp > t.inc && top.length) out.push("Your biggest costs this month are " + top.map(function (k) { return k + " (" + fmt(by[k]) + ")"; }).join(" and ") + ". Spending 10% less on " + top[0] + " saves " + fmt(Math.round(by[top[0]] / 10)) + ".");
+    if (f.pct !== null && f.pct >= 90 && f.pct < 100) out.push("Slow down on fun spending: " + fmt(f.left) + " is left for the rest of the month.");
+    if (f.pct !== null && f.pct >= 100) out.push("The fun budget is used up. Wait for next month or move money only if Checking and Savings are on track.");
+    if (s.monthGoal && s.savedThisMonth < s.monthGoal && c.available > 0) {
+      var move = Math.min(c.available, s.monthGoal - Math.max(0, s.savedThisMonth));
+      out.push("You have " + fmt(c.available) + " free in " + acctName("chk") + " after bills. Moving " + fmt(move) + " to " + acctName("sav") + " gets your savings goal back on track.");
+    }
+    var mb = monthlyBillsTotal();
+    if (mb && !state.goals.some(function (g) { return /emergenc/i.test(g.name); }))
+      out.push("Add an emergency fund goal in Savings goals. Three months of your bills is " + fmt(mb * 3) + ".");
+    if (iv.cash > 0 && iv.monthGoal) out.push(fmt(iv.cash) + " in " + acctName("inv") + " is still cash. Record a buy when you invest it so the app separates it from cash.");
+    if (!state.plan.funMonthlyCents) out.push("Set a monthly fun budget in Setup so the app can warn you at 75%, 90% and 100%.");
+    if (!state.bills.length) out.push("Add your bills (rent, electricity, phone, loans) in Bills so the app can reserve money for them.");
+    if (!out.length) out.push("You are on track. Keep using the paycheck split each payday.");
+    return out;
+  }
+
+  // ---------- Rendering ----------
+  function renderAccountSelects() {
+    document.querySelectorAll(".acct-select, #fAccount").forEach(function (sel) {
+      Array.prototype.forEach.call(sel.options, function (o) { if (isAcct(o.value)) o.textContent = acctName(o.value); });
+    });
+  }
+  function stat(label, value, note, cls) {
+    return '<div class="stat ' + (cls || "") + '"><div class="eyebrow">' + label + '</div><div class="v">' + value + '</div>' + (note ? '<div class="k">' + note + '</div>' : "") + '</div>';
+  }
+  function meterHTML(id, pct, cls) {
+    var el = $(id); el.className = "meter " + (cls || "");
+    el.firstElementChild.style.width = Math.max(0, Math.min(100, pct || 0)) + "%";
+  }
+  function recentFor(id, n) {
+    return movements(id).filter(function (m) { return m.date <= todayISO(); })
+      .sort(function (a, b) { return b.date.localeCompare(a.date); }).slice(0, n);
+  }
+  function srcLine(id) {
+    var a = acct(id);
+    return a.asOf ? "Entered by you · balance as of " + pretty(a.asOf) : "Starting balance not set";
+  }
+
+  function renderAccounts() {
+    var S = summary(), c = S.chk, f = S.fun, iv = S.inv, s = savingsInfo(), today = todayISO();
+
+    // Overview strip
+    $("ovChk").textContent = fmt(c.available); $("ovChk").className = "v" + (c.available < 0 ? " neg" : "");
+    $("ovFun").textContent = fmt(f.safe);
+    $("ovBanks").textContent = fmt(S.banks);
+
+    // Summary tiles
+    $("acctStats").innerHTML =
+      stat("Total in banks", fmt(S.banks), "4 accounts, cash only", "hl") +
+      stat("Reserved for bills", fmt(c.bills), c.due.length + " bill" + (c.due.length === 1 ? "" : "s") + " before " + pretty(c.payday.date, false)) +
+      stat("Savings", fmt(S.savings), acctName("sav")) +
+      stat("Invested", fmt(S.invested), "Not counted as bank cash") +
+      stat("Fun money left", fmt(f.room), f.budget ? "of " + fmt(f.budget) + " this month" : "No budget set") +
+      stat("Total wealth", fmt(S.wealth), "Banks + investments") +
+      (S.debts ? stat("Net worth", fmt(S.net), "After " + fmt(S.debts) + " of debt", S.net < 0 ? "bad" : "") : "");
+
+    // Where the money sits
+    var parts = [
+      { k: "Checking: for bills", c: Math.max(0, Math.min(c.balance, c.reserved)), col: "var(--c-chk)", o: 1 },
+      { k: "Checking: free", c: Math.max(0, c.available), col: "var(--c-chk)", o: .45 },
+      { k: "Savings", c: Math.max(0, S.savings), col: "var(--c-sav)", o: 1 },
+      { k: "Chase cash", c: Math.max(0, iv.cash), col: "var(--c-inv)", o: .45 },
+      { k: "Invested", c: Math.max(0, iv.invested), col: "var(--c-inv)", o: 1 },
+      { k: "US Bank", c: Math.max(0, f.balance), col: "var(--c-fun)", o: 1 }
+    ];
+    var tot = sum(parts, function (p) { return p.c; });
+    $("distBar").innerHTML = tot ? parts.map(function (p) { return p.c ? '<span style="width:' + (p.c / tot * 100) + '%;background:' + p.col + ';opacity:' + p.o + '"></span>' : ""; }).join("") : "";
+    $("distLegend").innerHTML = tot ? parts.filter(function (p) { return p.c; }).map(function (p) {
+      return '<span><i style="background:' + p.col + ';opacity:' + p.o + '"></i>' + p.k + " " + fmt(p.c) + " (" + Math.round(p.c / tot * 100) + "%)</span>";
+    }).join("") : "<span>Enter balances in Setup to see where your money is.</span>";
+
+    // Account cards
+    var cards = { chk: {}, sav: {}, inv: {}, fun: {} };
+    cards.chk.rows = [["Balance", c.balance], ["Reserved for bills & essentials", c.reserved], ["Free to use", c.available]];
+    cards.chk.meter = c.reserved ? [Math.round(c.balance / c.reserved * 100), c.available < 0 ? "bad" : "", c.available < 0 ? "Short " + fmt(-c.available) + " for what's due by " + pretty(c.payday.date, false) : "Bills covered until payday (" + pretty(c.payday.date, false) + ")"] : [100, "", "Nothing due before payday"];
+    cards.sav.rows = [["Balance", s.balance], ["Saved this month", s.savedThisMonth], ["Monthly goal", s.monthGoal]];
+    cards.sav.meter = s.monthGoal ? [Math.round(s.savedThisMonth / s.monthGoal * 100), "", fmt(Math.max(0, s.savedThisMonth)) + " of " + fmt(s.monthGoal) + " this month"] : [0, "", "Set a monthly savings goal in Setup"];
+    cards.inv.rows = [["Cash ready to invest", iv.cash], ["Invested (value now)", iv.invested], ["Total in " + acctName("inv"), iv.total]];
+    cards.inv.meter = iv.monthGoal ? [Math.round(iv.thisMonth / iv.monthGoal * 100), "", fmt(Math.max(0, iv.thisMonth)) + " of " + fmt(iv.monthGoal) + " moved in this month"] : [0, "", "Set a monthly investing goal in Setup"];
+    cards.fun.rows = [["Balance", f.balance], ["Spent this month", f.spent], ["Left in budget", f.left === null ? null : f.left]];
+    cards.fun.meter = f.budget ? [f.pct, funLevel(f.pct), f.pct + "% of " + fmt(f.budget) + " used · safe to spend " + fmt(f.safe)] : [0, "", "Set a monthly fun budget in Setup"];
+    var detail = { chk: "bills", sav: "savings", inv: "invest", fun: "fun" };
+    $("acctCards").innerHTML = ACCT_IDS.map(function (id) {
+      var a = acct(id), cd = cards[id], b = id === "inv" ? iv.cash : bal(id), m = cd.meter;
+      var recent = recentFor(id, 3);
+      return '<article class="panel acct" style="--c:' + ACCT_COLOR[id] + '">' +
+        '<div class="acct-head"><div class="acct-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ACCT_ICON[id] + '</svg></div>' +
+        '<div style="min-width:0"><div class="acct-name">' + esc(a.name) + '</div><div class="acct-purpose">' + esc(a.purpose) + '</div></div></div>' +
+        '<div><div class="acct-bal' + (b < 0 ? " neg" : "") + '">' + fmt(b) + '</div><div class="acct-src">' + (id === "inv" ? "Cash · " : "") + esc(srcLine(id)) + '</div></div>' +
+        '<dl class="kv">' + cd.rows.map(function (row) { return '<dt>' + esc(row[0]) + '</dt><dd>' + (row[1] === null ? "—" : money(row[1])) + '</dd>'; }).join("") + '</dl>' +
+        '<div><div class="meter ' + m[1] + '"><span style="width:' + Math.max(0, Math.min(100, m[0] || 0)) + '%"></span></div><div class="meter-cap">' + esc(m[2]) + '</div></div>' +
+        '<div><div class="eyebrow" style="margin-bottom:4px">Recent</div>' + (recent.length ? '<ul class="mini-list">' + recent.map(function (x) {
+          return '<li><span>' + esc(x.label) + ' <span class="d">' + pretty(x.date, false) + '</span></span><span class="' + (x.cents < 0 ? "c-exp" : "c-inc") + '">' + (x.cents < 0 ? "−" : "+") + fmt(Math.abs(x.cents)) + '</span></li>';
+        }).join("") + '</ul>' : '<div class="hint">No movements yet.</div>') + '</div>' +
+        '<div class="btn-row"><button class="btn small" type="button" data-goto="' + detail[id] + '">Details</button><button class="btn small" type="button" data-goto="setup">Update balance</button></div>' +
+        '</article>';
+    }).join("");
+
+    $("alertList").innerHTML = buildAlerts(S).map(function (a) { return '<li class="' + a.lvl + '"><b>' + esc(a.t) + '</b>' + esc(a.d) + '</li>'; }).join("");
+    $("adviceList").innerHTML = buildAdvice(S).map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("");
+
+    renderSplit();
+    renderTransfers();
+    renderBills(c);
+    renderSavings(s);
+    renderInvest(iv);
+    renderFun(f);
+    renderProgress();
+    renderSetupLists();
+  }
+
+  function renderTransfers() {
+    var rows = state.transfers.slice().sort(function (a, b) { return b.date.localeCompare(a.date) || String(b.createdAt).localeCompare(String(a.createdAt)); });
+    $("xEmpty").hidden = rows.length > 0;
+    $("xBody").innerHTML = rows.map(function (t) {
+      return '<tr class="' + (t.voidedAt ? "void" : "") + '"><td>' + pretty(t.date) + '</td><td>' + esc(acctName(t.from)) + ' → ' + esc(acctName(t.to)) + '</td><td class="note">' + esc(t.purpose) + '</td>' +
+        '<td class="num">' + fmt(t.amountCents) + '</td><td class="note">' + (t.createdAt ? new Date(t.createdAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "—") + '</td>' +
+        '<td class="num">' + (t.voidedAt ? '<span class="chip">Cancelled</span>' : '<button class="btn small danger" type="button" data-voidx="' + esc(t.id) + '">Cancel</button>') + '</td></tr>';
+    }).join("");
+    $("xPurpose").placeholder = { chk: "Bills", sav: "Savings", inv: "Investing", fun: "Fun budget" }[$("xTo").value];
+  }
+
+  function renderBills(c) {
+    var today = todayISO(), horizon = monthBounds(1)[1];
+    var list = billSchedule(minISO(horizon, addDays(today, 45)));
+    var chip = { paid: '<span class="chip ok">Paid</span>', overdue: '<span class="chip bad">Overdue</span>', soon: '<span class="chip warn">Due soon</span>', upcoming: '<span class="chip">Upcoming</span>' };
+    $("billEmpty").hidden = state.bills.length > 0;
+    $("billBody").innerHTML = list.map(function (o) {
+      var act = o.paid ? '<button class="btn small" type="button" data-unpay="' + esc(o.paid.id) + '">Undo</button>'
+        : '<button class="btn small primary" type="button" data-paybill="' + esc(o.bill.id + "|" + o.key) + '">Mark paid</button>';
+      return '<tr><td>' + pretty(o.due, false) + '</td><td><b>' + esc(o.bill.name) + '</b><div class="note">' + esc(o.bill.category) + '</div></td><td class="num">' + fmt(o.bill.amountCents) + '</td><td>' + chip[o.status] + '</td><td class="num">' + act + '</td></tr>';
+    }).join("");
+    $("billsSummary").textContent = "Due before payday (" + pretty(c.payday.date, false) + "): " + fmt(c.bills) + " · free after that: " + fmt(c.available);
+    $("billListEmpty").hidden = state.bills.length > 0;
+    var wd = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    $("billList").innerHTML = state.bills.map(function (b) {
+      return '<li><span class="dot expense"></span><div class="grow"><div class="t">' + esc(b.name) + ' · ' + fmt(b.amountCents) + '</div><div class="s">' +
+        (b.freq === "weekly" ? "Every " + wd[b.day] : "Monthly on day " + b.day) + ' · ' + esc(b.category) + '</div></div>' +
+        '<button class="btn small danger" type="button" data-delbill="' + esc(b.id) + '">Remove</button></li>';
+    }).join("");
+  }
+
+  function renderSavings(s) {
+    $("savTitle").textContent = acctName("sav");
+    $("savSrc").textContent = srcLine("sav");
+    $("savStats").innerHTML = stat("Balance", fmt(s.balance)) + stat("Saved this month", money(s.savedThisMonth), s.monthGoal ? "Goal " + fmt(s.monthGoal) : "No monthly goal") +
+      stat("Average per month", money(s.ratePerMonth), "Last 3 months");
+    meterHTML("savMeter", s.monthGoal ? s.savedThisMonth / s.monthGoal * 100 : 0);
+    $("savMeterCap").textContent = s.monthGoal ? Math.max(0, Math.round(s.savedThisMonth / s.monthGoal * 100)) + "% of this month's goal" : "Set a monthly savings goal in Setup.";
+    $("goalEmpty").hidden = s.goals.length > 0;
+    $("goalList").innerHTML = s.goals.map(function (g, i) {
+      var pct = Math.round(g.have / g.goal.targetCents * 100);
+      var eta = g.need <= 0 ? "Reached" : g.monthsToGo === null ? "Save regularly to get an estimate" : "About " + g.monthsToGo + " month" + (g.monthsToGo === 1 ? "" : "s") + " at your current pace";
+      return '<li style="display:grid;gap:6px"><div style="display:flex;gap:8px;align-items:center"><div class="grow"><div class="t">' + esc(g.goal.name) + '</div><div class="s">' + fmt(g.have) + ' of ' + fmt(g.goal.targetCents) + ' · ' + eta + '</div></div>' +
+        (i ? '<button class="btn small" type="button" data-goalup="' + esc(g.goal.id) + '" aria-label="Move up">↑</button>' : "") +
+        '<button class="btn small danger" type="button" data-delgoal="' + esc(g.goal.id) + '">Remove</button></div>' +
+        '<div class="meter"><span style="width:' + Math.min(100, pct) + '%"></span></div></li>';
+    }).join("");
+    var months = [5, 4, 3, 2, 1, 0].map(function (i) { var m = monthBounds(-i); return { label: parseISO(m[0]).toLocaleDateString("en-US", { month: "short" }), v: balanceAt("sav", minISO(m[1], todayISO())) }; });
+    var max = Math.max.apply(null, months.map(function (x) { return Math.abs(x.v); }).concat([1]));
+    $("savChart").innerHTML = months.map(function (x) {
+      return '<div class="mrow"><span>' + x.label + '</span><div class="mtrack"><div class="mfill sav" style="width:' + Math.max(0, x.v) / max * 100 + '%"></div></div><span>' + fmt(x.v) + '</span></div>';
+    }).join("");
+  }
+
+  function renderInvest(iv) {
+    $("invTitle").textContent = acctName("inv");
+    $("invSrc").textContent = srcLine("inv");
+    $("invStats").innerHTML = stat("Cash ready to invest", money(iv.cash)) + stat("Invested (value now)", fmt(iv.invested)) +
+      stat("Gain or loss", money(iv.gain), "Value now minus what you put in") + stat("Moved in, all time", money(iv.contributedAll), "Transfers and deposits");
+    meterHTML("invMeter", iv.monthGoal ? iv.thisMonth / iv.monthGoal * 100 : 0);
+    $("invMeterCap").textContent = iv.monthGoal ? fmt(Math.max(0, iv.thisMonth)) + " of " + fmt(iv.monthGoal) + " moved in this month" : "Set a monthly investing goal in Setup.";
+    $("holdEmpty").hidden = state.holdings.length > 0;
+    $("holdBody").innerHTML = state.holdings.map(function (h) {
+      var st = holdingStats(h);
+      return '<tr><td><b>' + esc(h.name) + '</b><div class="note">' + (h.valuationDate ? "Value updated " + pretty(h.valuationDate, false) : "Value = what you put in") + '</div></td>' +
+        '<td class="num">' + fmt(st.put) + '</td><td class="num">' + fmt(st.value) + '</td><td class="num">' + money(st.gain) + '</td>' +
+        '<td><div style="display:flex;gap:6px"><input class="hv" type="number" min="0" step="0.01" inputmode="decimal" id="hv-' + esc(h.id) + '" placeholder="0.00" aria-label="New value of ' + esc(h.name) + '">' +
+        '<button class="btn small" type="button" data-holdsave="' + esc(h.id) + '">Save</button></div></td></tr>';
+    }).join("");
+    var sel = $("tHold"), cur = sel.value;
+    sel.innerHTML = "";
+    state.holdings.forEach(function (h) { sel.add(new Option(h.name, h.id)); });
+    sel.add(new Option("+ New investment…", NEW_SOURCE));
+    sel.value = state.holdings.some(function (h) { return h.id === cur; }) ? cur : (state.holdings[0] ? state.holdings[0].id : NEW_SOURCE);
+    $("tNewWrap").hidden = sel.value !== NEW_SOURCE;
+    var moves = state.invMoves.slice().sort(function (a, b) { return b.date.localeCompare(a.date); });
+    $("tradeEmpty").hidden = moves.length > 0;
+    $("tradeBody").innerHTML = moves.map(function (m) {
+      var h = holding(m.holdingId);
+      return '<tr class="' + (m.voidedAt ? "void" : "") + '"><td>' + pretty(m.date, false) + '</td><td>' + (m.type === "buy" ? "Buy" : "Sell") + '</td><td>' + esc(h ? h.name : "") + '</td><td class="num">' + fmt(m.amountCents) + '</td>' +
+        '<td class="num">' + (m.voidedAt ? '<span class="chip">Cancelled</span>' : '<button class="btn small danger" type="button" data-voidtrade="' + esc(m.id) + '">Cancel</button>') + '</td></tr>';
+    }).join("");
+  }
+
+  function renderFun(f) {
+    $("funTitle").textContent = acctName("fun") + " fun budget";
+    $("funMonth").textContent = rangeLabel("month");
+    $("funStats").innerHTML = stat("Safe to spend now", fmt(f.safe), f.shortfall ? "Reduced: Checking is short " + fmt(f.shortfall) : "Within budget and balance", "hl") +
+      stat("Spent this month", fmt(f.spent), f.budget ? "of " + fmt(f.budget) : "No budget set") +
+      stat("Left in budget", f.left === null ? "—" : money(f.left)) + stat("Balance in " + acctName("fun"), money(f.balance)) +
+      stat("Average per week", fmt(f.weeklyAvg), "This month") + stat("Average per month", fmt(f.monthlyAvg), "Last 3 months");
+    meterHTML("funMeter", f.pct || 0, funLevel(f.pct));
+    $("funMeterCap").textContent = f.budget ? f.pct + "% used" + (f.pct >= 100 ? " · budget used up" : f.pct >= 90 ? " · over 90%" : f.pct >= 75 ? " · over 75%" : "") : "Set a monthly fun budget in Setup.";
+    var m = monthBounds(0), by = {};
+    var items = state.entries.filter(function (e) { return e.type === "expense" && e.accountId === "fun"; });
+    items.forEach(function (e) { if (inRange(e.date, m)) by[e.category] = (by[e.category] || 0) + e.amountCents; });
+    var cats = Object.keys(by).sort(function (a, b) { return by[b] - by[a]; }), max = cats.length ? by[cats[0]] : 1;
+    $("funBarsEmpty").hidden = cats.length > 0;
+    $("funBars").innerHTML = cats.map(function (k) {
+      return '<div class="bar-row"><span class="name">' + esc(k) + '</span><span class="val"><b>' + fmt(by[k]) + '</b></span><div class="bar-track"><div class="bar-fill" style="background:var(--c-fun);width:' + Math.max(2, by[k] / max * 100) + '%"></div></div></div>';
+    }).join("");
+    var recent = items.sort(function (a, b) { return b.date.localeCompare(a.date); }).slice(0, 8);
+    $("funRecentEmpty").hidden = recent.length > 0;
+    $("funRecent").innerHTML = recent.map(function (e) {
+      return '<li><span>' + esc(e.category) + ' <span class="d">' + pretty(e.date, false) + (e.note ? " · " + esc(e.note) : "") + '</span></span><span class="c-exp">−' + fmt(e.amountCents) + '</span></li>';
+    }).join("");
+  }
+
+  function renderProgress() {
+    var anyBal = ACCT_IDS.some(hasBalance), today = todayISO();
+    var rows = [5, 4, 3, 2, 1, 0].map(function (i) {
+      var m = monthBounds(-i), inc = 0, exp = 0;
+      state.entries.forEach(function (e) { if (inRange(e.date, m)) { if (e.type === "income") inc += e.amountCents; else exp += e.amountCents; } });
+      var end = minISO(m[1], today);
+      return { label: parseISO(m[0]).toLocaleDateString("en-US", { month: "short", year: "numeric" }), inc: inc, exp: exp, net: inc - exp,
+        saved: changeIn("sav", m), invested: flowsIn("inv", m), banks: anyBal ? sum(ACCT_IDS, function (id) { return balanceAt(id, end); }) : null, current: i === 0 };
+    });
+    $("progBody").innerHTML = rows.slice().reverse().map(function (x) {
+      return '<tr><td>' + x.label + (x.current ? ' <span class="chip info">so far</span>' : "") + '</td><td class="num c-inc">' + fmt(x.inc) + '</td><td class="num c-exp">' + fmt(x.exp) + '</td><td class="num">' + money(x.net) +
+        '</td><td class="num">' + money(x.saved) + '</td><td class="num">' + money(x.invested) + '</td><td class="num">' + (x.banks === null ? "—" : money(x.banks)) + '</td></tr>';
+    }).join("");
+    var prev = rows.slice(2, 5), avgNet = Math.round(sum(prev, function (x) { return x.net; }) / 3);
+    var last = rows[4], cur = rows[5];
+    var hasHistory = prev.some(function (x) { return x.inc || x.exp; });
+    $("progVerdict").textContent = !hasHistory ? "Keep recording for a couple of months to see a trend."
+      : "Last month you kept " + fmt(last.net) + (last.net >= avgNet ? ", better than" : ", below") + " your 3-month average of " + fmt(avgNet) + ". This month so far: " + fmt(cur.net) + "." +
+        (anyBal ? " Money in banks: " + fmt(rows[4].banks) + " at the end of last month, " + fmt(cur.banks) + " now." : "");
+    var max = Math.max.apply(null, rows.map(function (x) { return Math.abs(x.net); }).concat([1]));
+    $("progChart").innerHTML = rows.map(function (x) {
+      return '<div class="mrow"><span>' + x.label.split(" ")[0] + '</span><div class="mtrack"><div class="mfill' + (x.net < 0 ? " neg" : "") + '" style="width:' + Math.abs(x.net) / max * 100 + '%"></div></div><span>' + money(x.net) + '</span></div>';
+    }).join("");
+  }
+
+  function renderSetupLists() {
+    $("debtEmpty").hidden = state.debts.length > 0;
+    $("debtList").innerHTML = state.debts.map(function (d) {
+      return '<li><span class="dot expense"></span><div class="grow t">' + esc(d.name) + ' · ' + fmt(d.balanceCents) + '</div><button class="btn small danger" type="button" data-deldebt="' + esc(d.id) + '">Remove</button></li>';
+    }).join("");
+    var none = state.entries.filter(function (e) { return !e.accountId; });
+    $("migratePanel").hidden = none.length === 0;
+    if (none.length) $("migrateText").textContent = none.length + " older entr" + (none.length === 1 ? "y has" : "ies have") +
+      " no account, so they do not change any balance. If you assign them, entries dated on or before an account's balance date are treated as already included in that balance, so nothing is counted twice.";
+  }
+  // Setup inputs are filled only when the Setup screen opens, so typing is never overwritten.
+  function fillSetup() {
+    $("setupAccts").innerHTML = ACCT_IDS.map(function (id) {
+      var a = acct(id);
+      return '<div class="setup-acct" style="--c:' + ACCT_COLOR[id] + '">' +
+        '<div class="row-2"><label class="field"><span>Name</span><input type="text" id="sn-' + id + '" maxlength="40" value="' + esc(a.name) + '"></label>' +
+        '<label class="field"><span>What this account is for</span><input type="text" id="sp-' + id + '" maxlength="80" value="' + esc(a.purpose) + '"></label></div>' +
+        '<div class="row-2"><label class="field"><span>' + (id === "inv" ? "Cash balance today (not investments)" : "Balance today") + '</span><div class="money"><input type="number" step="0.01" inputmode="decimal" id="sb-' + id + '" value="' + (a.asOf ? (balanceAt(id, todayISO()) / 100).toFixed(2) : "") + '" placeholder="0.00"></div></label>' +
+        '<label class="field"><span>As of</span><input type="date" id="sd-' + id + '" value="' + todayISO() + '"></label></div>' +
+        '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn small primary" type="button" data-saveacct="' + id + '">Save ' + esc(a.name) + '</button><span class="hint">' + esc(srcLine(id)) + (a.updatedAt ? " · saved " + new Date(a.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "") + '</span></div></div>';
+    }).join("");
+    var P = state.plan;
+    [["pSav", P.savingsMonthlyCents], ["pInv", P.investMonthlyCents], ["pFun", P.funMonthlyCents], ["pEss", P.essentialsWeeklyCents], ["pCush", P.cushionCents]]
+      .forEach(function (x) { $(x[0]).value = x[1] ? (x[1] / 100).toFixed(2) : ""; });
+  }
+  function showSub(name) {
+    if (SUBS.indexOf(name) < 0) name = "cards";
+    SUBS.forEach(function (n) { $("sub-" + n).hidden = n !== name; });
+    document.querySelectorAll(".subnav [data-sub]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.sub === name)); });
+    if (name === "setup") fillSetup();
+    if (name === "paycheck" && !$("splitPay").value) resetSplitForm();
+  }
+  document.querySelectorAll(".subnav [data-sub]").forEach(function (b) { b.addEventListener("click", function () { showSub(b.dataset.sub); }); });
+
+  // ---------- Saving with a second tap when something looks wrong ----------
+  function disarm(btn) {
+    if (btn.dataset.label) btn.textContent = btn.dataset.label;
+    btn.dataset.armed = ""; btn.classList.remove("armed", "danger"); clearTimeout(btn._t);
+  }
+  function confirmIfNeeded(btn, warning, action) {
+    if (!warning || btn.dataset.armed === "1") { disarm(btn); action(); return; }
+    btn.dataset.label = btn.dataset.label || btn.textContent;
+    btn.dataset.armed = "1"; btn.classList.add("armed", "danger"); btn.textContent = "Save anyway";
+    toast(warning);
+    clearTimeout(btn._t); btn._t = setTimeout(function () { disarm(btn); }, 8000);
+  }
+  function centsAllowZero(input) { var v = parseFloat(input.value); return isFinite(v) && v >= 0 ? Math.round(v * 100) : null; }
+
+  function isDuplicateTransfer(from, to, c, date) {
+    return state.transfers.some(function (t) { return !t.voidedAt && t.from === from && t.to === to && t.amountCents === c && t.date === date; });
+  }
+  function transferWarning(from, to, c, date) {
+    if (isDuplicateTransfer(from, to, c, date)) return "A " + fmt(c) + " transfer from " + acctName(from) + " to " + acctName(to) + " on " + pretty(date, false) + " is already recorded. It may be a duplicate.";
+    if (hasBalance(from) && bal(from) - c < 0) return "This would leave " + acctName(from) + " at " + fmt(bal(from) - c) + ".";
+    if (from === "chk" && to !== "chk") {
+      var cr = checkingReserve();
+      if (cr.available - c < 0) return "This leaves " + acctName("chk") + " " + fmt(c - cr.available) + " short for bills and essentials before payday.";
+    }
+    return "";
+  }
+  function addTransfer(from, to, c, date, purpose) {
+    state.transfers.push({ id: uid(), from: from, to: to, amountCents: c, date: date, purpose: purpose,
+      createdAt: new Date().toISOString(), voidedAt: null });
+  }
+
+  handlers.xferForm = function () {
+    var from = $("xFrom").value, to = $("xTo").value, c = cents($("xAmt")), date = $("xDate").value;
+    if (from === to) return toast("Pick two different accounts.");
+    if (!c) return toast("Enter an amount greater than $0.");
+    if (!isISODate(date)) return toast("Pick a date.");
+    if (date > todayISO()) return toast("Transfers can't be dated in the future.");
+    confirmIfNeeded($("xBtn"), transferWarning(from, to, c, date), function () {
+      addTransfer(from, to, c, date, $("xPurpose").value.trim() || $("xPurpose").placeholder);
+      $("xAmt").value = ""; $("xPurpose").value = "";
+      save(); renderAll();
+      toast("Moved " + fmt(c) + " from " + acctName(from) + " to " + acctName(to));
+    });
+  };
+  $("xTo").addEventListener("change", renderTransfers);
+  $("xFrom").addEventListener("change", function () { if ($("xFrom").value === $("xTo").value) $("xTo").value = $("xFrom").value === "chk" ? "sav" : "chk"; renderTransfers(); });
+
+  handlers.splitForm = function () {
+    if (!cents($("splitPay"))) return toast("Enter your net pay.");
+    renderSplit();
+  };
+  $("splitIncluded").addEventListener("change", renderSplit);
+
+  handlers.affordForm = function () {
+    var a = cents($("affordAmt")), box = $("affordAnswer");
+    if (!a) return toast("Enter the price.");
+    var S = summary(), f = S.fun, c = S.chk, msg, cls;
+    if (a <= f.safe) { cls = "ok"; msg = "Yes. It fits your fun money in " + acctName("fun") + ". You would have " + fmt(f.safe - a) + " left to spend safely."; }
+    else if (a <= f.safe + Math.max(0, c.available)) {
+      cls = "warn"; msg = "Only by using extra money from " + acctName("chk") + " (" + fmt(a - f.safe) + "). Your bills stay covered, but it goes past your fun budget and slows your savings.";
+    } else {
+      cls = "bad"; msg = "No. It would use money you need for bills or savings. You are " + fmt(a - f.safe - Math.max(0, c.available)) + " short." +
+        (c.available < 0 ? " " + acctName("chk") + " is already short for bills." : "");
+    }
+    box.className = "answer " + cls; box.textContent = msg; box.hidden = false;
+  };
+
+  handlers.billForm = function () {
+    var name = $("bName").value.trim(), c = cents($("bAmt")), freq = $("bFreq").value;
+    var day = freq === "weekly" ? Number($("bWday").value) : Math.round(Number($("bDay").value));
+    if (!name) return toast("Type the bill's name.");
+    if (!c) return toast("Enter the bill amount.");
+    if (freq === "monthly" && !(day >= 1 && day <= 31)) return toast("The due day must be between 1 and 31.");
+    if (state.bills.some(function (b) { return b.active && sameName(b.name, name); })) return toast("A bill called " + name + " already exists.");
+    state.bills.push({ id: uid(), name: name, category: $("bCat").value || name, amountCents: c, freq: freq, day: day, active: true });
+    $("bName").value = ""; $("bAmt").value = "";
+    save(); renderAll(); toast("Bill added: " + name);
+  };
+  $("bFreq").addEventListener("change", function () {
+    var w = $("bFreq").value === "weekly";
+    $("bDayWrap").hidden = w; $("bWdayWrap").hidden = !w;
+  });
+
+  handlers.goalForm = function () {
+    var name = $("gName").value.trim(), c = cents($("gAmt"));
+    if (!name) return toast("Name your goal.");
+    if (!c) return toast("Enter the target amount.");
+    state.goals.push({ id: uid(), name: name, targetCents: c });
+    $("gName").value = ""; $("gAmt").value = "";
+    save(); renderAll(); toast("Goal added: " + name);
+  };
+
+  handlers.tradeForm = function () {
+    var type = $("tType").value, hid = $("tHold").value, c = cents($("tAmt")), date = $("tDate").value;
+    if (!c) return toast("Enter an amount greater than $0.");
+    if (!isISODate(date) || date > todayISO()) return toast("Pick today or an earlier date.");
+    var h = hid === NEW_SOURCE ? null : holding(hid);
+    if (!h) {
+      var name = $("tNew").value.trim();
+      if (!name) return toast("Name the investment.");
+      if (type === "sell") return toast("You can only sell an investment you recorded.");
+      h = state.holdings.filter(function (x) { return sameName(x.name, name); })[0];
+    }
+    var warn = "";
+    if (type === "buy" && c > bal("inv")) warn = "Chase cash is only " + fmt(bal("inv")) + ". Record the transfer into Chase first so cash is not counted twice.";
+    if (type === "sell" && h && c > holdingStats(h).value) warn = "That is more than the recorded value of " + h.name + " (" + fmt(holdingStats(h).value) + ").";
+    confirmIfNeeded($("tBtn"), warn, function () {
+      if (!h) { h = { id: uid(), name: $("tNew").value.trim(), valuationCents: 0, valuationDate: null }; state.holdings.push(h); }
+      state.invMoves.push({ id: uid(), holdingId: h.id, type: type, amountCents: c, date: date, createdAt: new Date().toISOString(), voidedAt: null });
+      $("tAmt").value = ""; $("tNew").value = "";
+      save(); renderAll(); $("tHold").value = h.id; $("tNewWrap").hidden = true;
+      toast((type === "buy" ? "Bought " : "Sold ") + fmt(c) + " of " + h.name);
+    });
+  };
+  $("tHold").addEventListener("change", function () { $("tNewWrap").hidden = $("tHold").value !== NEW_SOURCE; });
+
+  handlers.planForm = function () {
+    var vals = {}, bad = false;
+    [["pSav", "savingsMonthlyCents"], ["pInv", "investMonthlyCents"], ["pFun", "funMonthlyCents"], ["pEss", "essentialsWeeklyCents"], ["pCush", "cushionCents"]].forEach(function (x) {
+      var v = $(x[0]).value.trim() === "" ? 0 : centsAllowZero($(x[0]));
+      if (v === null) bad = true; else vals[x[1]] = v;
+    });
+    if (bad) return toast("Amounts must be $0 or more.");
+    Object.keys(vals).forEach(function (k) { state.plan[k] = vals[k]; });
+    save(); renderAll(); toast("Targets saved");
+  };
+
+  handlers.debtForm = function () {
+    var name = $("dName").value.trim(), c = cents($("dAmt"));
+    if (!name) return toast("Name the debt.");
+    if (!c) return toast("Enter what you owe.");
+    var d = state.debts.filter(function (x) { return sameName(x.name, name); })[0];
+    if (d) d.balanceCents = c; else state.debts.push({ id: uid(), name: name, balanceCents: c });
+    $("dName").value = ""; $("dAmt").value = "";
+    save(); renderAll(); toast(d ? "Debt updated" : "Debt added");
+  };
+
+  function saveAccount(id) {
+    var a = acct(id), name = $("sn-" + id).value.trim(), raw = $("sb-" + id).value.trim(), date = $("sd-" + id).value;
+    if (!name) return toast("The account needs a name.");
+    a.name = name.slice(0, 40); a.purpose = $("sp-" + id).value.trim().slice(0, 80);
+    if (raw !== "") {
+      var v = parseFloat(raw);
+      if (!isFinite(v) || Math.abs(v) > 1e9) return toast("Enter the balance as a number, like 1250.75.");
+      if (!isISODate(date) || date > todayISO()) return toast("Pick today or an earlier date.");
+      if (v < 0 && id !== "chk") return toast(name + " can't have a negative balance.");
+      a.balanceCents = Math.round(v * 100); a.asOf = date; a.updatedAt = new Date().toISOString();
+    }
+    save(); renderAll(); fillSetup();
+    toast(name + " saved");
+  }
+
+  // ---------- Clicks inside the accounts screens ----------
+  document.addEventListener("click", function (ev) {
+    var t = ev.target, el;
+    if ((el = t.closest("[data-goto]"))) { showView("accounts"); showSub(el.dataset.goto); return; }
+    if ((el = t.closest("[data-saveacct]"))) { saveAccount(el.dataset.saveacct); return; }
+    if ((el = t.closest("#splitRecord"))) {
+      var sp = lastSplit, today = todayISO();
+      if (!sp) return;
+      var rows = sp.rows.filter(function (x) { return x.id !== "chk" && x.cents > 0; });
+      var dup = rows.some(function (x) { return isDuplicateTransfer("chk", x.id, x.cents, today); });
+      confirmIfNeeded(el, dup ? "Some of these transfers are already recorded today. Recording again may duplicate them." : "", function () {
+        rows.forEach(function (x) { addTransfer("chk", x.id, x.cents, today, "Paycheck split"); });
+        save(); renderAll();
+        toast("Recorded " + rows.length + " transfer" + (rows.length === 1 ? "" : "s") + " from " + acctName("chk"));
+      });
+      return;
+    }
+    if ((el = t.closest("[data-voidx]"))) {
+      armOrRun(el, "Tap to confirm", function () {
+        state.transfers.forEach(function (x) { if (x.id === el.dataset.voidx) x.voidedAt = new Date().toISOString(); });
+        save(); renderAll(); toast("Transfer cancelled. It stays in the log.");
+      });
+      return;
+    }
+    if ((el = t.closest("[data-paybill]"))) {
+      var parts = el.dataset.paybill.split("|"), b = state.bills.filter(function (x) { return x.id === parts[0]; })[0];
+      if (!b || billPayment(b, parts[1])) return;
+      addEntry({ type: "expense", category: b.category, amountCents: b.amountCents, date: todayISO(), note: b.name, recurring: false, accountId: "chk", billId: b.id, billKey: parts[1] });
+      return;
+    }
+    if ((el = t.closest("[data-unpay]"))) {
+      armOrRun(el, "Confirm", function () {
+        state.entries = state.entries.filter(function (e) { return e.id !== el.dataset.unpay; });
+        save(); renderAll(); toast("Payment removed");
+      });
+      return;
+    }
+    if ((el = t.closest("[data-delbill]"))) {
+      armOrRun(el, "Confirm", function () {
+        state.bills = state.bills.filter(function (b) { return b.id !== el.dataset.delbill; });
+        save(); renderAll(); toast("Bill removed. Past payments stay in History.");
+      });
+      return;
+    }
+    if ((el = t.closest("[data-delgoal]"))) {
+      armOrRun(el, "Confirm", function () {
+        state.goals = state.goals.filter(function (g) { return g.id !== el.dataset.delgoal; });
+        save(); renderAll(); toast("Goal removed");
+      });
+      return;
+    }
+    if ((el = t.closest("[data-goalup]"))) {
+      var i = state.goals.map(function (g) { return g.id; }).indexOf(el.dataset.goalup);
+      if (i > 0) { var g = state.goals.splice(i, 1)[0]; state.goals.splice(i - 1, 0, g); save(); renderAll(); }
+      return;
+    }
+    if ((el = t.closest("[data-holdsave]"))) {
+      var h = holding(el.dataset.holdsave), v = centsAllowZero($("hv-" + el.dataset.holdsave));
+      if (!h) return;
+      if (v === null) return toast("Enter the current value, like 1520.40.");
+      h.valuationCents = v; h.valuationDate = todayISO();
+      save(); renderAll(); toast(h.name + " value updated");
+      return;
+    }
+    if ((el = t.closest("[data-voidtrade]"))) {
+      armOrRun(el, "Confirm", function () {
+        state.invMoves.forEach(function (m) { if (m.id === el.dataset.voidtrade) m.voidedAt = new Date().toISOString(); });
+        save(); renderAll(); toast("Cancelled. It stays in the log.");
+      });
+      return;
+    }
+    if ((el = t.closest("[data-deldebt]"))) {
+      state.debts = state.debts.filter(function (d) { return d.id !== el.dataset.deldebt; });
+      save(); renderAll(); toast("Debt removed");
+      return;
+    }
+    if ((el = t.closest("#migrateBtn"))) {
+      armOrRun(el, "Tap to confirm", function () {
+        var n = 0;
+        state.entries.forEach(function (e) { if (!e.accountId) { e.accountId = e.type === "income" ? $("migInc").value : $("migExp").value; n++; } });
+        state.recurring.forEach(function (r) { if (!r.accountId) r.accountId = r.type === "income" ? $("migInc").value : $("migExp").value; });
+        save(); renderAll(); toast(n + " entries assigned");
+      });
+    }
+  });
+
   Object.keys(handlers).forEach(function (id) {
     var form = $(id);
     form.addEventListener("submit", function (ev) { ev.preventDefault(); });
@@ -1046,6 +2299,9 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
 
   $("expCategory").addEventListener("change", function () {
     toggleNewCat();
+    var v = $("expCategory").value;
+    if (FUN_CATEGORIES.indexOf(v) >= 0) $("expAccount").value = "fun";
+    else if (v !== NEW_SOURCE && $("expAccount").value === "fun") $("expAccount").value = "chk";
     if ($("expCategory").value === NEW_SOURCE) $("expNewCat").focus();
   });
 
@@ -1101,7 +2357,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     $("fFromWrap").hidden = !custom; $("fToWrap").hidden = !custom;
     renderHistory();
   });
-  ["fType", "fFrom", "fTo"].forEach(function (id) { $(id).addEventListener("change", renderHistory); });
+  ["fType", "fFrom", "fTo", "fAccount"].forEach(function (id) { $(id).addEventListener("change", renderHistory); });
   $("weekStart").addEventListener("change", function () {
     state.settings.weekStart = Number($("weekStart").value);
     save(); renderAll();
@@ -1182,11 +2438,13 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
 
   // ---------- Start ----------
   var today = todayISO();
-  ["payDate", "incDate", "expDate"].forEach(function (id) { $(id).value = today; });
+  ["payDate", "incDate", "expDate", "xDate", "tDate"].forEach(function (id) { $(id).value = today; });
+  $("xTo").value = "sav";
   $("weekStart").value = String(state.settings.weekStart);
   $("todayLabel").textContent = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
   var generated = generateRecurring();
   renderAll();
+  resetSplitForm();
   setSaveStatus("local");
   if (generated) toast("Added " + generated + " recurring entr" + (generated === 1 ? "y" : "ies") + " for missed weeks");
   connectCloud().then(function (ok) {
@@ -1198,6 +2456,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     var added = generateRecurring();   // also uploads local data on first connect
     $("weekStart").value = String(state.settings.weekStart);
     renderAll();
+    resetSplitForm();
     setSaveStatus("account");
     if (added) toast("Added " + added + " recurring entr" + (added === 1 ? "y" : "ies") + " for missed weeks");
   });
