@@ -481,6 +481,31 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
 .checks input { margin: 0; accent-color: var(--accent); }
 .checks label:has(input:checked) { background: var(--accent-soft); border-color: var(--accent); }
 
+/* ---- Tablets: logo only in the top bar, title kept for screen readers ---- */
+@media (min-width: 760px) and (max-width: 1023px) {
+  .topbar .brand > div:last-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+
+/* ---- Side menu (computers) ---- */
+.sidebar { display: none; }
+.side-title { font: 800 1rem/1.2 var(--font-display); margin: 0; }
+.side-add { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+.side-add svg { width: 18px; height: 18px; }
+.side-nav { display: grid; gap: 4px; }
+.side-nav .tab { display: flex; align-items: center; gap: 12px; text-align: left; padding: 10px 12px; border-radius: 10px; font-size: .95rem; color: var(--muted); }
+.side-nav .tab svg { width: 20px; height: 20px; flex: none; }
+.side-nav .tab[aria-selected="true"] { background: var(--accent-soft); color: var(--accent); }
+.side-nav .tab:hover:not([aria-selected="true"]) { background: var(--surface-2); color: var(--ink); }
+.side-foot { margin-top: auto; display: grid; gap: 10px; }
+.side-status { font-size: .78rem; color: var(--muted); margin: 0; }
+@media (min-width: 1024px) {
+  body { padding-left: 248px; padding-bottom: 32px; }
+  .topbar, .tabs-bottom { display: none; }
+  .fab { display: none !important; }
+  .sidebar { display: flex; flex-direction: column; gap: 18px; position: fixed; left: 0; top: 0; bottom: 0; width: 248px; padding: calc(20px + env(safe-area-inset-top, 0px)) 16px 20px; background: var(--surface); border-right: 1px solid var(--line); z-index: 20; overflow-y: auto; }
+  main { max-width: 1120px; padding-block: 24px; }
+}
+
 /* ---- Toast ---- */
 .toast {
   position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 10px);
@@ -505,11 +530,10 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     </div>
     <nav class="tabs-top" role="tablist" aria-label="Sections">
       <button class="tab" role="tab" data-view="overview" aria-selected="true">Overview</button>
+      <button class="tab" role="tab" data-view="history" aria-selected="false">Transactions</button>
       <button class="tab" role="tab" data-view="budget" aria-selected="false">Budget</button>
       <button class="tab" role="tab" data-view="accounts" aria-selected="false">Accounts</button>
-      <button class="tab" role="tab" data-view="add" aria-selected="false">Add entry</button>
-      <button class="tab" role="tab" data-view="history" aria-selected="false">History</button>
-      <button class="tab" role="tab" data-view="settings" aria-selected="false">Backup &amp; settings</button>
+      <button class="tab" role="tab" data-view="settings" aria-selected="false">Settings</button>
     </nav>
     <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch to dark mode" title="Dark / light mode">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -517,7 +541,24 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
   </div>
 </header>
 
-<main>
+<aside class="sidebar" aria-label="Main menu">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">$</div><div><p class="side-title">Income &amp; Expense Tracker</p><small id="todayLabel2"></small></div></div>
+  <button class="btn primary side-add" type="button" data-goview="add">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add entry</button>
+  <nav class="side-nav" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" data-view="overview" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>Overview</button>
+      <button class="tab" role="tab" data-view="history" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Transactions</button>
+      <button class="tab" role="tab" data-view="budget" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12A9 9 0 1 1 12 3v9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/></svg>Budget</button>
+      <button class="tab" role="tab" data-view="accounts" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l9-6 9 6M5 10v8M10 10v8M14 10v8M19 10v8M3 20h18"/></svg>Accounts</button>
+      <button class="tab" role="tab" data-view="settings" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>Settings</button>
+  </nav>
+  <div class="side-foot">
+    <p class="side-status" id="sideStatus">Saved in this browser only.</p>
+    <button class="btn small" type="button" id="themeBtn2">Dark mode</button>
+  </div>
+</aside>
+
+<main id="main">
   <noscript>
     <div class="panel"><strong>JavaScript is turned off in this viewer.</strong> Download this file and open it in Chrome, Safari, Edge or Firefox to add entries.</div>
   </noscript>
@@ -1049,16 +1090,11 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
 </main>
 
 <nav class="tabs-bottom" role="tablist" aria-label="Sections">
-  <button class="tab" role="tab" data-view="overview" aria-selected="true">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>Overview</button>
-  <button class="tab" role="tab" data-view="budget" aria-selected="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12A9 9 0 1 1 12 3v9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/></svg>Budget</button>
-  <button class="tab" role="tab" data-view="accounts" aria-selected="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6M5 10v8M10 10v8M14 10v8M19 10v8M3 20h18"/></svg>Accounts</button>
-  <button class="tab" role="tab" data-view="history" aria-selected="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>History</button>
-  <button class="tab" role="tab" data-view="settings" aria-selected="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Backup</button>
+      <button class="tab" role="tab" data-view="overview" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>Overview</button>
+      <button class="tab" role="tab" data-view="history" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Transactions</button>
+      <button class="tab" role="tab" data-view="budget" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12A9 9 0 1 1 12 3v9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/></svg>Budget</button>
+      <button class="tab" role="tab" data-view="accounts" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l9-6 9 6M5 10v8M10 10v8M14 10v8M19 10v8M3 20h18"/></svg>Accounts</button>
+      <button class="tab" role="tab" data-view="settings" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>Settings</button>
 </nav>
 
 <button class="fab" id="fab" type="button" aria-label="Add an entry" title="Add an entry">
@@ -1337,6 +1373,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       : s === "error" ? "Last change was not saved to your account. Check your connection."
       : storageOK ? "Saved in this browser only."
       : "Not saved: this viewer blocks storage. Export a backup before closing.";
+    $("sideStatus").textContent = s === "account" ? "✓ Saved to your Claude account" : s === "error" ? "⚠ Last change not saved" : storageOK ? "Saved in this browser only" : "⚠ Not saved in this viewer";
   }
 
   function save() {
@@ -1386,7 +1423,8 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     $("fab").hidden = name === "add";
     if (name === "overview") renderCharts();
     if (name === "budget") renderBudget(true);
-    document.querySelectorAll(".tab[data-view]").forEach(function (b) { b.setAttribute("aria-selected", String(b.dataset.view === name)); });
+    var navName = name === "add" ? "history" : name;   // Add entry belongs to Transactions
+    document.querySelectorAll(".tab[data-view]").forEach(function (b) { b.setAttribute("aria-selected", String(b.dataset.view === navName)); });
     if (name === "settings") $("backupText").value = JSON.stringify(state, null, 2);
     window.scrollTo(0, 0);
   }
@@ -3268,24 +3306,30 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     return window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
   function setThemeLabel() {
-    $("themeBtn").setAttribute("aria-label", currentTheme() === "dark" ? "Switch to light mode" : "Switch to dark mode");
+    var dark = currentTheme() === "dark";
+    $("themeBtn").setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    $("themeBtn2").textContent = dark ? "Light mode" : "Dark mode";
   }
   var savedTheme = storeGet(THEME_KEY);
   if (savedTheme === "dark" || savedTheme === "light") document.documentElement.setAttribute("data-theme", savedTheme);
   setThemeLabel();
-  $("themeBtn").addEventListener("click", function () {
+  function toggleTheme() {
     var next = currentTheme() === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
     storeSet(THEME_KEY, next);
     setThemeLabel();
-  });
+    renderCharts();
+  }
+  $("themeBtn").addEventListener("click", toggleTheme);
+  $("themeBtn2").addEventListener("click", toggleTheme);
+  document.addEventListener("click", function (ev) { var g = ev.target.closest("[data-goview]"); if (g) showView(g.dataset.goview); });
 
   // ---------- Start ----------
   var today = todayISO();
   ["payDate", "incDate", "expDate", "xDate", "tDate"].forEach(function (id) { $(id).value = today; });
   $("xTo").value = "sav";
   $("weekStart").value = String(state.settings.weekStart);
-  $("todayLabel").textContent = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
+  $("todayLabel").textContent = $("todayLabel2").textContent = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
   var generated = generateRecurring();
   renderAll();
   resetSplitForm();
