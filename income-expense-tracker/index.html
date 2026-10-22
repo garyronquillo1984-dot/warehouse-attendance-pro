@@ -203,7 +203,7 @@ th { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color:
 form { display: grid; gap: 12px; }
 .field { display: grid; gap: 5px; min-width: 0; }
 .field > span { font-size: .8rem; font-weight: 600; color: var(--muted); }
-input[type="text"], input[type="number"], input[type="date"], select, textarea {
+input[type="text"], input[type="number"], input[type="date"], input[type="search"], select, textarea {
   width: 100%; min-height: 44px; padding: 10px 12px; border-radius: 10px;
   border: 1px solid var(--line); background: var(--surface-2); color: var(--ink);
 }
@@ -449,6 +449,37 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
 .dlegend { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; min-width: 190px; flex: 1; }
 .dlegend li { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; font-size: .9rem; }
 .dlegend .pct { color: var(--muted); font-size: .8rem; }
+
+/* ---- Transactions filter ---- */
+.htools { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.hsearch { flex: 1 1 240px; position: relative; display: block; min-width: 0; }
+.hsearch svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--muted); pointer-events: none; }
+.hsearch input { padding-left: 36px; }
+#hSort { width: auto; flex: 0 1 auto; }
+@media (max-width: 600px) { .hsearch { flex-basis: 100%; } #hSort, #hFiltersBtn { flex: 1 1 0; } }
+.badge { display: inline-grid; place-items: center; min-width: 20px; height: 20px; border-radius: 99px; background: var(--accent); color: var(--accent-ink); font-size: .72rem; margin-left: 6px; padding: 0 6px; }
+.hperiods { margin-bottom: 8px; }
+.active-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; }
+.fchip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface-2); border-radius: 99px; padding: 3px 4px 3px 10px; font-size: .8rem; font-weight: 600; max-width: 100%; }
+.fchip button { border: 0; background: var(--surface); color: var(--muted); width: 22px; height: 22px; border-radius: 50%; cursor: pointer; line-height: 1; flex: none; }
+.th-sort { border: 0; background: none; padding: 0; font: inherit; color: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; }
+.th-sort:hover { color: var(--ink); }
+.sheet-back { position: fixed; inset: 0; z-index: 40; background: rgba(8, 14, 20, .5); display: flex; align-items: flex-end; justify-content: center; }
+.sheet { background: var(--surface); color: var(--ink); width: 100%; max-width: 560px; max-height: 88vh; display: flex; flex-direction: column; border-radius: 18px 18px 0 0; padding-bottom: env(safe-area-inset-bottom, 0px); }
+@media (min-width: 760px) { .sheet-back { align-items: center; } .sheet { border-radius: 18px; max-height: 82vh; } }
+.sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.sheet-head h2 { font-size: 1.1rem; }
+.sheet-head .icon-btn { margin-left: 0; }
+.sheet-body { overflow: auto; padding: 14px 18px; display: grid; gap: 18px; }
+.sheet-foot { display: flex; gap: 8px; justify-content: space-between; padding: 12px 18px; border-top: 1px solid var(--line); }
+.sheet-foot .primary { flex: 1; }
+.fgroup h3 { font-size: .9rem; margin: 0 0 8px; }
+.cgroup + .cgroup { margin-top: 10px; }
+.cgroup .eyebrow { margin-bottom: 6px; }
+.checks { display: flex; flex-wrap: wrap; gap: 6px; }
+.checks label { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 99px; padding: 6px 12px; font-size: .85rem; cursor: pointer; min-height: 36px; }
+.checks input { margin: 0; accent-color: var(--accent); }
+.checks label:has(input:checked) { background: var(--accent-soft); border-color: var(--accent); }
 
 /* ---- Toast ---- */
 .toast {
@@ -917,44 +948,34 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
   <!-- ================= HISTORY ================= -->
   <section class="view" id="view-history" hidden>
     <article class="panel" aria-labelledby="histTitle">
-      <div class="panel-head"><h2 id="histTitle">Transaction history</h2></div>
-      <div class="filters">
-        <label class="field"><span>Period</span>
-          <select id="fPeriod">
-            <option value="week">This week</option>
-            <option value="month">This month</option>
-            <option value="all" selected>All time</option>
-            <option value="custom">Custom range</option>
-          </select>
-        </label>
-        <label class="field"><span>Type</span>
-          <select id="fType">
-            <option value="all">All</option>
-            <option value="income">Income</option>
-            <option value="expense">Expenses</option>
-          </select>
-        </label>
-        <label class="field"><span>Account</span>
-          <select id="fAccount">
-            <option value="all">All accounts</option>
-            <option value="chk">BofA Checking</option><option value="sav">BofA Savings</option><option value="inv">Chase</option><option value="fun">US Bank</option>
-            <option value="none">No account</option>
-          </select>
-        </label>
-        <label class="field"><span>Category</span>
-          <select id="fCategory"><option value="all">All categories</option></select>
-        </label>
-        <label class="field" id="fFromWrap" hidden><span>From</span><input type="date" id="fFrom"></label>
-        <label class="field" id="fToWrap" hidden><span>To</span><input type="date" id="fTo"></label>
+      <div class="panel-head"><h2 id="histTitle">Transactions</h2><span class="hint" id="histCount"></span></div>
+      <div class="htools">
+        <label class="hsearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input type="search" id="hQ" placeholder="Search category, note or amount" aria-label="Search transactions" autocomplete="off"></label>
+        <button class="btn" id="hFiltersBtn" type="button" aria-haspopup="dialog">Filters<span class="badge" id="hBadge" hidden>0</span></button>
+        <select id="hSort" aria-label="Sort transactions">
+          <option value="date-desc">Newest first</option><option value="date-asc">Oldest first</option>
+          <option value="amt-desc">Highest amount</option><option value="amt-asc">Lowest amount</option>
+          <option value="cat-asc">Category A–Z</option><option value="cat-desc">Category Z–A</option>
+        </select>
       </div>
+      <nav class="subnav hperiods" aria-label="Period">
+        <button type="button" data-hp="week" aria-pressed="false">This week</button>
+        <button type="button" data-hp="month" aria-pressed="true">This month</button>
+        <button type="button" data-hp="lastmonth" aria-pressed="false">Last month</button>
+        <button type="button" data-hp="3m" aria-pressed="false">Last 3 months</button>
+        <button type="button" data-hp="all" aria-pressed="false">All time</button>
+        <button type="button" data-hp="custom" aria-pressed="false" id="hpCustom">Custom dates</button>
+      </nav>
+      <div class="active-chips" id="hActive" hidden></div>
       <div class="table-wrap">
         <table class="history">
           <thead>
             <tr>
-              <th class="sortable" id="sortDate" aria-sort="descending" tabindex="0">Date ↓</th>
+              <th aria-sort="descending"><button class="th-sort" type="button" data-hsort="date">Date<span class="arrow"> ↓</span></button></th>
               <th>Type</th>
-              <th>Category / source</th>
-              <th class="num">Amount</th>
+              <th aria-sort="none"><button class="th-sort" type="button" data-hsort="cat">Category / source<span class="arrow"></span></button></th>
+              <th class="num" aria-sort="none"><button class="th-sort" type="button" data-hsort="amt">Amount<span class="arrow"></span></button></th>
               <th>Note</th>
               <th></th>
             </tr>
@@ -962,13 +983,18 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
           <tbody id="histBody"></tbody>
         </table>
       </div>
-      <div class="empty" id="histEmpty">No transactions match this filter.</div>
-      <div class="hist-foot">
-        <span id="histCount">0 transactions</span>
-        <span id="histSum">Net <b>$0.00</b></span>
-      </div>
+      <div class="empty" id="histEmpty">No transactions match. <button class="linkbtn" type="button" id="histEmptyClear">Show everything</button></div>
+      <div class="hist-foot"><span id="histSum">Net <b>$0.00</b></span></div>
     </article>
   </section>
+
+  <div class="sheet-back" id="hfSheet" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="hfTitle">
+      <div class="sheet-head"><h2 id="hfTitle">Filter transactions</h2><button class="icon-btn" type="button" id="hfClose" aria-label="Close filters">✕</button></div>
+      <div class="sheet-body" id="hfBody"></div>
+      <div class="sheet-foot"><button class="btn" type="button" id="hfClear">Clear filters</button><button class="btn primary" type="button" id="hfApply">Show results</button></div>
+    </div>
+  </div>
 
   <!-- ================= SETTINGS ================= -->
   <section class="view" id="view-settings" hidden>
@@ -1408,23 +1434,81 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     }).join("");
   }
 
-  // ---------- History ----------
-  var sortDesc = true;
+  // ---------- History: search, period chips, filter panel, sorting ----------
+  // The filter lives in `hf`. The panel edits a draft copy and applies it in one go.
+  // The last filter is remembered in this browser only (a convenience, not data).
+  var HF_KEY = "incomeExpenseTracker.histFilter";
+  function hfDefault() { return { q: "", period: "month", from: "", to: "", type: "all", accounts: [], cats: [], min: "", max: "", sort: "date-desc" }; }
+  var hf = hfDefault();
+  try { var savedHf = JSON.parse(storeGet(HF_KEY) || "null"); if (savedHf && typeof savedHf === "object") Object.keys(hf).forEach(function (k) { if (savedHf[k] !== undefined && typeof savedHf[k] === typeof hf[k]) hf[k] = savedHf[k]; }); } catch (e) { /* ignore */ }
+  var hfDraft = null;
+  var PERIOD_LABEL = { week: "This week", month: "This month", lastmonth: "Last month", "3m": "Last 3 months", all: "All time", custom: "Custom dates" };
+  var SORTS = { "date-desc": "Newest first", "date-asc": "Oldest first", "amt-desc": "Highest amount", "amt-asc": "Lowest amount", "cat-asc": "Category A–Z", "cat-desc": "Category Z–A" };
+
+  function hfRange(f) {
+    var ym = todayISO().slice(0, 7);
+    if (f.period === "lastmonth") return monthRange(shiftMonth(ym, -1));
+    if (f.period === "3m") return [monthRange(shiftMonth(ym, -2))[0], monthRange(ym)[1]];
+    if (f.period === "custom") return [f.from || null, f.to || null];
+    return periodRange(f.period);   // week, month, all
+  }
+  function hfCents(v) { var n = parseFloat(v); return v !== "" && isFinite(n) && n >= 0 ? Math.round(n * 100) : null; }
+  function hfRows(f) {
+    var r = hfRange(f), q = f.q.trim().toLowerCase(), min = hfCents(f.min), max = hfCents(f.max);
+    return state.entries.filter(function (e) {
+      if (!inRange(e.date, r)) return false;
+      if (f.type !== "all" && e.type !== f.type) return false;
+      if (f.accounts.length && f.accounts.indexOf(e.accountId || "none") < 0) return false;
+      if (f.cats.length && f.cats.indexOf(e.category) < 0) return false;
+      if (min !== null && e.amountCents < min) return false;
+      if (max !== null && e.amountCents > max) return false;
+      if (q) {
+        var hay = (e.category + " " + (e.note || "") + " " + (e.accountId ? acctName(e.accountId) : "") + " " + (e.amountCents / 100).toFixed(2)).toLowerCase();
+        if (hay.indexOf(q) < 0) return false;
+      }
+      return true;
+    });
+  }
+  function hfSort(rows, how) {
+    var k = how.split("-")[0], dir = how.split("-")[1] === "asc" ? 1 : -1;
+    return rows.sort(function (a, b) {
+      var c = k === "amt" ? a.amountCents - b.amountCents : k === "cat" ? byName(a.category, b.category) : a.date.localeCompare(b.date);
+      return (c || a.date.localeCompare(b.date) || a.id.localeCompare(b.id)) * dir;
+    });
+  }
+  function hfActiveCount(f) { return (f.type !== "all" ? 1 : 0) + f.accounts.length + f.cats.length + (f.min !== "" ? 1 : 0) + (f.max !== "" ? 1 : 0); }
+  function hfSave() { storeSet(HF_KEY, JSON.stringify(hf)); }
+
+  var sortDesc = true;   // kept for older code paths
   function renderHistory() {
-    var fc = $("fCategory"), fcur = fc.value, cset = {};
-    state.entries.forEach(function (e) { cset[e.category] = 1; });
-    var clist = Object.keys(cset).sort(byName);
-    fc.innerHTML = '<option value="all">All categories</option>' + clist.map(function (c) { return '<option>' + esc(c) + '</option>'; }).join("");
-    fc.value = clist.indexOf(fcur) >= 0 ? fcur : "all";
-    var p = $("fPeriod").value, type = $("fType").value, fa = $("fAccount").value, fcv = fc.value;
-    var r = p === "custom" ? [$("fFrom").value || null, $("fTo").value || null] : periodRange(p);
-    var rows = state.entries.filter(function (e) {
-      return inRange(e.date, r) && (type === "all" || e.type === type) &&
-        (fa === "all" || (fa === "none" ? !e.accountId : e.accountId === fa)) && (fcv === "all" || e.category === fcv);
-    })
-      .sort(function (a, b) { var c = a.date.localeCompare(b.date) || a.id.localeCompare(b.id); return sortDesc ? -c : c; });
-    $("sortDate").textContent = "Date " + (sortDesc ? "↓" : "↑");
-    $("sortDate").setAttribute("aria-sort", sortDesc ? "descending" : "ascending");
+    var rows = hfSort(hfRows(hf), hf.sort);
+    // period chips + custom label
+    document.querySelectorAll("[data-hp]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.hp === hf.period)); });
+    var r = hfRange(hf);
+    $("hpCustom").textContent = hf.period === "custom" && (r[0] || r[1]) ? (r[0] ? pretty(r[0], false) : "…") + " – " + (r[1] ? pretty(r[1], false) : "…") : "Custom dates";
+    if ($("hQ") !== document.activeElement) $("hQ").value = hf.q;
+    $("hSort").value = hf.sort;
+    var n = hfActiveCount(hf);
+    $("hBadge").hidden = !n; $("hBadge").textContent = n;
+    // header sort state
+    document.querySelectorAll("[data-hsort]").forEach(function (th) {
+      var k = th.dataset.hsort, on = hf.sort.indexOf(k + "-") === 0, asc = /-asc$/.test(hf.sort);
+      th.closest("th").setAttribute("aria-sort", on ? (asc ? "ascending" : "descending") : "none");
+      th.querySelector(".arrow").textContent = on ? (asc ? " ↑" : " ↓") : "";
+    });
+    // active filter chips
+    var chips = [];
+    if (hf.q.trim()) chips.push(["q", "", "“" + hf.q.trim() + "”"]);
+    if (hf.type !== "all") chips.push(["type", "", hf.type === "income" ? "Income only" : "Expenses only"]);
+    hf.accounts.forEach(function (a) { chips.push(["acct", a, a === "none" ? "No account" : acctName(a)]); });
+    hf.cats.forEach(function (c) { chips.push(["cat", c, c]); });
+    if (hf.min !== "") chips.push(["min", "", "≥ " + fmt(hfCents(hf.min) || 0)]);
+    if (hf.max !== "") chips.push(["max", "", "≤ " + fmt(hfCents(hf.max) || 0)]);
+    $("hActive").innerHTML = chips.map(function (c) {
+      return '<span class="fchip">' + esc(c[2]) + '<button type="button" data-hfx="' + esc(c[0] + "|" + c[1]) + '" aria-label="Remove filter ' + esc(c[2]) + '">✕</button></span>';
+    }).join("") + (chips.length ? '<button class="linkbtn" type="button" data-hfx="all|">Clear all</button>' : "");
+    $("hActive").hidden = !chips.length;
+    // rows
     $("histBody").innerHTML = rows.map(function (e) {
       var inc = e.type === "income";
       return '<tr>' +
@@ -1437,11 +1521,132 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
         '</tr>';
     }).join("");
     $("histEmpty").hidden = rows.length > 0;
+    $("histEmptyClear").hidden = !(chips.length || hf.period !== "all");
     var inc = 0, exp = 0;
     rows.forEach(function (e) { if (e.type === "income") inc += e.amountCents; else exp += e.amountCents; });
-    $("histCount").textContent = rows.length + " transaction" + (rows.length === 1 ? "" : "s");
+    $("histCount").textContent = rows.length + " transaction" + (rows.length === 1 ? "" : "s") + " · " + (hf.period === "custom" ? $("hpCustom").textContent : PERIOD_LABEL[hf.period]);
     $("histSum").innerHTML = "Income " + fmt(inc) + " · Expenses " + fmt(exp) + " · Net <b" + (inc - exp < 0 ? ' class="c-neg"' : "") + ">" + fmt(inc - exp) + "</b>";
   }
+
+  // ---------- Filter panel ----------
+  function openFilters(focusId) {
+    hfDraft = JSON.parse(JSON.stringify(hf));
+    renderFilterSheet();
+    $("hfSheet").hidden = false;
+    document.body.style.overflow = "hidden";
+    var el = focusId ? $(focusId) : $("hfClose");
+    if (el) el.focus();
+  }
+  function closeFilters() {
+    $("hfSheet").hidden = true; hfDraft = null; document.body.style.overflow = "";
+    $("hFiltersBtn").focus();
+  }
+  function renderFilterSheet() {
+    var d = hfDraft, groups = { Income: [], Bills: [], Expenses: [], Subscriptions: [] }, seen = {};
+    state.entries.forEach(function (e) {
+      if (seen[e.category]) return; seen[e.category] = 1;
+      var g = e.type === "income" ? "Income" : { bill: "Bills", exp: "Expenses", sub: "Subscriptions" }[groupOf(e.category)];
+      groups[g].push(e.category);
+    });
+    function check(name, value, label, on) {
+      return '<label><input type="checkbox" data-hfc="' + name + '" value="' + esc(value) + '"' + (on ? " checked" : "") + '>' + esc(label) + '</label>';
+    }
+    var h = '<div class="fgroup"><h3>Type</h3><div class="seg" role="group" aria-label="Type">' +
+      [["all", "All"], ["income", "Income"], ["expense", "Expenses"]].map(function (t) { return '<button type="button" data-hft="' + t[0] + '" aria-pressed="' + (d.type === t[0]) + '">' + t[1] + '</button>'; }).join("") + '</div></div>';
+    h += '<div class="fgroup"><h3>Accounts</h3><div class="checks">' + ACCT_IDS.concat(["none"]).map(function (a) { return check("acct", a, a === "none" ? "No account" : acctName(a), d.accounts.indexOf(a) >= 0); }).join("") + '</div></div>';
+    h += '<div class="fgroup"><h3>Categories</h3>' + Object.keys(groups).filter(function (g) { return groups[g].length; }).map(function (g) {
+      return '<div class="cgroup"><div class="eyebrow">' + g + '</div><div class="checks">' + groups[g].sort(byName).map(function (c) { return check("cat", c, c, d.cats.indexOf(c) >= 0); }).join("") + '</div></div>';
+    }).join("") + (Object.keys(seen).length ? "" : '<p class="hint">No transactions yet.</p>') + '</div>';
+    h += '<div class="fgroup"><h3>Amount</h3><div class="row-2">' +
+      '<label class="field"><span>At least</span><div class="money"><input type="number" min="0" step="0.01" inputmode="decimal" id="hfMin" value="' + esc(d.min) + '" placeholder="0.00"></div></label>' +
+      '<label class="field"><span>At most</span><div class="money"><input type="number" min="0" step="0.01" inputmode="decimal" id="hfMax" value="' + esc(d.max) + '" placeholder="Any"></div></label></div></div>';
+    h += '<div class="fgroup"><h3>Custom dates</h3><div class="row-2">' +
+      '<label class="field"><span>From</span><input type="date" id="hfFrom" value="' + esc(d.period === "custom" ? d.from : "") + '"></label>' +
+      '<label class="field"><span>To</span><input type="date" id="hfTo" value="' + esc(d.period === "custom" ? d.to : "") + '"></label></div>' +
+      '<p class="hint">Dates replace the period chips while they are set.</p></div>';
+    $("hfBody").innerHTML = h;
+    hfLiveCount();
+  }
+  function readDraftInputs() {
+    var d = hfDraft;
+    d.min = $("hfMin").value.trim(); d.max = $("hfMax").value.trim();
+    var f = $("hfFrom").value, t = $("hfTo").value;
+    if (f || t) { d.period = "custom"; d.from = f; d.to = t; }
+    else if (d.period === "custom") { d.period = "month"; d.from = ""; d.to = ""; }
+  }
+  function hfLiveCount() {
+    readDraftInputs();
+    var n = hfRows(hfDraft).length, bad = hfDraft.min !== "" && hfDraft.max !== "" && hfCents(hfDraft.min) > hfCents(hfDraft.max);
+    $("hfApply").textContent = bad ? "Fix the amount range" : "Show " + n + " result" + (n === 1 ? "" : "s");
+    $("hfApply").disabled = bad;
+  }
+  $("hfBody").addEventListener("change", function (ev) {
+    var c = ev.target.closest("[data-hfc]");
+    if (c) {
+      var list = c.dataset.hfc === "acct" ? hfDraft.accounts : hfDraft.cats, i = list.indexOf(c.value);
+      if (c.checked && i < 0) list.push(c.value); if (!c.checked && i >= 0) list.splice(i, 1);
+    }
+    hfLiveCount();
+  });
+  $("hfBody").addEventListener("input", function () { hfLiveCount(); });
+  $("hfBody").addEventListener("click", function (ev) {
+    var t = ev.target.closest("[data-hft]");
+    if (!t) return;
+    hfDraft.type = t.dataset.hft;
+    document.querySelectorAll("[data-hft]").forEach(function (b) { b.setAttribute("aria-pressed", String(b === t)); });
+    hfLiveCount();
+  });
+  $("hfApply").addEventListener("click", function () {
+    readDraftInputs();
+    var q = hf.q, sort = hf.sort;
+    hf = hfDraft; hf.q = q; hf.sort = sort;
+    hfSave(); closeFilters(); renderHistory();
+  });
+  $("hfClear").addEventListener("click", function () {
+    var keep = { q: hfDraft.q, sort: hfDraft.sort, period: hfDraft.period === "custom" ? "month" : hfDraft.period };
+    hfDraft = hfDefault(); hfDraft.q = keep.q; hfDraft.sort = keep.sort; hfDraft.period = keep.period;
+    renderFilterSheet();
+  });
+  $("hfClose").addEventListener("click", closeFilters);
+  $("hfSheet").addEventListener("click", function (ev) { if (ev.target === $("hfSheet")) closeFilters(); });
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && !$("hfSheet").hidden) closeFilters(); });
+
+  // ---------- Toolbar ----------
+  $("hFiltersBtn").addEventListener("click", function () { openFilters(); });
+  var hqTimer;
+  $("hQ").addEventListener("input", function () {
+    clearTimeout(hqTimer);
+    hqTimer = setTimeout(function () { hf.q = $("hQ").value; hfSave(); renderHistory(); }, 150);
+  });
+  $("hSort").addEventListener("change", function () { hf.sort = $("hSort").value; hfSave(); renderHistory(); });
+  document.addEventListener("click", function (ev) {
+    var p = ev.target.closest("[data-hp]");
+    if (p) {
+      if (p.dataset.hp === "custom") { openFilters("hfFrom"); return; }
+      hf.period = p.dataset.hp; hf.from = ""; hf.to = ""; hfSave(); renderHistory(); return;
+    }
+    var s = ev.target.closest("[data-hsort]");
+    if (s) {
+      var k = s.dataset.hsort, cur = hf.sort;
+      hf.sort = cur === k + "-desc" ? k + "-asc" : cur === k + "-asc" ? k + "-desc" : (k === "cat" ? "cat-asc" : k + "-desc");
+      hfSave(); renderHistory(); return;
+    }
+    var x = ev.target.closest("[data-hfx]");
+    if (x) {
+      var parts = x.dataset.hfx.split("|"), kind = parts[0], val = parts.slice(1).join("|");
+      if (kind === "all") { var keep = hf.sort, per = hf.period === "custom" ? "month" : hf.period; hf = hfDefault(); hf.sort = keep; hf.period = per; }
+      else if (kind === "q") hf.q = "";
+      else if (kind === "type") hf.type = "all";
+      else if (kind === "acct") hf.accounts = hf.accounts.filter(function (a) { return a !== val; });
+      else if (kind === "cat") hf.cats = hf.cats.filter(function (c) { return c !== val; });
+      else if (kind === "min") hf.min = "";
+      else if (kind === "max") hf.max = "";
+      hfSave(); renderHistory(); return;
+    }
+    if (ev.target.closest("#histEmptyClear")) {
+      var keepSort = hf.sort; hf = hfDefault(); hf.sort = keepSort; hf.period = "all"; hfSave(); renderHistory();
+    }
+  });
 
   // ---------- Sources ----------
   function renderSources() {
@@ -1899,7 +2104,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
 
   // ---------- Rendering ----------
   function renderAccountSelects() {
-    document.querySelectorAll(".acct-select, #fAccount").forEach(function (sel) {
+    document.querySelectorAll(".acct-select").forEach(function (sel) {
       Array.prototype.forEach.call(sel.options, function (o) { if (isAcct(o.value)) o.textContent = acctName(o.value); });
     });
   }
@@ -2609,14 +2814,10 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     }
   });
   function openHistoryFor(cat, ym) {
-    var r = monthRange(ym);
-    showView("history");
-    $("fPeriod").value = "custom"; $("fFromWrap").hidden = false; $("fToWrap").hidden = false;
-    $("fFrom").value = r[0]; $("fTo").value = r[1];
-    $("fType").value = "expense"; $("fAccount").value = "all";
-    renderHistory();
-    $("fCategory").value = cat;
-    renderHistory();
+    var r = monthRange(ym), sort = hf.sort;
+    hf = hfDefault(); hf.sort = sort;
+    hf.period = "custom"; hf.from = r[0]; hf.to = r[1]; hf.type = "expense"; hf.cats = [cat];
+    hfSave(); showView("history"); renderHistory();
   }
 
   // ---------- Overview: KPIs, alerts, budget summary, Top 5 ----------
@@ -3001,15 +3202,6 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
   });
 
 
-  function toggleSort() { sortDesc = !sortDesc; renderHistory(); }
-  $("sortDate").addEventListener("click", toggleSort);
-  $("sortDate").addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleSort(); } });
-  $("fPeriod").addEventListener("change", function () {
-    var custom = $("fPeriod").value === "custom";
-    $("fFromWrap").hidden = !custom; $("fToWrap").hidden = !custom;
-    renderHistory();
-  });
-  ["fType", "fFrom", "fTo", "fAccount", "fCategory"].forEach(function (id) { $(id).addEventListener("change", renderHistory); });
   $("weekStart").addEventListener("change", function () {
     state.settings.weekStart = Number($("weekStart").value);
     save(); renderAll();
