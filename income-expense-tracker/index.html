@@ -689,7 +689,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
           <div class="row-2">
             <label class="field"><span>Net pay (what lands in the bank)</span><div class="money"><input type="number" id="splitPay" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div></label>
             <label class="switch" style="align-self:end"><input type="checkbox" id="splitIncluded">
-              <span>Already in BofA Checking<small>Turn on if this pay is already recorded</small></span></label>
+              <span id="splitIncLabel">Already in BofA Checking<small>Turn on if this pay is already recorded</small></span></label>
           </div>
           <button class="btn primary" type="button" data-submit="splitForm">Calculate split</button>
         </form>
@@ -1076,6 +1076,11 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
               <option value="1">Monday</option>
             </select>
           </label>
+          <label class="field"><span>FedEx pay goes into</span>
+            <select id="payAccount" class="acct-select">
+              <option value="chk">BofA Checking</option><option value="sav">BofA Savings</option><option value="inv">Chase</option><option value="fun">US Bank</option>
+            </select>
+          </label>
           <div class="field"><span>Income sources</span>
             <ul class="list" id="srcList"></ul>
           </div>
@@ -1179,7 +1184,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       incomeBudgets: {},      // income source -> expected per month in cents
       entries: [],    // {id, type, category, amountCents, date, note, recurringId}
       recurring: [],  // {id, type, category, amountCents, note, lastDate, active}
-      settings: { weekStart: 0 },
+      settings: { weekStart: 0, payAccount: "chk" },
       lastOpened: null,
       // Bank accounts. A balance is what the bank showed on `asOf`; later movements are added to it.
       accounts: ACCT_IDS.map(function (id) {
@@ -1232,6 +1237,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     });
     normalizeAccounts(data, s);
     if (data.settings && (data.settings.weekStart === 0 || data.settings.weekStart === 1)) s.settings.weekStart = data.settings.weekStart;
+    if (data.settings && isAcct(data.settings.payAccount)) s.settings.payAccount = data.settings.payAccount;
     s.lastOpened = isISODate(data.lastOpened) ? data.lastOpened : null;
     return s;
   }
@@ -1460,6 +1466,8 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     var last = state.entries.filter(function (e) { return e.type === "income" && e.category === DEFAULT_SOURCE; })
       .sort(function (a, b) { return b.date.localeCompare(a.date); })[0];
     $("payLast").textContent = last ? "Last paycheck: " + fmt(last.amountCents) + " on " + pretty(last.date) : "No paycheck logged yet.";
+    $("payAcctNote").textContent = "Goes into " + acctName(state.settings.payAccount) + ". Change it in Settings.";
+    $("payAccount").value = state.settings.payAccount;
 
     // Recurring
     var active = state.recurring.filter(function (x) { return x.active; });
@@ -1778,7 +1786,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     var c = cents($("payAmount"));
     if (!c) return toast("Enter the amount of your paycheck.");
     if (!isISODate($("payDate").value)) return toast("Pick the date you were paid.");
-    addEntry({ type: "income", category: DEFAULT_SOURCE, amountCents: c, date: $("payDate").value, note: "", recurring: $("payRecurring").checked, accountId: "chk" });
+    addEntry({ type: "income", category: DEFAULT_SOURCE, amountCents: c, date: $("payDate").value, note: "", recurring: $("payRecurring").checked, accountId: state.settings.payAccount });
     $("payAmount").value = ""; $("payRecurring").checked = false;
   };
 
@@ -2021,12 +2029,14 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     // Pay already in Checking must last until the next payday; pay still coming must last one week past it.
     var until = included ? pd.date : addDays(pd.date, 7);
     var res = checkingReserve(until);
-    var base = included ? res.balance - pay : res.balance;
+    var src = state.settings.payAccount;   // where the pay lands
+    var base = included && src === "chk" ? res.balance - pay : res.balance;
     var need = Math.max(0, res.reserved - base);
-    var out = { pay: pay, res: res, base: base, need: need, rows: [], short: 0, extra: 0 };
+    var out = { pay: pay, res: res, base: base, need: need, rows: [], short: 0, extra: 0, src: src };
     if (need >= pay) {
       out.short = need - pay;
       out.rows.push({ id: "chk", cents: pay, why: "Bills and essentials" });
+      out.rows.forEach(function (x) { if (x.id === src) x.stays = true; });
       return out;
     }
     var leftover = pay - need;
@@ -2051,6 +2061,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     out.rows.push({ id: "sav", cents: give.sav + out.extra, why: give.sav && out.extra ? "Savings target + " + fmt(out.extra) + " left over" : out.extra ? "Left over after your targets" : "Savings target" });
     out.rows.push({ id: "inv", cents: give.inv, why: "Investing target" });
     out.rows.push({ id: "fun", cents: give.fun, why: f.budget ? "Fun budget for this week" : "No fun budget set" });
+    out.rows.forEach(function (x) { if (x.id === src) x.stays = true; });
     return out;
   }
   var lastSplit = null;
@@ -2058,7 +2069,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     var last = state.entries.filter(function (e) { return e.type === "income" && e.category === DEFAULT_SOURCE; })
       .sort(function (a, b) { return b.date.localeCompare(a.date); })[0];
     if (last && !$("splitPay").value) $("splitPay").value = (last.amountCents / 100).toFixed(2);
-    $("splitIncluded").checked = !!(last && last.accountId === "chk" && last.date >= addDays(todayISO(), -3) && last.date <= todayISO());
+    $("splitIncluded").checked = !!(last && last.accountId === state.settings.payAccount && last.date >= addDays(todayISO(), -3) && last.date <= todayISO());
     lastSplit = null;
     renderSplit();
   }
@@ -2067,7 +2078,8 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     $("payWhen").textContent = "Next payday " + pretty(pd.date, false) + " (" + pd.how + ")";
     var pay = cents($("splitPay"));
     if (!pay) { $("splitOut").innerHTML = '<div class="empty">Enter your net pay to see how to split it.</div>'; return; }
-    var sp = splitPaycheck(pay, $("splitIncluded").checked), r = sp.res;
+    var sp = splitPaycheck(pay, $("splitIncluded").checked), r = sp.res, srcName = acctName(sp.src);
+    $("splitIncLabel").firstChild.textContent = "Already in " + srcName;
     lastSplit = sp;
     var h = '<article class="panel"><div class="panel-head"><h2>What BofA Checking needs first</h2><span class="hint">Until ' + pretty(r.until) + '</span></div><dl class="kv">' +
       '<dt>Bills due (' + r.due.length + ')</dt><dd>' + fmt(r.bills) + '</dd>' +
@@ -2077,19 +2089,21 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       '<dt><b>Needed from this pay</b></dt><dd>' + fmt(sp.need) + '</dd></dl></article>';
     h += '<article class="panel"><div class="panel-head"><h2>Suggested split of ' + fmt(pay) + '</h2></div>';
     if (sp.short) {
-      h += '<div class="answer bad">This pay is ' + fmt(sp.short) + ' short of what your bills and essentials need. Keep all of it in BofA Checking and do not move money to Savings, Chase or US Bank this time.</div>' +
+      h += '<div class="answer bad">This pay is ' + fmt(sp.short) + ' short of what your bills and essentials need. ' + (sp.src === "chk" ? "Keep all of it in " + acctName("chk") : "Move all of it from " + srcName + " to " + acctName("chk")) + ' and do not move money to savings, investing or fun this time.</div>' +
+        (sp.src !== "chk" ? '<div class="btn-row" style="margin-top:12px"><button class="btn primary" type="button" id="splitRecord">Record moving ' + fmt(sp.pay) + ' to ' + esc(acctName("chk")) + '</button></div>' : "") +
         '<ul class="recs" style="margin-top:12px"><li>Pay the bills that are overdue or due soonest first.</li><li>Lower the "essentials per week" amount only if you can really spend less.</li><li>Pause fun spending until Checking is covered.</li><li>If a bill cannot be paid on time, call the company before the due date to ask for an extension.</li></ul>';
     } else {
       h += '<div class="table-wrap"><table><thead><tr><th>Account</th><th>Why</th><th class="num">Amount</th><th class="num">%</th></tr></thead><tbody>' +
         sp.rows.map(function (row) {
-          return '<tr><td><b style="color:' + ACCT_COLOR[row.id] + '">' + esc(acctName(row.id)) + '</b></td><td class="note">' + esc(row.why) + '</td><td class="num">' + fmt(row.cents) + '</td><td class="num">' + Math.round(row.cents / pay * 100) + '%</td></tr>';
+          return '<tr><td><b>' + esc(acctName(row.id)) + '</b>' + (row.stays ? ' <span class="chip">stays here</span>' : "") + '</td><td class="note">' + esc(row.why) + '</td><td class="num">' + fmt(row.cents) + '</td><td class="num">' + Math.round(row.cents / pay * 100) + '%</td></tr>';
         }).join("") + '</tbody></table></div>';
       var noTargets = !state.plan.savingsMonthlyCents && !state.plan.investMonthlyCents && !state.plan.funMonthlyCents;
       if (noTargets) h += '<p class="plan-note">You have no monthly targets yet, so everything left after bills goes to Savings. Set targets in Setup to split it your way.</p>';
       else if (sp.extra) h += '<p class="plan-note">Your targets are covered. The ' + fmt(sp.extra) + ' left over is added to Savings.</p>';
       else h += '<p class="plan-note">Not enough for all targets, so each one gets the same share of what is left after bills.</p>';
-      if (!sp.short && sp.rows.some(function (x) { return x.id !== "chk" && x.cents > 0; }))
-        h += '<div class="btn-row" style="margin-top:12px"><button class="btn primary" type="button" id="splitRecord">Record these transfers from Checking</button></div>';
+      h += '<p class="plan-note">Your pay lands in ' + esc(srcName) + '. The other amounts are transfers out of it.</p>';
+      if (sp.rows.some(function (x) { return !x.stays && x.cents > 0; }))
+        h += '<div class="btn-row" style="margin-top:12px"><button class="btn primary" type="button" id="splitRecord">Record these transfers from ' + esc(srcName) + '</button></div>';
     }
     h += '</article>';
     $("splitOut").innerHTML = h;
@@ -2562,12 +2576,12 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     if ((el = t.closest("#splitRecord"))) {
       var sp = lastSplit, today = todayISO();
       if (!sp) return;
-      var rows = sp.rows.filter(function (x) { return x.id !== "chk" && x.cents > 0; });
-      var dup = rows.some(function (x) { return isDuplicateTransfer("chk", x.id, x.cents, today); });
+      var src = sp.src, rows = sp.rows.filter(function (x) { return x.id !== src && x.cents > 0; });
+      var dup = rows.some(function (x) { return isDuplicateTransfer(src, x.id, x.cents, today); });
       confirmIfNeeded(el, dup ? "Some of these transfers are already recorded today. Recording again may duplicate them." : "", function () {
-        rows.forEach(function (x) { addTransfer("chk", x.id, x.cents, today, "Paycheck split"); });
+        rows.forEach(function (x) { addTransfer(src, x.id, x.cents, today, "Paycheck split"); });
         save(); renderAll();
-        toast("Recorded " + rows.length + " transfer" + (rows.length === 1 ? "" : "s") + " from " + acctName("chk"));
+        toast("Recorded " + rows.length + " transfer" + (rows.length === 1 ? "" : "s") + " from " + acctName(src));
       });
       return;
     }
@@ -3240,6 +3254,10 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
   });
 
 
+  $("payAccount").addEventListener("change", function () {
+    state.settings.payAccount = $("payAccount").value;
+    save(); renderAll(); toast("FedEx pay now goes into " + acctName(state.settings.payAccount));
+  });
   $("weekStart").addEventListener("change", function () {
     state.settings.weekStart = Number($("weekStart").value);
     save(); renderAll();
