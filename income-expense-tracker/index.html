@@ -793,8 +793,9 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
               <label class="field"><span>Amount</span><div class="money"><input type="number" id="tAmt" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div></label>
               <label class="field"><span>Date</span><input type="date" id="tDate"></label>
             </div>
+            <label class="field"><span>Cash comes from / goes to</span><select id="tCash" class="acct-select"><option value="inv">Chase</option><option value="chk">BofA Checking</option><option value="sav">BofA Savings</option><option value="fun">US Bank</option></select></label>
             <button class="btn primary" type="button" data-submit="tradeForm" id="tBtn">Record</button>
-            <p class="plan-note">A buy moves money from Chase cash into the investment. It is not income or an expense.</p>
+            <p class="plan-note">A buy moves money from that account into the investment (for example a Fidelity ETF). It is not income or an expense.</p>
           </form>
         </article>
         <article class="panel"><div class="panel-head"><h2>Buy and sell log</h2></div>
@@ -1281,7 +1282,8 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       if (!m || (m.type !== "buy" && m.type !== "sell") || !posCents(m.amountCents) || !isISODate(m.date)) return;
       if (!s.holdings.some(function (h) { return h.id === m.holdingId; })) return;
       s.invMoves.push({ id: String(m.id || uid()), holdingId: m.holdingId, type: m.type, amountCents: posCents(m.amountCents), date: m.date,
-        createdAt: typeof m.createdAt === "string" ? m.createdAt : null, voidedAt: typeof m.voidedAt === "string" ? m.voidedAt : null });
+        createdAt: typeof m.createdAt === "string" ? m.createdAt : null, voidedAt: typeof m.voidedAt === "string" ? m.voidedAt : null,
+        cashAccount: isAcct(m.cashAccount) ? m.cashAccount : "inv" });
     });
     arr(data.debts).forEach(function (d) {
       if (d && str(d.name, 60) && posCents(d.balanceCents)) s.debts.push({ id: String(d.id || uid()), name: str(d.name, 60), balanceCents: posCents(d.balanceCents), limitCents: posCents(d.limitCents) });
@@ -1863,8 +1865,9 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       if (t.from === id) out.push({ date: t.date, cents: -t.amountCents, label: "Transfer to " + acctName(t.to), kind: "transfer", created: t.createdAt });
       if (t.to === id) out.push({ date: t.date, cents: t.amountCents, label: "Transfer from " + acctName(t.from), kind: "transfer", created: t.createdAt });
     });
-    if (id === "inv") state.invMoves.forEach(function (m) {
-      if (m.voidedAt) return;
+    // A buy takes cash from the account that paid for it (Chase unless another one was chosen).
+    state.invMoves.forEach(function (m) {
+      if (m.voidedAt || (m.cashAccount || "inv") !== id) return;
       var h = holding(m.holdingId);
       out.push({ date: m.date, cents: m.type === "buy" ? -m.amountCents : m.amountCents, label: (m.type === "buy" ? "Bought " : "Sold ") + (h ? h.name : "investment"), kind: "trade", created: m.createdAt });
     });
@@ -2349,7 +2352,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     $("tradeEmpty").hidden = moves.length > 0;
     $("tradeBody").innerHTML = moves.map(function (m) {
       var h = holding(m.holdingId);
-      return '<tr class="' + (m.voidedAt ? "void" : "") + '"><td>' + pretty(m.date, false) + '</td><td>' + (m.type === "buy" ? "Buy" : "Sell") + '</td><td>' + esc(h ? h.name : "") + '</td><td class="num">' + fmt(m.amountCents) + '</td>' +
+      return '<tr class="' + (m.voidedAt ? "void" : "") + '"><td>' + pretty(m.date, false) + '</td><td>' + (m.type === "buy" ? "Buy" : "Sell") + '<div class="note">' + (m.type === "buy" ? "from " : "to ") + esc(acctName(m.cashAccount || "inv")) + '</div></td><td>' + esc(h ? h.name : "") + '</td><td class="num">' + fmt(m.amountCents) + '</td>' +
         '<td class="num">' + (m.voidedAt ? '<span class="chip">Cancelled</span>' : '<button class="btn small danger" type="button" data-voidtrade="' + esc(m.id) + '">Cancel</button>') + '</td></tr>';
     }).join("");
   }
@@ -2534,7 +2537,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
   };
 
   handlers.tradeForm = function () {
-    var type = $("tType").value, hid = $("tHold").value, c = cents($("tAmt")), date = $("tDate").value;
+    var type = $("tType").value, hid = $("tHold").value, c = cents($("tAmt")), date = $("tDate").value, cash = $("tCash").value;
     if (!c) return toast("Enter an amount greater than $0.");
     if (!isISODate(date) || date > todayISO()) return toast("Pick today or an earlier date.");
     var h = hid === NEW_SOURCE ? null : holding(hid);
@@ -2545,11 +2548,11 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       h = state.holdings.filter(function (x) { return sameName(x.name, name); })[0];
     }
     var warn = "";
-    if (type === "buy" && c > bal("inv")) warn = "Chase cash is only " + fmt(bal("inv")) + ". Record the transfer into Chase first so cash is not counted twice.";
+    if (type === "buy" && c > bal(cash)) warn = acctName(cash) + " only has " + fmt(bal(cash)) + ". Record the money coming into it first so cash is not counted twice.";
     if (type === "sell" && h && c > holdingStats(h).value) warn = "That is more than the recorded value of " + h.name + " (" + fmt(holdingStats(h).value) + ").";
     confirmIfNeeded($("tBtn"), warn, function () {
       if (!h) { h = { id: uid(), name: $("tNew").value.trim(), valuationCents: 0, valuationDate: null }; state.holdings.push(h); }
-      state.invMoves.push({ id: uid(), holdingId: h.id, type: type, amountCents: c, date: date, createdAt: new Date().toISOString(), voidedAt: null });
+      state.invMoves.push({ id: uid(), holdingId: h.id, type: type, amountCents: c, date: date, createdAt: new Date().toISOString(), voidedAt: null, cashAccount: cash });
       $("tAmt").value = ""; $("tNew").value = "";
       save(); renderAll(); $("tHold").value = h.id; $("tNewWrap").hidden = true;
       toast((type === "buy" ? "Bought " : "Sold ") + fmt(c) + " of " + h.name);
@@ -2747,9 +2750,24 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     Object.keys(state.incomeBudgets).forEach(function (s) { set[s] = 1; });
     return Object.keys(set).sort(byName);
   }
-  // Money moved from spending accounts into Savings or Chase (net) during a range.
+  // Accounts whose money counts as put aside. Chase only counts when the paycheck lands elsewhere.
+  function keptAccounts() {
+    var keep = { sav: 1 };
+    if (state.settings.payAccount !== "inv") keep.inv = 1;
+    return keep;
+  }
+  // Net cash bought into investments (buys minus sells) during a range.
+  function investedIn(r) {
+    var c = 0;
+    state.invMoves.forEach(function (m) {
+      if (m.voidedAt || !inRange(m.date, r)) return;
+      c += m.type === "buy" ? m.amountCents : -m.amountCents;
+    });
+    return c;
+  }
+  // Money moved from spending accounts into Savings or Chase, plus investment buys (net) during a range.
   function savedIn(r) {
-    var keep = { sav: 1, inv: 1 }, c = 0;
+    var keep = keptAccounts(), c = investedIn(r);
     state.transfers.forEach(function (t) {
       if (t.voidedAt || !inRange(t.date, r)) return;
       if (keep[t.to] && !keep[t.from]) c += t.amountCents;
@@ -2790,7 +2808,8 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     return { ym: ym, groups: g, totals: t, planned: planned, incomePlan: incomePlan, leftToBudget: incomePlan - planned };
   }
   function savedInto(id, r) {
-    var c = 0;
+    if (id === "inv" && !keptAccounts().inv) return investedIn(r);
+    var c = id === "inv" ? investedIn(r) : 0;
     state.transfers.forEach(function (t) {
       if (t.voidedAt || !inRange(t.date, r)) return;
       var other = id === "sav" ? "inv" : "sav";
