@@ -2693,8 +2693,10 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     var r = monthRange(ym), c = 0;
     state.recurring.forEach(function (x) {
       if (!x.active || x.type !== "income" || x.category !== src) return;
+      // Count paydays only from the first one this repeating pay produced.
+      var first = state.entries.filter(function (e) { return e.recurringId === x.id; }).map(function (e) { return e.date; }).sort()[0] || x.lastDate;
       var d = x.lastDate;
-      while (d > r[0]) d = addDays(d, -7);
+      while (d > r[0] && addDays(d, -7) >= first) d = addDays(d, -7);
       while (d < r[0]) d = addDays(d, 7);
       for (; d <= r[1]; d = addDays(d, 7)) c += x.amountCents;
     });
@@ -2756,7 +2758,8 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     var t = {};
     Object.keys(g).forEach(function (k) { t[k] = { budget: sum(g[k], function (x) { return x.budget; }), real: sum(g[k], function (x) { return x.real; }) }; });
     var planned = t.bill.budget + t.exp.budget + t.sub.budget + t.sav.budget;
-    var incomePlan = t.inc.budget || t.inc.real;
+    // Expected income never counts less than what already arrived.
+    var incomePlan = sum(g.inc, function (x) { return Math.max(x.budget, x.real); });
     return { ym: ym, groups: g, totals: t, planned: planned, incomePlan: incomePlan, leftToBudget: incomePlan - planned };
   }
   function savedInto(id, r) {
