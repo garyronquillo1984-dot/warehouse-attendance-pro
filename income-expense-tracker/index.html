@@ -850,6 +850,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
             <div class="row-2">
               <label class="field"><span>Debt name</span><input type="text" id="dName" maxlength="60" placeholder="e.g. Car loan"></label>
               <label class="field"><span>Amount owed today</span><div class="money"><input type="number" id="dAmt" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div></label>
+              <label class="field"><span>Credit limit (cards, optional)</span><div class="money"><input type="number" id="dLimit" min="0" step="0.01" inputmode="decimal" placeholder="None"></div></label>
             </div>
             <button class="btn primary" type="button" data-submit="debtForm">Save debt</button>
           </form>
@@ -1195,7 +1196,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       goals: [],      // {id, name, targetCents} in priority order
       holdings: [],   // {id, name, valuationCents, valuationDate}
       invMoves: [],   // {id, holdingId, type: buy|sell, amountCents, date, createdAt, voidedAt}
-      debts: [],      // {id, name, balanceCents}
+      debts: [],      // {id, name, balanceCents, limitCents (credit cards, 0 = none)}
       plan: { savingsMonthlyCents: 0, investMonthlyCents: 0, funMonthlyCents: 0, essentialsWeeklyCents: 0, cushionCents: 0 }
     };
   }
@@ -1283,7 +1284,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
         createdAt: typeof m.createdAt === "string" ? m.createdAt : null, voidedAt: typeof m.voidedAt === "string" ? m.voidedAt : null });
     });
     arr(data.debts).forEach(function (d) {
-      if (d && str(d.name, 60) && posCents(d.balanceCents)) s.debts.push({ id: String(d.id || uid()), name: str(d.name, 60), balanceCents: posCents(d.balanceCents) });
+      if (d && str(d.name, 60) && posCents(d.balanceCents)) s.debts.push({ id: String(d.id || uid()), name: str(d.name, 60), balanceCents: posCents(d.balanceCents), limitCents: posCents(d.limitCents) });
     });
     var cg = data.catGroups || {};
     Object.keys(cg).forEach(function (k) { if (k.trim() && ["bill", "exp", "sub"].indexOf(cg[k]) >= 0) s.catGroups[k] = cg[k]; });
@@ -2011,6 +2012,13 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
   }
   function funLevel(pct) { return pct === null ? "" : pct >= 100 ? "bad" : pct >= 75 ? "warn" : ""; }
 
+  // Credit card use: below 30% of the limit is the usual healthy range for a credit score.
+  function cardUse(d) {
+    if (!d.limitCents) return null;
+    var pct = Math.round(d.balanceCents / d.limitCents * 100);
+    return { pct: pct, available: Math.max(0, d.limitCents - d.balanceCents), level: pct >= 90 ? "bad" : pct >= 30 ? "warn" : "",
+      toHealthy: Math.max(0, d.balanceCents - Math.floor(d.limitCents * 0.3)) };
+  }
   function summary() {
     var c = checkingReserve(), f = funInfo(c), inv = investInfo();
     var banks = sum(ACCT_IDS, bal), debts = sum(state.debts, function (d) { return d.balanceCents; });
@@ -2128,6 +2136,11 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       list.push({ lvl: f.pct >= 100 ? "bad" : "warn", t: "Fun budget " + (f.pct >= 100 ? "used up" : f.pct + "% used"), d: "Spent " + fmt(f.spent) + " of " + fmt(f.budget) + " this month." });
     var t = totals("month");
     if (t.exp > t.inc) list.push({ lvl: "bad", t: "Spending is higher than income this month", d: "Expenses " + fmt(t.exp) + ", income " + fmt(t.inc) + "." });
+    state.debts.forEach(function (d) {
+      var u = cardUse(d);
+      if (u && u.pct >= 30) list.push({ lvl: u.pct >= 90 ? "bad" : "warn", t: d.name + " is " + u.pct + "% used",
+        d: fmt(d.balanceCents) + " of a " + fmt(d.limitCents) + " limit · " + fmt(u.available) + " available." });
+    });
     if (!list.length) list.push({ lvl: "ok", t: "Everything is on track", d: "No bills overdue and no budgets over their limit." });
     return list;
   }
@@ -2150,6 +2163,10 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     if (iv.cash > 0 && iv.monthGoal) out.push(fmt(iv.cash) + " in " + acctName("inv") + " is still cash. Record a buy when you invest it so the app separates it from cash.");
     if (!state.plan.funMonthlyCents) out.push("Set a monthly fun budget in Setup so the app can warn you at 75%, 90% and 100%.");
     if (!state.bills.length) out.push("Add your bills (rent, electricity, phone, loans) in Bills so the app can reserve money for them.");
+    state.debts.forEach(function (d) {
+      var u = cardUse(d);
+      if (u && u.toHealthy > 0) out.push("Pay " + fmt(u.toHealthy) + " on " + d.name + " to bring it under 30% of its limit (" + fmt(Math.floor(d.limitCents * 0.3)) + "). Keeping cards low helps your credit score; avoid new charges on it until then.");
+    });
     if (!out.length) out.push("You are on track. Keep using the paycheck split each payday.");
     return out;
   }
@@ -2192,7 +2209,11 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       stat("Invested", fmt(S.invested), "Not counted as bank cash") +
       stat("Fun money left", fmt(f.room), f.budget ? "of " + fmt(f.budget) + " this month" : "No budget set") +
       stat("Total wealth", fmt(S.wealth), "Banks + investments") +
-      (S.debts ? stat("Net worth", fmt(S.net), "After " + fmt(S.debts) + " of debt", S.net < 0 ? "bad" : "") : "");
+      (S.debts ? stat("Net worth", fmt(S.net), "After " + fmt(S.debts) + " of debt", S.net < 0 ? "bad" : "") : "") +
+      state.debts.filter(function (d) { return d.limitCents; }).map(function (d) {
+        var u = cardUse(d);
+        return stat(esc(d.name), u.pct + "% used", fmt(u.available) + " of " + fmt(d.limitCents) + " available", u.level === "bad" ? "bad" : "");
+      }).join("");
 
     // Where the money sits
     var parts = [
@@ -2385,7 +2406,11 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
   function renderSetupLists() {
     $("debtEmpty").hidden = state.debts.length > 0;
     $("debtList").innerHTML = state.debts.map(function (d) {
-      return '<li><span class="dot expense"></span><div class="grow t">' + esc(d.name) + ' · ' + fmt(d.balanceCents) + '</div><button class="btn small danger" type="button" data-deldebt="' + esc(d.id) + '">Remove</button></li>';
+      var u = cardUse(d);
+      return '<li style="display:grid;gap:6px"><div style="display:flex;gap:10px;align-items:center"><span class="dot expense"></span><div class="grow"><div class="t">' + esc(d.name) + ' · ' + fmt(d.balanceCents) + '</div>' +
+        (u ? '<div class="s">' + u.pct + '% of ' + fmt(d.limitCents) + ' limit used · ' + fmt(u.available) + ' available</div>' : '<div class="s">No credit limit set</div>') + '</div>' +
+        '<button class="btn small danger" type="button" data-deldebt="' + esc(d.id) + '">Remove</button></div>' +
+        (u ? '<div class="meter ' + u.level + '"><span style="width:' + Math.min(100, u.pct) + '%"></span></div>' : "") + '</li>';
     }).join("");
     var none = state.entries.filter(function (e) { return !e.accountId; });
     $("migratePanel").hidden = none.length === 0;
@@ -2544,12 +2569,14 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
   };
 
   handlers.debtForm = function () {
-    var name = $("dName").value.trim(), c = cents($("dAmt"));
+    var name = $("dName").value.trim(), c = cents($("dAmt")), lim = $("dLimit").value.trim() === "" ? null : centsAllowZero($("dLimit"));
     if (!name) return toast("Name the debt.");
     if (!c) return toast("Enter what you owe.");
+    if ($("dLimit").value.trim() !== "" && lim === null) return toast("The credit limit must be $0 or more.");
     var d = state.debts.filter(function (x) { return sameName(x.name, name); })[0];
-    if (d) d.balanceCents = c; else state.debts.push({ id: uid(), name: name, balanceCents: c });
-    $("dName").value = ""; $("dAmt").value = "";
+    if (d) { d.balanceCents = c; if (lim !== null) d.limitCents = lim; }
+    else state.debts.push({ id: uid(), name: name, balanceCents: c, limitCents: lim || 0 });
+    $("dName").value = ""; $("dAmt").value = ""; $("dLimit").value = "";
     save(); renderAll(); toast(d ? "Debt updated" : "Debt added");
   };
 
