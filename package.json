@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npm --prefix web ci && npm --prefix web run build",
     "db:reset": "./reset_local_db.sh",
-    "test:db": "./reset_local_db.sh && node tests/isolation.test.mjs"
+    "test:db": "./reset_local_db.sh && node tests/isolation.test.mjs && node tests/recruiting.test.mjs"
   },
   "devDependencies": {
     "pg": "^8.23.1"

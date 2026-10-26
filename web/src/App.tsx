@@ -1,3 +1,4 @@
+import { lazy, Suspense, type ComponentType } from 'react';
 import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import { useAuth } from './lib/auth';
 import { OrgProvider, useOrg, canManage } from './lib/org';
@@ -23,6 +24,28 @@ import EmployeeForm from './pages/EmployeeForm';
 import ImportEmployees from './pages/ImportEmployees';
 import Attendance from './pages/Attendance';
 import Reports from './pages/Reports';
+
+// The recruiting module and the public form load on first visit, keeping the attendance app light.
+function lazyPage(load: () => Promise<{ default: ComponentType }>) {
+  const Page = lazy(load);
+  return function LazyPage() {
+    return <Suspense fallback={<Loading />}><Page /></Suspense>;
+  };
+}
+const Apply = lazyPage(() => import('./pages/Apply'));
+const RecruitingLayout = lazyPage(() => import('./pages/recruiting/Layout'));
+const RecruitingDashboard = lazyPage(() => import('./pages/recruiting/Dashboard'));
+const Candidates = lazyPage(() => import('./pages/recruiting/Candidates'));
+const CandidateDetail = lazyPage(() => import('./pages/recruiting/CandidateDetail'));
+const Pipeline = lazyPage(() => import('./pages/recruiting/Pipeline'));
+const RecruitingTasks = lazyPage(() => import('./pages/recruiting/Tasks'));
+const Openings = lazyPage(() => import('./pages/recruiting/Openings'));
+const RecruitingCalendar = lazyPage(() => import('./pages/recruiting/Calendar'));
+const Sources = lazyPage(() => import('./pages/recruiting/Sources'));
+const Agencies = lazyPage(() => import('./pages/recruiting/Agencies'));
+const Templates = lazyPage(() => import('./pages/recruiting/Templates'));
+const RecruitingReport = lazyPage(() => import('./pages/recruiting/Report'));
+const RecruitingSettings = lazyPage(() => import('./pages/recruiting/Settings'));
 
 // Signed-out visitors only (signed-in users go to the app).
 function PublicOnly() {
@@ -73,6 +96,7 @@ export default function App() {
       <Route path="/demo" element={<Demo />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/privacy" element={<Privacy />} />
+      <Route path="/apply/:token" element={<Apply />} />
       <Route path="/invite" element={<OrgProvider><AcceptInvite /></OrgProvider>} />
       <Route element={<RequireAuth />}>
         <Route path="/setup" element={<Setup />} />
@@ -85,6 +109,21 @@ export default function App() {
           <Route path="/employees/import" element={<ImportEmployees />} />
           <Route path="/employees/:id" element={<EmployeeForm />} />
           <Route path="/reports" element={<Reports />} />
+          <Route path="/recruiting" element={<RecruitingLayout />}>
+            <Route index element={<RecruitingDashboard />} />
+            <Route path="candidates" element={<Candidates />} />
+            <Route path="candidates/new" element={<CandidateDetail />} />
+            <Route path="candidates/:id" element={<CandidateDetail />} />
+            <Route path="pipeline" element={<Pipeline />} />
+            <Route path="tasks" element={<RecruitingTasks />} />
+            <Route path="openings" element={<Openings />} />
+            <Route path="calendar" element={<RecruitingCalendar />} />
+            <Route path="sources" element={<Sources />} />
+            <Route path="agencies" element={<Agencies />} />
+            <Route path="templates" element={<Templates />} />
+            <Route path="report" element={<RecruitingReport />} />
+            <Route path="settings" element={<RecruitingSettings />} />
+          </Route>
           <Route path="/settings" element={<Settings />} />
           <Route path="/account" element={<Account />} />
         </Route>

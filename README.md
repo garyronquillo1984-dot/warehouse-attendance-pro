@@ -16,6 +16,7 @@ Each customer company's data is fully isolated by the database itself.
 | 5. Dashboard & reports | KPIs, 7 reports, CSV/Excel/PDF | Done |
 | 6. Licensing & Hotmart | Webhook edge function, inactive page, super admin | Done (needs the Hotmart token as a secret) |
 | 7. Demo & launch | Demo mode, legal pages, production deploy | Demo and legal pages done; own email domain pending |
+| 8. Recruiting | Bilingual (EN/ES) candidate database, public pre-registration form + QR, pipeline, tasks, openings, 90-day calendar, agency coordination, dashboard, supervisor reports | Built and tested locally; migrations not yet applied to Supabase. Spanish working docs in `docs/reclutamiento/` |
 
 ## Database
 
@@ -40,6 +41,9 @@ versions match the history of the Supabase project `warehouse-attendance-dev`
 | `20261007220500_schedule_license_expiry.sql` | Daily license expiry (pg_cron, 05:15 UTC) | Yes |
 | `20261008021217_demo.sql` | Live demo sandboxes (`start_demo`), admin lists skip demos | Yes |
 | `20261008021300_demo_purge.sql` | Hourly removal of demos older than 24 h | Run from the SQL Editor (contains DELETE) |
+| `20261026120000_recruiting_schema.sql` | Recruiting tables, RLS, automations, privacy-safe candidate audit | Not yet |
+| `20261026120100_recruiting_functions.sql` | Defaults, public intake form, hiring link to roster, outcomes, export log, sample data | Not yet |
+| `20261026120200_recruiting_retention_purge.sql` | Daily deletion of untouched candidate records (retention policy) | Not yet (contains DELETE: SQL Editor) |
 
 The last file contains `DELETE` statements inside functions, so Supabase requires a human
 confirmation; it was run by hand from Supabase → SQL Editor.
@@ -63,6 +67,8 @@ npm run test:db
 
 `tests/supabase_shim.sql` recreates the Supabase pieces the migrations need (roles, `auth.uid()`, default grants) **for local testing only — never run it on a real project.**
 
+`npm run test:db` also runs `tests/recruiting.test.mjs` (recruiting access control, privacy and automations).
+
 The suite impersonates real users (Owner, Admin, Supervisor of two companies, an outsider, an unconfirmed user, anonymous, the platform owner) and checks that every cross-company read, write, delete, privilege escalation and license bypass is blocked, and that legitimate work succeeds.
 
 ## Web app (`web/`)
@@ -84,6 +90,10 @@ npm run build    # output in web/dist (what Cloudflare serves)
 arriving, sign up and email confirmation, the setup wizard, settings, changing and resetting the
 password, someone signing up without a purchase, inviting a supervisor, and a refund locking
 access. Emails are captured to `~/.wap-localstack/mail`. Screenshots go to `tests/e2e/screenshots/`.
+
+`tests/e2e/run_recruiting.sh` drives the recruiting module the same way: defaults, settings, an authorized
+opening, a pre-registration QR form filled anonymously in Spanish on a phone, contact log, message preparation,
+hiring onto the roster, first attendance moving the pipeline, the 90-day plan, agency log, reports, exports and sample data.
 
 ## Hotmart webhook (`supabase/functions/hotmart-webhook`)
 

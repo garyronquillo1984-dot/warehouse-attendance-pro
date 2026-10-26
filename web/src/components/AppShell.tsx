@@ -56,6 +56,7 @@ export default function AppShell() {
           <NavLink to="/attendance">Attendance</NavLink>
           <NavLink to="/employees">Employees</NavLink>
           <NavLink to="/reports">Reports</NavLink>
+          <NavLink to="/recruiting">Recruiting</NavLink>
           {canManage(current) && <NavLink to="/settings">Settings</NavLink>}
           <NavLink to="/account" className="wide-only">My account</NavLink>
           {platformAdmin && <NavLink to="/admin" className="wide-only">Admin</NavLink>}
