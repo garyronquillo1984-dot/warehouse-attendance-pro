@@ -41,8 +41,8 @@ versions match the history of the Supabase project `warehouse-attendance-dev`
 | `20261007220500_schedule_license_expiry.sql` | Daily license expiry (pg_cron, 05:15 UTC) | Yes |
 | `20261008021217_demo.sql` | Live demo sandboxes (`start_demo`), admin lists skip demos | Yes |
 | `20261008021300_demo_purge.sql` | Hourly removal of demos older than 24 h | Run from the SQL Editor (contains DELETE) |
-| `20261026120000_recruiting_schema.sql` | Recruiting tables, RLS, automations, privacy-safe candidate audit | Not yet |
-| `20261026120100_recruiting_functions.sql` | Defaults, public intake form, hiring link to roster, outcomes, export log, sample data | Not yet |
+| `20261026120000_recruiting_schema.sql` | Recruiting tables, RLS, automations, privacy-safe candidate audit | Yes (2026-10-26; tables empty until the module ships) |
+| `20261026120100_recruiting_functions.sql` | Defaults, public intake form, hiring link to roster, outcomes, export log, sample data | Not yet (contains DELETE: approve the confirmation or run from the SQL Editor) |
 | `20261026120200_recruiting_retention_purge.sql` | Daily deletion of untouched candidate records (retention policy) | Not yet (contains DELETE: SQL Editor) |
 
 The last file contains `DELETE` statements inside functions, so Supabase requires a human
