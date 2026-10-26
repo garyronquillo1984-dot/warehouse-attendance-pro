@@ -198,6 +198,9 @@ th { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color:
 .c-inc { color: var(--income); }
 .c-exp { color: var(--expense); }
 .c-neg { color: var(--danger); }
+.wk-up { color: var(--income); font-weight: 600; }
+.wk-down { color: var(--danger); font-weight: 600; }
+.wk-name { margin: 4px 0 2px; font-size: 1rem; }
 
 /* ---- Forms ---- */
 form { display: grid; gap: 12px; }
@@ -780,6 +783,10 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
         <div class="table-wrap"><table><thead><tr><th>Investment</th><th class="num">Put in</th><th class="num">Value now</th><th class="num">Gain</th><th>New value</th></tr></thead><tbody id="holdBody"></tbody></table></div>
         <div class="empty" id="holdEmpty">No investments recorded. Money in Chase counts as cash until you record a purchase.</div>
       </article>
+      <article class="panel" id="weeklyPanel" hidden>
+        <div class="panel-head"><h2>Weekly growth</h2><span class="hint" id="weeklyHint"></span></div>
+        <div id="weeklyBody"></div>
+      </article>
       <div class="grid-2">
         <article class="panel">
           <div class="panel-head"><h2>Record a buy or sell</h2></div>
@@ -1195,7 +1202,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       transfers: [],  // {id, from, to, amountCents, date, purpose, createdAt, voidedAt}
       bills: [],      // {id, name, category, amountCents, freq: monthly|weekly, day, active}
       goals: [],      // {id, name, targetCents} in priority order
-      holdings: [],   // {id, name, valuationCents, valuationDate}
+      holdings: [],   // {id, name, valuationCents, valuationDate, history: [{date, valueCents}]}
       invMoves: [],   // {id, holdingId, type: buy|sell, amountCents, date, createdAt, voidedAt}
       debts: [],      // {id, name, balanceCents, limitCents (credit cards, 0 = none)}
       plan: { savingsMonthlyCents: 0, investMonthlyCents: 0, funMonthlyCents: 0, essentialsWeeklyCents: 0, cushionCents: 0 }
@@ -1276,7 +1283,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     arr(data.holdings).forEach(function (h) {
       if (!h || !str(h.name, 60)) return;
       s.holdings.push({ id: String(h.id || uid()), name: str(h.name, 60), valuationCents: isFinite(h.valuationCents) && h.valuationCents >= 0 ? Math.round(h.valuationCents) : 0,
-        valuationDate: isISODate(h.valuationDate) ? h.valuationDate : null });
+        valuationDate: isISODate(h.valuationDate) ? h.valuationDate : null, history: normHistory(h.history) });
     });
     arr(data.invMoves).forEach(function (m) {
       if (!m || (m.type !== "buy" && m.type !== "sell") || !posCents(m.amountCents) || !isISODate(m.date)) return;
@@ -1904,6 +1911,43 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
   }
   function changeIn(id, r) { return balanceAt(id, minISO(r[1], todayISO())) - balanceAt(id, addDays(r[0], -1)); }
 
+  // One value per date, oldest first.
+  function normHistory(list) {
+    var byDate = {};
+    arr(list).forEach(function (x) {
+      if (x && isISODate(x.date) && isFinite(x.valueCents) && x.valueCents >= 0) byDate[x.date] = Math.round(x.valueCents);
+    });
+    return Object.keys(byDate).sort().slice(-520).map(function (d) { return { date: d, valueCents: byDate[d] }; });
+  }
+  function recordValue(h, v, date) {
+    h.valuationCents = v; h.valuationDate = date;
+    h.history = normHistory((h.history || []).concat([{ date: date, valueCents: v }]));
+  }
+  // Friday that closes the week a date belongs to (Saturday to Friday).
+  function weekFriday(iso) { return addDays(iso, (5 - parseISO(iso).getDay() + 7) % 7); }
+  // Net money bought into a holding in (from, to].
+  function netFlows(h, from, to) {
+    return sum(state.invMoves.filter(function (m) {
+      return !m.voidedAt && m.holdingId === h.id && (from === null || m.date > from) && m.date <= to;
+    }), function (m) { return m.type === "buy" ? m.amountCents : -m.amountCents; });
+  }
+  // Last value of each week, compared with the week before. Growth leaves out money you added.
+  function weeklyGrowth(h) {
+    var weeks = [];
+    (h.history || []).forEach(function (x) {
+      var f = weekFriday(x.date), last = weeks[weeks.length - 1];
+      if (last && last.friday === f) { last.date = x.date; last.value = x.valueCents; }
+      else weeks.push({ friday: f, date: x.date, value: x.valueCents });
+    });
+    var prev = null;
+    return weeks.map(function (w) {
+      var added = netFlows(h, prev ? prev.date : null, w.date), base = (prev ? prev.value : 0) + added;
+      var change = w.value - base;
+      var row = { friday: w.friday, date: w.date, value: w.value, added: added, change: change, pct: base > 0 ? change / base * 100 : null, first: !prev };
+      prev = w;
+      return row;
+    });
+  }
   function holdingStats(h) {
     var put = 0, after = 0;
     state.invMoves.forEach(function (m) {
@@ -2327,6 +2371,31 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     }).join("");
   }
 
+  function pctText(p) { return p === null ? "—" : (p > 0 ? "+" : "") + p.toFixed(2) + "%"; }
+  function renderWeekly() {
+    var withHist = state.holdings.filter(function (h) { return h.history && h.history.length; });
+    $("weeklyPanel").hidden = !withHist.length;
+    if (!withHist.length) return;
+    var today = todayISO(), fri = weekFriday(today);
+    $("weeklyHint").textContent = fri === today ? "It's Friday: save this week's value above" : "Next check-in: Friday " + pretty(fri, false);
+    $("weeklyBody").innerHTML = withHist.map(function (h) {
+      var rows = weeklyGrowth(h), st = holdingStats(h);
+      var totalPct = st.put > 0 ? st.gain / st.put * 100 : null;
+      var body = rows.slice().reverse().map(function (r) {
+        var cls = r.change > 0 ? "wk-up" : r.change < 0 ? "wk-down" : "";
+        var chg = (r.change > 0 ? "+" : "") + fmt(r.change);
+        var when = r.date === r.friday ? "Fri " + pretty(r.friday, false) : "Fri " + pretty(r.friday, false) + '<div class="note">so far (' + pretty(r.date, false) + ')</div>';
+        return '<tr><td>' + when + (r.first ? '<div class="note">first check-in</div>' : "") + '</td>' +
+          '<td class="num">' + fmt(r.value) + '</td><td class="num">' + (r.added ? money(r.added) : "—") + '</td>' +
+          '<td class="num ' + cls + '">' + chg + '<div>' + pctText(r.pct) + '</div></td></tr>';
+      }).join("");
+      return '<h3 class="wk-name">' + esc(h.name) + '</h3>' +
+        '<p class="note">Since you started: ' + money(st.gain) + " (" + pctText(totalPct) + ") on " + fmt(st.put) + " put in.</p>" +
+        '<div class="table-wrap"><table><thead><tr><th>Week</th><th class="num">Value</th><th class="num">Added</th><th class="num">Growth</th></tr></thead><tbody>' + body + '</tbody></table></div>' +
+        '<p class="note">Growth = value change minus money you added or took out that week, so deposits don\'t count as gains. The first check-in is compared with what you put in.</p>';
+    }).join("");
+  }
+
   function renderInvest(iv) {
     $("invTitle").textContent = acctName("inv");
     $("invSrc").textContent = srcLine("inv");
@@ -2342,6 +2411,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
         '<td><div style="display:flex;gap:6px"><input class="hv" type="number" min="0" step="0.01" inputmode="decimal" id="hv-' + esc(h.id) + '" placeholder="0.00" aria-label="New value of ' + esc(h.name) + '">' +
         '<button class="btn small" type="button" data-holdsave="' + esc(h.id) + '">Save</button></div></td></tr>';
     }).join("");
+    renderWeekly();
     var sel = $("tHold"), cur = sel.value;
     sel.innerHTML = "";
     state.holdings.forEach(function (h) { sel.add(new Option(h.name, h.id)); });
@@ -2658,7 +2728,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       var h = holding(el.dataset.holdsave), v = centsAllowZero($("hv-" + el.dataset.holdsave));
       if (!h) return;
       if (v === null) return toast("Enter the current value, like 1520.40.");
-      h.valuationCents = v; h.valuationDate = todayISO();
+      recordValue(h, v, todayISO());
       save(); renderAll(); toast(h.name + " value updated");
       return;
     }
