@@ -163,7 +163,7 @@ pre.msg { white-space: pre-wrap; font: inherit; margin: 0; padding: 12px 14px; b
 .timeline { list-style: none; margin: 0; padding: 0 0 0 12px; border-left: 3px solid var(--line); display: grid; gap: 8px; }
 ol.proto { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
 
-dialog { border: 0; padding: 0; border-radius: 10px; width: min(860px, calc(100vw - 24px)); max-height: calc(100vh - 32px); background: var(--floor); color: var(--ink); }
+dialog { border: 0; padding: 0; border-radius: 10px; width: min(860px, calc(100vw - 24px)); max-height: calc(100vh - 32px); overflow: auto; overscroll-behavior: contain; background: var(--floor); color: var(--ink); }
 dialog::backdrop { background: rgb(0 0 0 / .45); }
 .dlg-head { position: sticky; top: 0; z-index: 2; background: var(--bar); color: var(--bar-ink); padding: 12px 16px; display: flex; justify-content: space-between; gap: 10px; align-items: center; border-bottom: 4px solid var(--tape); }
 .dlg-head .btn.ghost { color: var(--bar-ink); border-color: color-mix(in srgb, var(--bar-ink) 35%, transparent); }
@@ -208,6 +208,8 @@ const L = o => (o ? o[S.lang] : '');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const $ = s => document.querySelector(s);
 const today = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
+// Local calendar day of a stored timestamp (stored in UTC), or of a plain date / local date-time.
+const dayOf = v => { if (!v) return ''; if (v.length > 10 && /(Z|[+-]\d\d:\d\d)$/.test(v)) { const d = new Date(v); return isNaN(d) ? v.slice(0, 10) : new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); } return v.slice(0, 10); };
 const addDays = (d, n) => { const x = new Date(d + 'T12:00:00Z'); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
 const days = (a, b) => Math.round((Date.parse(b + 'T12:00:00Z') - Date.parse(a + 'T12:00:00Z')) / 864e5);
 const newId = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)).replace(/[^a-zA-Z0-9-]/g, '');
@@ -340,7 +342,9 @@ async function boot() {
   if (!db || !uid) { S.offline = true; render(); return; }
   S.db = db; S.uid = uid;
   let pending = Object.keys(LISTS).length + 1;
-  const done = () => { if (--pending === 0) { S.ready = true; render(); } };
+  const done = () => { if (--pending === 0 && !S.ready) { S.ready = true; render(); pruneTasks(); } };
+  // If the store is slow to answer, say so instead of loading forever; data appears when it arrives.
+  setTimeout(() => { if (!S.ready) { S.slow = true; render(); } }, 15000);
   const firstOf = {};
   for (const [name, key] of Object.entries(LISTS)) {
     col(name).onSnapshot(snap => {
@@ -352,6 +356,14 @@ async function boot() {
     S.settings = snap.exists ? { ...snap.data() } : {};
     if (!firstOf.settings) { firstOf.settings = true; done(); } else liveRender();
   }, () => { if (!firstOf.settings) { firstOf.settings = true; done(); } });
+}
+// Completed tasks older than 45 days are removed once a day, so storage stays well under its limit.
+async function pruneTasks() {
+  const key = 'rw.pruned', d0 = today();
+  try { if (localStorage.getItem(key) === d0) return; } catch {}
+  const cut = addDays(d0, -45), old = S.tasks.filter(x => x.done && dayOf(x.doneAt || '') && dayOf(x.doneAt) < cut).slice(0, 300);
+  for (const x of old) { try { await del('tasks', x.id); } catch { break; } }
+  try { localStorage.setItem(key, d0); } catch {}
 }
 // Snapshots re-render the current section, never an open editor or the kiosk.
 function liveRender() { if (S.ready) render(); }
@@ -371,7 +383,7 @@ function readiness(c, o) {
   if (o && (c.exp || []).includes(o.position)) { s += 20; r.push(t('experiencia en el puesto', 'role experience')); }
   else if ((c.exp || []).some(e => e !== 'none')) { s += 10; r.push(t('experiencia en almacén', 'warehouse experience')); }
   if ((c.equip || []).length) { s += 10; r.push(t('equipos', 'equipment')); }
-  if (c.lastContactAt && days(c.lastContactAt.slice(0, 10), today()) <= 7) { s += 15; r.push(t('contactado esta semana', 'contacted this week')); }
+  if (c.lastContactAt && days(dayOf(c.lastContactAt), today()) <= 7) { s += 15; r.push(t('contactado esta semana', 'contacted this week')); }
   return { score: Math.min(100, s), reasons: r };
 }
 function inPool(c, o) {
@@ -405,7 +417,7 @@ function autoTasks(c, prev) {
     if (atLeast(c.stage, 'prescreened') || c.stage === 'closed') close.push(`${c.id}--prescreen`);
     if (atLeast(c.stage, 'started') || c.stage === 'closed') S.tasks.filter(x => x.candId === c.id && ['confirm', 'day_check'].includes(x.kind) && !x.done).forEach(x => close.push(x.id));
   }
-  if (c.interviewAt && c.interviewAt !== prev?.interviewAt) mk('interview-' + c.interviewAt.replace(/[^0-9]/g, ''), 'interview', 'Entrevista ' + c.interviewAt.slice(11, 16), 'Interview ' + c.interviewAt.slice(11, 16), c.interviewAt.slice(0, 10));
+  if (c.interviewAt && c.interviewAt !== prev?.interviewAt) mk('interview-' + c.interviewAt.replace(/[^0-9]/g, ''), 'interview', 'Entrevista ' + c.interviewAt.slice(11, 16), 'Interview ' + c.interviewAt.slice(11, 16), dayOf(c.interviewAt));
   if (c.firstDay && ['assigned', 'first_day_confirmed'].includes(c.stage) && (c.firstDay !== prev?.firstDay || c.stage !== prev?.stage)) {
     const conf = addDays(c.firstDay, -1);
     mk('confirm-' + c.firstDay, 'confirm', 'Confirmar primer día ' + c.firstDay, 'Confirm first day ' + c.firstDay, conf < d0 ? d0 : conf);
@@ -463,7 +475,10 @@ function render() {
     if (['fuentes', 'mensajes', 'agencias'].includes(S.tab)) v.innerHTML += VIEWS[S.tab]();
     return;
   }
-  if (!S.ready) return;
+  if (!S.ready) {
+    if (S.slow) v.innerHTML = `<div class="panel empty"><h2>${t('Tu almacenamiento está tardando en responder', 'Your storage is taking a while to respond')}</h2><p class="muted">${t('Revisa tu conexión y recarga la página. Tus datos no se pierden.', 'Check your connection and reload the page. Your data is not lost.')}</p></div>`;
+    return;
+  }
   v.innerHTML = (VIEWS[S.tab] || VIEWS.panel)();
   if (S.tab === 'candidatos') renderCandList();
   if (S.tab === 'kit') paintQr();
@@ -475,12 +490,12 @@ const VIEWS = {};
 VIEWS.panel = () => {
   const st = ST(), d0 = today();
   const from = S.period === '1' ? d0 : addDays(d0, -(Number(S.period) - 1));
-  const inP = iso => iso && iso.slice(0, 10) >= from && iso.slice(0, 10) <= d0;
+  const inP = iso => iso && dayOf(iso) >= from && dayOf(iso) <= d0;
   const all = S.cands, cohort = all.filter(c => inP(c.registeredAt));
   const r = min => cohort.filter(c => reached(c, min)).length;
-  const contactsToday = all.filter(c => (c.log || []).some(l => l.kind !== 'note' && l.at.slice(0, 10) === d0)).length;
+  const contactsToday = all.filter(c => (c.log || []).some(l => l.kind !== 'note' && dayOf(l.at) === d0)).length;
   const open = S.tasks.filter(x => !x.done);
-  const stale = all.filter(c => c.stage !== 'closed' && !atLeast(c.stage, 'started') && days((c.lastContactAt || c.registeredAt).slice(0, 10), d0) >= st.stale).length;
+  const stale = all.filter(c => c.stage !== 'closed' && !atLeast(c.stage, 'started') && days(dayOf(c.lastContactAt || c.registeredAt), d0) >= st.stale).length;
   const fdPeople = all.filter(c => c.firstDay && c.firstDay >= from && c.firstDay < d0 && (atLeast(c.stage, 'assigned') || c.closedReason === 'no_show'));
   const showed = fdPeople.filter(c => atLeast(c.stage, 'started') || (c.hist || []).some(h => h.to === 'started')).length;
   const ret = ['d7', 'd30', 'd60'].map(k => { const el = all.filter(c => c.ret && c.ret[k]); return { k, n: el.length, y: el.filter(c => c.ret[k] === 'yes').length }; });
@@ -508,7 +523,7 @@ VIEWS.panel = () => {
     <p class="muted">${t('Agrega a la primera persona, abre el Modo registro en una tableta durante un evento, o importa respuestas de un formulario (Ajustes y datos). Para practicar, carga datos de ejemplo identificados.', 'Add the first person, open Registration mode on a tablet at an event, or import form responses (Settings & data). To practice, load labelled sample data.')}</p>
     <div class="row"><button class="btn" data-act="new-cand">${t('Agregar candidato', 'Add candidate')}</button><button class="btn ghost" data-act="samples-on">${t('Cargar datos de ejemplo', 'Load sample data')}</button></div></div>` : ''}
   <section class="stack"><h2>${t('Hoy', 'Today')}</h2><div class="kpis">
-    ${kpi(t('Nuevos registros hoy', 'New registrations today'), all.filter(c => (c.registeredAt || '').slice(0, 10) === d0).length, null, true)}
+    ${kpi(t('Nuevos registros hoy', 'New registrations today'), all.filter(c => dayOf(c.registeredAt || '') === d0).length, null, true)}
     ${kpi(t('Personas contactadas hoy', 'People contacted today'), contactsToday, t('meta', 'goal') + ' ' + st.gContacts)}
     ${kpi(t('Tareas para hoy', 'Tasks due today'), open.filter(x => x.due === d0).length)}
     ${kpi(t('Seguimientos vencidos', 'Overdue follow-ups'), open.filter(x => x.due < d0).length, stale ? t(`${stale} sin contacto ${st.stale}+ días`, `${stale} without contact ${st.stale}+ days`) : null)}
@@ -519,7 +534,7 @@ VIEWS.panel = () => {
     ${kpi(t('Contactados', 'Contacted'), r('contacted'))}${kpi(t('Interesados', 'Interested'), r('interested'))}
     ${kpi(t('Preseleccionados', 'Pre-selected'), r('prescreened'))}${kpi(t('Completaron el proceso', 'Completed process'), r('approved'))}
     ${kpi(t('Incorporaciones confirmadas', 'Confirmed starts'), r('first_day_confirmed'))}
-    ${kpi(t('Entrevistas en el período', 'Interviews in period'), all.filter(c => inP(c.interviewAt)).length, t(`${all.filter(c => c.interviewAt && c.interviewAt.slice(0, 10) >= d0).length} próximas`, `${all.filter(c => c.interviewAt && c.interviewAt.slice(0, 10) >= d0).length} upcoming`))}
+    ${kpi(t('Entrevistas en el período', 'Interviews in period'), all.filter(c => inP(c.interviewAt)).length, t(`${all.filter(c => c.interviewAt && dayOf(c.interviewAt) >= d0).length} próximas`, `${all.filter(c => c.interviewAt && dayOf(c.interviewAt) >= d0).length} upcoming`))}
   </div></section>
   <section class="stack"><h2>${t('Asistencia y retención', 'Attendance and retention')}</h2><div class="kpis">
     ${kpi(t('Autorizados para trabajar ahora', 'Authorized to work now'), all.filter(c => phaseOf(c.stage) === 'authorized').length, null, true)}
@@ -573,7 +588,7 @@ function filteredCands() {
     if (f.ready && c.availableFrom && c.availableFrom > d0) return false;
     if (f.dup && !c.dupOf) return false;
     if (f.hold && c.agency !== 'reported') return false;
-    if (f.stale && (c.stage === 'closed' || atLeast(c.stage, 'started') || days((c.lastContactAt || c.registeredAt).slice(0, 10), d0) < st.stale)) return false;
+    if (f.stale && (c.stage === 'closed' || atLeast(c.stage, 'started') || days(dayOf(c.lastContactAt || c.registeredAt), d0) < st.stale)) return false;
     if (q && !(nameOf(c).toLowerCase().includes(q) || (c.email || '').includes(q) || (dig.length >= 3 && (c.phone || '').includes(dig)))) return false;
     return true;
   }).sort((a, b) => (b.registeredAt || '').localeCompare(a.registeredAt || ''));
@@ -585,7 +600,7 @@ function renderCandList() {
   if (!S.cands.length) { box.innerHTML = `<div class="empty"><p class="muted">${t('Aún no hay candidatos. Usa “Agregar candidato” o el Modo registro.', 'No candidates yet. Use “Add candidate” or Registration mode.')}</p></div>`; return; }
   if (!list.length) { box.innerHTML = `<p class="muted" style="padding:16px 20px">${t('Nadie coincide con estos filtros.', 'No one matches these filters.')}</p>`; return; }
   box.innerHTML = `<div class="scroll"><table class="cards"><thead><tr><th>${t('Nombre', 'Name')}</th><th>${t('Etapa', 'Stage')}</th><th>${t('Teléfono', 'Phone')}</th><th>${t('Turnos', 'Shifts')}</th><th>${t('Último contacto', 'Last contact')}</th><th>${t('Próxima acción', 'Next action')}</th></tr></thead><tbody>
-  ${list.slice(0, 400).map(c => { const lc = c.lastContactAt ? days(c.lastContactAt.slice(0, 10), d0) : null; return `<tr class="click" data-open="${esc(c.id)}">
+  ${list.slice(0, 400).map(c => { const lc = c.lastContactAt ? days(dayOf(c.lastContactAt), d0) : null; return `<tr class="click" data-open="${esc(c.id)}">
     <td><b>${esc(nameOf(c))}</b>${sampleTag(c)}${c.dupOf ? `<span class="tag warn">${t('Posible duplicado', 'Possible duplicate')}</span>` : ''}${c.agency === 'reported' ? `<span class="tag warn">${t('Otra agencia', 'Agency hold')}</span>` : ''}<div class="small muted">${t('Preparación', 'Readiness')} ${readiness(c).score}</div></td>
     <td data-l="${t('Etapa', 'Stage')}">${stagePill(c.stage)}</td>
     <td data-l="${t('Teléfono', 'Phone')}" class="mono">${esc(fmtPhone(c.phone) || c.email || '')}</td>
@@ -606,7 +621,7 @@ VIEWS.pipeline = () => `<div class="head"><div><h1>${t('Pipeline de selección y
 
 VIEWS.tareas = () => {
   const d0 = today(), open = S.tasks.filter(x => !x.done).sort((a, b) => a.due.localeCompare(b.due));
-  const doneRecent = S.tasks.filter(x => x.done && (x.doneAt || '').slice(0, 10) >= addDays(d0, -7));
+  const doneRecent = S.tasks.filter(x => x.done && dayOf(x.doneAt || '') >= addDays(d0, -7));
   const grp = [[t('Vencidas', 'Overdue'), open.filter(x => x.due < d0)], [t('Hoy', 'Today'), open.filter(x => x.due === d0)], [t('Próximos 7 días', 'Next 7 days'), open.filter(x => x.due > d0 && x.due <= addDays(d0, 7))], [t('Más adelante', 'Later'), open.filter(x => x.due > addDays(d0, 7))], [t('Hechas (7 días)', 'Done (7 days)'), doneRecent]];
   return `<div class="head"><div><h1>${t('Tareas y recordatorios', 'Tasks and reminders')}</h1><p class="muted">${t('Se crean solas: primer contacto, preselección, entrevista, confirmar primer día, ¿se presentó?, seguimiento 7/30/60 días, recontacto.', 'Created automatically: first contact, pre-screen, interview, confirm first day, did they show?, 7/30/60-day check-ins, recontact.')}</p></div></div>
   ${grp.filter(([, l]) => l.length).map(([n, l]) => `<section class="panel"><h2>${esc(n)} <span class="muted">${l.length}</span></h2>${taskList(l)}</section>`).join('') || `<p class="muted">${t('Nada pendiente.', 'Nothing pending.')}</p>`}
@@ -685,7 +700,7 @@ VIEWS.agencias = () => {
   const openIssues = S.coord.filter(x => x.status === 'open');
   const agenda = [t('Coordinación semanal — ', 'Weekly coordination — ') + today(), t('1. Necesidades del cliente esta semana (según el contacto del sitio)', '1. Client needs this week (from the site contact)'),
     ...(auth.length ? auth.map(o => `• ${o.title}: ${t('necesarias', 'needed')} ${o.headcount}, ${t('colocadas por nosotros', 'placed by us')} ${S.cands.filter(c => c.openingId === o.id && atLeast(c.stage, 'assigned')).length}, ${t('grupo listo', 'ready pool')} ${S.cands.filter(c => inPool(c, o)).length}`) : [t('• (agregar vacantes autorizadas)', '• (add authorized openings)')]),
-    t('2. Cobertura: qué agencia cubre qué puestos / turnos', '2. Coverage: which agency covers which positions / shifts'), t(`3. Pendientes abiertos: ${openIssues.length}`, `3. Open items: ${openIssues.length}`), ...openIssues.slice(0, 10).map(x => '• ' + x.title),
+    t('2. Cobertura: qué agencia cubre qué puestos / turnos', '2. Coverage: which agency covers which positions / shifts'), t(`3. Pendientes abiertos: ${openIssues.length}`, `3. Open items: ${openIssues.length}`), ...dayOf(openIssues).map(x => '• ' + x.title),
     t('4. Asistencia / primer día (sin datos personales en notas compartidas)', '4. Attendance / first day (no personal data in shared notes)'), t('5. Acuerdos y responsables', '5. Agreements and owners')].join('\n');
   return `<div class="head"><div><h1>${t('Coordinación entre agencias', 'Inter-agency coordination')}</h1><p class="muted">${t('El cliente quiere que las agencias trabajen juntas, no que compitan. Aquí solo hay información operativa; nunca datos de candidatos.', 'The client wants agencies to work together, not compete. Only operational information here; never candidate data.')}</p></div></div>
   <section class="panel"><h2>${t('Protocolo', 'Protocol')}</h2><ol class="proto">
@@ -726,7 +741,7 @@ function reportRange() {
 // Every number in a report comes from the records in this page; nothing is estimated.
 function reportData() {
   const st = ST(), d0 = today(), [from, to] = reportRange();
-  const inP = iso => !!iso && iso.slice(0, 10) >= from && iso.slice(0, 10) <= to;
+  const inP = iso => !!iso && dayOf(iso) >= from && dayOf(iso) <= to;
   const all = S.cands, cohort = all.filter(c => inP(c.registeredAt)), moves = {};
   all.forEach(c => (c.hist || []).forEach(h => { if (inP(h.at)) moves[h.to] = (moves[h.to] || 0) + 1; }));
   const contacts = all.flatMap(c => (c.log || []).filter(l => l.kind !== 'note' && inP(l.at)).map(() => c.id));
@@ -768,7 +783,7 @@ function reportData() {
   const activities = S.acts.filter(a => a.date >= from && a.date <= to).sort((a, b) => a.date.localeCompare(b.date)).map(a => [a.date, a.title, lab(ACT_KINDS, a.kind), lab(ACT_STATUS, a.status), a.partner || '—', a.target ?? '—', a.results || '—']);
   const upcoming = S.acts.filter(a => a.date > to && a.date <= addDays(to, 14) && a.status !== 'cancelled').sort((a, b) => a.date.localeCompare(b.date)).map(a => [a.date, a.title, lab(ACT_KINDS, a.kind), lab(ACT_STATUS, a.status)]);
   const coordination = coord.sort((a, b) => a.date.localeCompare(b.date)).map(x => [x.date, lab(COORD_KINDS, x.kind), x.title, x.status === 'open' ? t('Abierto', 'Open') : t('Resuelto', 'Resolved'), x.decisions || '—']);
-  const candidates = all.filter(c => inP(c.registeredAt) || inP(c.stageAt) || inP(c.lastContactAt)).map(c => [nameOf(c), stageName(c.stage), srcName(c.source), (c.registeredAt || '').slice(0, 10), (c.shifts || []).map(s => lab(SHIFTS, s)).join(', '), c.firstDay || '—', c.nextAction || '—']);
+  const candidates = all.filter(c => inP(c.registeredAt) || inP(c.stageAt) || inP(c.lastContactAt)).map(c => [nameOf(c), stageName(c.stage), srcName(c.source), dayOf(c.registeredAt || ''), (c.shifts || []).map(s => lab(SHIFTS, s)).join(', '), c.firstDay || '—', c.nextAction || '—']);
   const titles = { daily: t('Reporte diario de reclutamiento', 'Daily Recruiting Report'), weekly: t('Reporte semanal de reclutamiento', 'Weekly Recruiting Report'), monthly: t('Reporte mensual de reclutamiento', 'Monthly Recruiting Report'), custom: t('Reporte de reclutamiento', 'Recruiting Report') };
   return { st, from, to, title: titles[S.rkind] || titles.daily, period: from === to ? from : `${from} → ${to}`, kpis, funnel, sources, openings, pipeline, activities, upcoming, coordination, candidates,
     sample: all.some(c => c.sample), comments: (S.rcomments || '').trim() };
@@ -954,6 +969,7 @@ VIEWS.ajustes = () => {
     <p class="small muted">${t('Para respuestas de un formulario de Google/Microsoft o una hoja de cálculo. Columnas reconocidas: nombre/first name, apellido/last name, teléfono/phone, correo/email, ciudad/city, código postal/zip, idioma/language, turno/shift, consentimiento/consent (sí/yes). Solo se marca consentimiento si la columna lo dice.', 'For Google/Microsoft form responses or a spreadsheet. Recognized columns: first name, last name, phone, email, city, zip, language, shift, consent (yes/sí). Consent is set only when the column says so.')}</p>
     <input type="file" id="csv-file" accept=".csv,text/csv"><textarea id="csv-text" placeholder="${t('…o pega aquí el CSV', '…or paste the CSV here')}"></textarea><div><button class="btn ghost" data-act="import">${t('Importar', 'Import')}</button></div></section>
   <section class="panel"><h2>${t('Privacidad y datos', 'Privacy and data')}</h2>
+    <p class="small"><b>${t('Registros guardados', 'Records stored')}:</b> ${(S.cands.length + S.tasks.length + S.openings.length + S.acts.length + S.agencies.length + S.coord.length).toLocaleString()} ${t('de 25,000 posibles', 'of 25,000 allowed')} · ${S.cands.length} ${t('candidatos', 'candidates')}, ${S.tasks.length} ${t('tareas', 'tasks')}. ${t('Las tareas completadas de más de 45 días se borran solas.', 'Completed tasks older than 45 days are removed automatically.')}</p>
     <p>${t('Tus candidatos se guardan en un espacio privado de esta página: solo tú los ves, aunque compartas la página. No pidas ni escribas aquí Seguro Social, identificaciones, datos bancarios, fecha de nacimiento, salud ni estatus migratorio.', 'Your candidates are stored in a private space of this page: only you see them, even if you share the page. Never ask for or type here SSN, ID numbers, bank details, date of birth, health or immigration status.')}</p>
     <p class="small muted">${t('Conservación: borra cada mes a quienes llevan más de 12 meses sin actividad (o lo que diga la política de tu agencia), y elimina enseguida a quien lo pida.', 'Retention: each month delete people with no activity for 12+ months (or per your agency’s policy), and delete anyone who asks right away.')}</p>
     <div class="row">${S.dl ? `<button class="btn ghost" data-act="export-cands">${t('Exportar candidatos (CSV)', 'Export candidates (CSV)')}</button>` : ''}<button class="btn ghost" data-act="purge-old">${t('Revisar inactivos +12 meses', 'Review inactive 12+ months')}</button>
@@ -967,10 +983,10 @@ function callQueue() {
   const add = (c, prio, es, en, tpl) => { if (!c || !c.consent?.contact) return; const cur = seen.get(c.id); if (!cur || prio < cur.prio) seen.set(c.id, { c, prio, why: t(es, en), tpl }); };
   for (const c of S.cands) {
     if (c.agency === 'reported') continue;
-    const last = (c.lastContactAt || c.registeredAt || d0).slice(0, 10), idle = days(last, d0);
+    const last = dayOf(c.lastContactAt || c.registeredAt || d0), idle = days(last, d0);
     if (c.firstDay === tomorrow && ['assigned', 'first_day_confirmed'].includes(c.stage)) add(c, 1, 'Primer día mañana: confirmar', 'First day tomorrow: confirm', 'first_day');
     if (c.firstDay === d0 && ['assigned', 'first_day_confirmed'].includes(c.stage)) add(c, 1, 'Primer día hoy: ¿se presentó?', 'First day today: did they show?', 'first_day');
-    if (c.interviewAt && c.interviewAt.slice(0, 10) === tomorrow) add(c, 2, 'Cita mañana: recordatorio', 'Appointment tomorrow: reminder', 'interview');
+    if (c.interviewAt && dayOf(c.interviewAt) === tomorrow) add(c, 2, 'Cita mañana: recordatorio', 'Appointment tomorrow: reminder', 'interview');
     if (['new', 'pending_contact'].includes(c.stage) && !(c.log || []).length) add(c, 3, 'Nuevo: primer contacto', 'New: first contact', 'first');
     if (c.stage === 'closed' && c.recontactOn && c.recontactOn <= d0 && idle > 0) add(c, 5, 'Pidió recontacto', 'Asked to be recontacted', 'recontact');
     if (['prescreened', 'approved', 'available'].includes(c.stage) && idle >= 14) add(c, 6, 'Confirmar disponibilidad (14+ días)', 'Confirm availability (14+ days)', 'availability');
@@ -981,7 +997,7 @@ function callQueue() {
 }
 VIEWS.llamadas = () => {
   const d0 = today(), st = ST(), q = callQueue();
-  const done = S.cands.filter(c => (c.log || []).some(l => l.kind !== 'note' && l.at.slice(0, 10) === d0)).length;
+  const done = S.cands.filter(c => (c.log || []).some(l => l.kind !== 'note' && dayOf(l.at) === d0)).length;
   const pctDone = Math.min(100, Math.round((done / Math.max(1, st.gContacts)) * 100));
   return `<div class="head"><div><h1>${t('Lista de llamadas de hoy', 'Today’s call list')}</h1><p class="muted">${t('En orden de prioridad: primeros días, citas, nuevos, tareas, recontactos, disponibilidad y sin contacto. Solo personas con consentimiento; quien está con otra agencia no aparece.', 'In priority order: first days, appointments, new people, tasks, recontacts, availability and no contact. Only people with consent; anyone held for another agency is left out.')}</p></div></div>
   <section class="panel"><div class="row" style="justify-content:space-between"><b>${t(`Contactados hoy: ${done} de ${st.gContacts}`, `Contacted today: ${done} of ${st.gContacts}`)}</b><span class="muted small">${q.length} ${t('pendientes en la lista', 'left on the list')}</span></div>
@@ -998,7 +1014,7 @@ VIEWS.llamadas = () => {
 function messageFor(c, code) {
   const st = ST(), lg = c.lang === 'es' ? 'es' : 'en', tp = TEMPLATES.find(x => x.code === code) || TEMPLATES[1];
   return fill(tp[lg][1], { first_name: c.first, my_name: st.myName, my_phone: st.myPhone, company: st.company, apply_link: st.applyLink,
-    shift: (c.shifts || []).map(s => SHIFTS.find(x => x.key === s)?.[lg]).join(' / '), date: c.firstDay || (c.interviewAt || '').slice(0, 10), time: (c.interviewAt || '').slice(11, 16) });
+    shift: (c.shifts || []).map(s => SHIFTS.find(x => x.key === s)?.[lg]).join(' / '), date: c.firstDay || dayOf(c.interviewAt || ''), time: (c.interviewAt || '').slice(11, 16) });
 }
 
 // ---------------------------------------------------------------- recruiting kit (QR, flyer, cards)
@@ -1238,7 +1254,7 @@ function openCandidate(id) {
   const myTasks = S.tasks.filter(x => x.candId === c.id).sort((a, b) => a.due.localeCompare(b.due));
   const tplOpts = TEMPLATES.filter(x => !['social', 'script', 'board'].includes(x.ch));
   openDlg(nameOf(c), `
-  <div class="row">${stagePill(c.stage)}${sampleTag(c)}<span class="small muted">${t('Registrado', 'Registered')} ${esc((c.registeredAt || '').slice(0, 10))} · ${t('Preparación', 'Readiness')} ${r.score}/100 (${esc(r.reasons.join(', ') || '—')})</span></div>
+  <div class="row">${stagePill(c.stage)}${sampleTag(c)}<span class="small muted">${t('Registrado', 'Registered')} ${esc(dayOf(c.registeredAt || ''))} · ${t('Preparación', 'Readiness')} ${r.score}/100 (${esc(r.reasons.join(', ') || '—')})</span></div>
   ${c.consent?.contact ? `<p>${c.phone ? `<b class="mono">${esc(fmtPhone(c.phone))}</b> <button class="btn ghost sm" data-copytext="${esc(c.phone)}">${t('Copiar número', 'Copy number')}</button> ` : ''}${c.email ? `<span class="mono">${esc(c.email)}</span>` : ''}</p>` : `<p class="note bad">${t('Sin consentimiento de contacto: no contactar.', 'No consent to contact: do not reach out.')}</p>`}
   ${dup ? `<div class="note">${t('Posible duplicado de', 'Possible duplicate of')} <button class="linkbtn" data-open="${esc(dup.id)}">${esc(nameOf(dup))}</button>. ${t('Conserva un solo registro.', 'Keep one record.')} <button class="linkbtn" data-act="not-dup" data-id="${esc(c.id)}">${t('No es duplicado', 'Not a duplicate')}</button></div>` : ''}
   ${c.agency === 'reported' ? `<div class="note bad">${t('Dice que otra agencia lo colocó en este cliente. No lo proceses ni intentes transferirlo. Escala a tu supervisor y registra el resultado en Agencias.', 'Says another agency placed them at this client. Do not process or try to move them. Escalate to your supervisor and record the outcome under Agencies.')}</div>` : ''}
@@ -1447,7 +1463,7 @@ async function saveCsv(name, rows) {
 }
 function exportCands() {
   saveCsv(`candidatos_${today()}.csv`, [[t('Nombre', 'First name'), t('Apellido', 'Last name'), t('Teléfono', 'Phone'), 'Email', t('Ciudad', 'City'), 'ZIP', t('Idioma', 'Language'), t('Etapa', 'Stage'), t('Fuente', 'Source'), t('Registro', 'Registered'), t('Turnos', 'Shifts'), t('Disponible desde', 'Available from'), t('Último contacto', 'Last contact'), t('Próxima acción', 'Next action'), t('Consentimiento', 'Consent'), t('Ejemplo', 'Sample')],
-    ...S.cands.map(c => [c.first, c.last, fmtPhone(c.phone), c.email, c.city, c.zip, c.lang, stageName(c.stage), srcName(c.source), (c.registeredAt || '').slice(0, 10), (c.shifts || []).join(' '), c.availableFrom, (c.lastContactAt || '').slice(0, 10), c.nextAction, c.consent?.contact ? 'yes' : 'no', c.sample ? 'SAMPLE' : ''])]);
+    ...S.cands.map(c => [c.first, c.last, fmtPhone(c.phone), c.email, c.city, c.zip, c.lang, stageName(c.stage), srcName(c.source), dayOf(c.registeredAt || ''), (c.shifts || []).join(' '), c.availableFrom, dayOf(c.lastContactAt || ''), c.nextAction, c.consent?.contact ? 'yes' : 'no', c.sample ? 'SAMPLE' : ''])]);
 }
 function parseCsv(text) {
   const rows = []; let row = [], cell = '', q = false;
@@ -1568,8 +1584,8 @@ document.addEventListener('click', async e => {
   else if (act === 'del-agency') { if (await safe(() => del('agencies', ds.id), t('Agencia eliminada', 'Agency deleted'))) d_close(); }
   else if (act === 'import') { const f = $('#csv-file').files[0]; const text = f ? await f.text() : $('#csv-text').value; if (text.trim()) await importCsv(text); }
   else if (act === 'purge-old') {
-    const cut = addDays(today(), -365), old = S.cands.filter(c => !atLeast(c.stage, 'started') && ((c.lastContactAt || c.registeredAt || '').slice(0, 10) < cut));
-    openDlg(t('Inactivos más de 12 meses', 'Inactive 12+ months'), old.length ? `<p>${t(`${old.length} registros sin actividad en 12 meses. Elimínalos si la política de tu agencia lo indica.`, `${old.length} records with no activity in 12 months. Delete them if your agency’s policy says so.`)}</p><ul class="list">${old.map(c => `<li>${esc(nameOf(c))} <span class="small muted">${esc((c.lastContactAt || c.registeredAt).slice(0, 10))}</span></li>`).join('')}</ul><div><button class="btn danger" data-act="purge-yes">${t('Eliminar estos registros', 'Delete these records')}</button></div>` : `<p>${t('No hay registros inactivos por más de 12 meses.', 'No records inactive for more than 12 months.')}</p>`);
+    const cut = addDays(today(), -365), old = S.cands.filter(c => !atLeast(c.stage, 'started') && (dayOf(c.lastContactAt || c.registeredAt || '') < cut));
+    openDlg(t('Inactivos más de 12 meses', 'Inactive 12+ months'), old.length ? `<p>${t(`${old.length} registros sin actividad en 12 meses. Elimínalos si la política de tu agencia lo indica.`, `${old.length} records with no activity in 12 months. Delete them if your agency’s policy says so.`)}</p><ul class="list">${old.map(c => `<li>${esc(nameOf(c))} <span class="small muted">${esc(dayOf(c.lastContactAt || c.registeredAt))}</span></li>`).join('')}</ul><div><button class="btn danger" data-act="purge-yes">${t('Eliminar estos registros', 'Delete these records')}</button></div>` : `<p>${t('No hay registros inactivos por más de 12 meses.', 'No records inactive for more than 12 months.')}</p>`);
     S._purge = old.map(c => c.id);
   }
   else if (act === 'purge-yes') { for (const id of S._purge || []) { for (const x of S.tasks.filter(x => x.candId === id)) await safe(() => del('tasks', x.id)); await safe(() => del('candidates', id)); } toast(t('Registros eliminados', 'Records deleted')); d_close(); }
