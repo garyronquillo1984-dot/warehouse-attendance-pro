@@ -1,7 +1,7 @@
 <title>Top Tier HR</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700&family=Cormorant+Garamond:wght@500;600&display=swap">
 <style>
 /* Layout: a warehouse floor board — charcoal frame, concrete floor, one safety-yellow tape line marking where you are. */
 :root {
@@ -19,8 +19,9 @@
   --stop-soft: #FBE9E7;
   --warn-soft: #FFF4D2;
   --focus: #2E6BE6;
-  --bar: #1B2220;
-  --bar-ink: #EEF0EC;
+  --bar: #433B36;
+  --bar-ink: #F0E9E1;
+  --brand: 'Cormorant Garamond', 'Times New Roman', Georgia, serif;
   --display: 'Barlow Semi Condensed', 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;
   --body: 'Barlow', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --r: 8px;
@@ -29,13 +30,13 @@
   :root:not([data-theme="light"]) {
     --floor: #121715; --panel: #1A201E; --panel-2: #212825; --ink: #E7ECE8; --muted: #A1ABA6; --line: #333E39;
     --tape: #E5B620; --tape-ink: #121715; --go: #43A976; --go-soft: #1B3127; --stop: #EF7468; --stop-soft: #3A1E1B;
-    --warn-soft: #39311A; --focus: #7EA6FF; --bar: #0B0F0E; --bar-ink: #E7ECE8; color-scheme: dark;
+    --warn-soft: #39311A; --focus: #7EA6FF; --bar: #2E2723; --bar-ink: #F0E9E1; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --floor: #121715; --panel: #1A201E; --panel-2: #212825; --ink: #E7ECE8; --muted: #A1ABA6; --line: #333E39;
   --tape: #E5B620; --tape-ink: #121715; --go: #43A976; --go-soft: #1B3127; --stop: #EF7468; --stop-soft: #3A1E1B;
-  --warn-soft: #39311A; --focus: #7EA6FF; --bar: #0B0F0E; --bar-ink: #E7ECE8; color-scheme: dark;
+  --warn-soft: #39311A; --focus: #7EA6FF; --bar: #2E2723; --bar-ink: #F0E9E1; color-scheme: dark;
 }
 * { box-sizing: border-box; }
 body { background: var(--floor); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.45; font-variant-numeric: tabular-nums; }
@@ -49,7 +50,8 @@ a { color: inherit; }
 
 .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bar); color: var(--bar-ink); border-bottom: 5px solid var(--tape); }
 .top-in { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-.brand { font-family: var(--display); font-weight: 700; font-size: 1.15rem; letter-spacing: .01em; }
+.brand { font-family: var(--brand); font-weight: 600; font-size: 1.6rem; line-height: 1.1; }
+.brand small { font-family: var(--body); }
 .brand small { font-family: var(--body); font-weight: 500; opacity: .7; font-size: .8rem; margin-left: 8px; }
 @media (max-width: 600px) { .brand small { display: none; } }
 .spacer { flex: 1; }
@@ -175,7 +177,7 @@ dialog::backdrop { background: rgb(0 0 0 / .45); }
 
 <header class="top">
   <div class="top-in">
-    <div class="brand">Top Tier HR <small>Recruiting · Winit Florence · 7050 New Buffington Rd, Florence, KY 41042</small></div>
+    <div class="brand">Top Tier HR <small title="Top Tier HR is a DBA of OC Staffing and HR Solutions LLC">Recruiting · Winit Florence · 7050 New Buffington Rd, Florence, KY 41042</small></div>
     <div class="spacer"></div>
     <div class="seg" role="group" aria-label="Language / Idioma">
       <button id="lang-en" aria-pressed="true">EN</button><button id="lang-es" aria-pressed="false">ES</button>
@@ -198,7 +200,8 @@ const S = {
   db: null, uid: null, ready: false, offline: false, dl: null,
   cands: [], tasks: [], openings: [], acts: [], agencies: [], coord: [], settings: {},
   f: { q: '', phase: '', stage: '', source: '', shift: '', pos: '', ready: false, stale: false, dup: false, hold: false, closed: false },
-  period: '30', rkind: 'daily', rday: null, kioskSource: 'kiosk',
+  period: '30', rkind: 'daily', rday: null, kioskSource: 'kiosk', rnames: false,
+  rcomments: (() => { try { return localStorage.getItem('rw.rcomments') || ''; } catch { return ''; } })(),
 };
 const t = (es, en) => (S.lang === 'en' ? en : es);
 const L = o => (o ? o[S.lang] : '');
@@ -708,53 +711,214 @@ VIEWS.mensajes = () => {
     <pre class="msg" id="tpl-${tp.code}-${lg}">${esc(fill(tp[lg][1], { company: st.company, my_name: st.myName, my_phone: st.myPhone, apply_link: st.applyLink }))}</pre><div><button class="btn ghost sm" data-copy="tpl-${tp.code}-${lg}">${t('Copiar', 'Copy')}</button></div></section>`).join('')).join('')}</div>`;
 };
 
-VIEWS.reportes = () => {
-  const st = ST(), d0 = today(), day = S.rday || d0;
-  const wd = new Date(day + 'T12:00:00Z').getUTCDay() || 7;
-  const from = S.rkind === 'daily' ? day : addDays(day, 1 - wd);
-  const to = S.rkind === 'daily' ? day : (addDays(from, 6) > d0 ? d0 : addDays(from, 6));
-  const inP = iso => iso && iso.slice(0, 10) >= from && iso.slice(0, 10) <= to;
-  const all = S.cands, moves = {};
+// ---------------------------------------------------------------- reports (screen, Excel, PDF)
+const BRAND = { name: 'Top Tier HR', dba: 'a DBA of OC Staffing and HR Solutions LLC', site: 'Kentucky · Win.It America, 7050 New Buffington Rd, Florence, KY 41042' };
+function reportRange() {
+  const d0 = today(), day = S.rday || d0;
+  if (S.rkind === 'weekly') { const wd = new Date(day + 'T12:00:00Z').getUTCDay() || 7, f = addDays(day, 1 - wd); return [f, addDays(f, 6) > d0 ? d0 : addDays(f, 6)]; }
+  if (S.rkind === 'monthly') { const f = day.slice(0, 8) + '01', e = addDays(addDays(f, 32).slice(0, 8) + '01', -1); return [f, e > d0 ? d0 : e]; }
+  if (S.rkind === 'custom') { const f = S.rfrom || addDays(d0, -29), e = S.rto || d0; return f <= e ? [f, e] : [e, f]; }
+  return [day, day];
+}
+// Every number in a report comes from the records in this page; nothing is estimated.
+function reportData() {
+  const st = ST(), d0 = today(), [from, to] = reportRange();
+  const inP = iso => !!iso && iso.slice(0, 10) >= from && iso.slice(0, 10) <= to;
+  const all = S.cands, cohort = all.filter(c => inP(c.registeredAt)), moves = {};
   all.forEach(c => (c.hist || []).forEach(h => { if (inP(h.at)) moves[h.to] = (moves[h.to] || 0) + 1; }));
   const contacts = all.flatMap(c => (c.log || []).filter(l => l.kind !== 'note' && inP(l.at)).map(() => c.id));
-  const nDays = S.rkind === 'daily' ? 1 : Math.min(5, days(from, to) + 1);
+  const workdays = Math.max(1, Math.min(days(from, to) + 1, Math.round((days(from, to) + 1) * 5 / 7) || 1));
+  const weeks = Math.max(1, (days(from, to) + 1) / 7);
   const fd = all.filter(c => c.firstDay && c.firstDay >= from && c.firstDay <= to && c.firstDay < d0 && (atLeast(c.stage, 'assigned') || c.closedReason === 'no_show'));
   const showed = fd.filter(c => atLeast(c.stage, 'started')).length;
-  const r30 = all.filter(c => c.ret && c.ret.d30);
   const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
+  const ret = k => { const el = all.filter(c => c.ret && c.ret[k]); return pct(el.filter(c => c.ret[k] === 'yes').length, el.length) + (el.length ? ` (${el.filter(c => c.ret[k] === 'yes').length}/${el.length})` : ''); };
   const coord = S.coord.filter(x => x.date >= from && x.date <= to);
-  const rows = [
-    [t('Nuevos registros', 'New registrations'), all.filter(c => inP(c.registeredAt)).length, ''],
-    [t('Personas contactadas', 'People contacted'), new Set(contacts).size, `${t('meta', 'goal')} ${st.gContacts * nDays}`],
+  const kpis = [
+    [t('Nuevos registros', 'New registrations'), cohort.length, ''],
+    [t('Personas contactadas', 'People contacted'), new Set(contacts).size, `${t('meta', 'goal')} ${st.gContacts * workdays}`],
     [t('Intentos de contacto registrados', 'Contact attempts logged'), contacts.length, ''],
-    [t('Pasaron a preselección', 'Moved to pre-selected'), moves.prescreened || 0, `${t('meta', 'goal')} ${S.rkind === 'weekly' ? st.gPrescreen : Math.ceil(st.gPrescreen / 5)}`],
-    [t('Entrevistas / citas en el período', 'Interviews in period'), all.filter(c => inP(c.interviewAt)).length, `${t('meta', 'goal')} ${S.rkind === 'weekly' ? st.gInterviews : Math.ceil(st.gInterviews / 5)}`],
-    [t('Aprobados por el proceso', 'Approved by hiring process'), moves.approved || 0, ''],
+    [t('Pasaron a preselección', 'Moved to pre-selected'), moves.prescreened || 0, `${t('meta', 'goal')} ${Math.round(st.gPrescreen * weeks)}`],
+    [t('Entrevistas / citas en el período', 'Interviews / appointments'), all.filter(c => inP(c.interviewAt)).length, `${t('meta', 'goal')} ${Math.round(st.gInterviews * weeks)}`],
+    [t('Aprobados por el proceso de contratación', 'Approved by hiring process'), moves.approved || 0, ''],
     [t('Primeros días confirmados', 'First days confirmed'), moves.first_day_confirmed || 0, ''],
-    [t('Se presentaron (primer día)', 'Showed up (first day)'), moves.started || 0, ''],
+    [t('Se presentaron a trabajar', 'Showed up to work'), moves.started || 0, ''],
     [t('No se presentaron', 'No-shows'), all.filter(c => c.closedReason === 'no_show' && inP(c.stageAt)).length, ''],
-    [t('Asistencia al primer día', 'First-day show rate'), pct(showed, fd.length), `${t('meta', 'goal')} ${st.gShow}%`],
-    [t('Retención a 30 días (acumulada)', '30-day retention (to date)'), pct(r30.filter(c => c.ret.d30 === 'yes').length, r30.length), `${t('meta', 'goal')} ${st.gRet30}%`],
+    [t('Asistencia al primer día', 'First-day show rate'), pct(showed, fd.length) + (fd.length ? ` (${showed}/${fd.length})` : ''), `${t('meta', 'goal')} ${st.gShow}%`],
+    [t('Retención 7 días (acumulada)', '7-day retention (to date)'), ret('d7'), ''],
+    [t('Retención 30 días (acumulada)', '30-day retention (to date)'), ret('d30'), `${t('meta', 'goal')} ${st.gRet30}%`],
+    [t('Retención 60 días (acumulada)', '60-day retention (to date)'), ret('d60'), ''],
     [t('Autorizados aún sin colocar', 'Authorized, not yet placed'), all.filter(c => ['approved', 'available'].includes(c.stage)).length, ''],
-    [t('Seguimientos vencidos ahora', 'Overdue follow-ups now'), S.tasks.filter(x => !x.done && x.due < d0).length, ''],
+    [t('Seguimientos vencidos (hoy)', 'Overdue follow-ups (today)'), S.tasks.filter(x => !x.done && x.due < d0).length, ''],
     [t('Registros de coordinación entre agencias', 'Agency coordination entries'), coord.length, `${coord.filter(x => x.kind === 'escalation').length} ${t('escalamientos', 'escalations')}`],
   ];
-  const opens = S.openings.filter(o => o.status === 'authorized').map(o => `• ${o.title}: ${o.headcount} / ${all.filter(c => c.openingId === o.id && atLeast(c.stage, 'assigned')).length} / ${all.filter(c => inPool(c, o)).length}`);
-  const srcCount = {}; all.filter(c => inP(c.registeredAt)).forEach(c => { const k = c.source || 'other'; srcCount[k] ||= [0, 0]; srcCount[k][0]++; if (reached(c, 'started')) srcCount[k][1]++; });
-  const title = S.rkind === 'daily' ? t('Reporte diario de reclutamiento', 'Daily recruiting report') : t('Reporte semanal de reclutamiento', 'Weekly recruiting report');
-  const text = [`${title} — ${st.company} — ${from === to ? from : from + ' → ' + to}`,
-    all.some(c => c.sample) ? t('NOTA: incluye datos de EJEMPLO (no son resultados reales).', 'NOTE: includes SAMPLE data (not real results).') : null, '',
-    ...rows.map(([a, b, c]) => `• ${a}: ${b}${c ? ` (${c})` : ''}`), '',
-    t('Vacantes autorizadas (necesarias / colocadas / grupo listo):', 'Authorized openings (needed / placed / ready pool):'), ...(opens.length ? opens : [t('• ninguna registrada', '• none recorded')]), '',
-    t('Fuentes del período (registrados → iniciaron):', 'Sources this period (registered → started):'), ...(Object.keys(srcCount).length ? Object.entries(srcCount).map(([k, [a, b]]) => `• ${srcName(k)}: ${a} → ${b}`) : [t('• sin registros', '• no registrations')])].filter(x => x !== null).join('\n');
-  S.lastReport = { text, rows, title, from, to };
-  return `<div class="head"><div><h1>${t('Reportes para mi supervisor', 'Reports for my supervisor')}</h1><p class="muted">${t('Solo cantidades: sin nombres, teléfonos ni correos.', 'Counts only: no names, phones or emails.')}</p></div></div>
-  <div class="filters"><div class="chips"><button class="chip" data-rkind="daily" aria-pressed="${S.rkind === 'daily'}">${t('Diario', 'Daily')}</button><button class="chip" data-rkind="weekly" aria-pressed="${S.rkind === 'weekly'}">${t('Semanal', 'Weekly')}</button></div>
-    <label class="f" style="max-width:220px">${S.rkind === 'daily' ? t('Día', 'Day') : t('Un día de la semana', 'Any day of the week')}<input type="date" id="rday" value="${day}" max="${d0}"></label></div>
-  <section class="panel"><h2>${esc(title)}</h2><p class="small muted">${from === to ? from : from + ' → ' + to}</p>
-    <div class="scroll"><table><tbody>${rows.map(([a, b, c]) => `<tr><td>${esc(a)}</td><td class="n"><b>${esc(b)}</b></td><td class="small muted">${esc(c)}</td></tr>`).join('')}</tbody></table></div></section>
-  <section class="panel"><h2>${t('Texto para correo o chat', 'Text for email or chat')}</h2><pre class="msg" id="report-text">${esc(text)}</pre>
-    <div class="row"><button class="btn" data-copy="report-text">${t('Copiar reporte', 'Copy report')}</button>${S.dl ? `<button class="btn ghost" data-act="export-report">CSV</button>` : ''}</div></section>`;
+  const funnelSteps = [['contacted', t('Contactados', 'Contacted')], ['interested', t('Interesados', 'Interested')], ['prescreened', t('Preseleccionados', 'Pre-selected')], ['approved', t('Aprobados', 'Approved')], ['first_day_confirmed', t('Primer día confirmado', 'First day confirmed')], ['started', t('Se presentaron', 'Showed up')]];
+  const funnel = [[t('Registrados', 'Registered'), cohort.length, cohort.length ? '100%' : '—'], ...funnelSteps.map(([k, n]) => { const v = cohort.filter(c => reached(c, k)).length; return [n, v, pct(v, cohort.length)]; })];
+  const months = Math.max(1, (days(from, to) + 1) / 30.4), bySrc = {};
+  cohort.forEach(c => (bySrc[c.source || 'other'] ||= []).push(c));
+  const sources = Object.entries(bySrc).sort((a, b) => b[1].length - a[1].length).map(([k, cs]) => {
+    const started = cs.filter(c => reached(c, 'started')).length, spend = st.spend?.[k] ? Math.round(st.spend[k] * months * 100) / 100 : null;
+    return [srcName(k), cs.length, cs.filter(c => reached(c, 'contacted')).length, cs.filter(c => reached(c, 'prescreened')).length, cs.filter(c => reached(c, 'approved')).length, started, pct(started, cs.length), spend === null ? '—' : '$' + spend.toFixed(2), spend === null ? '—' : '$' + (spend / cs.length).toFixed(2)];
+  });
+  const openings = S.openings.filter(o => o.status !== 'closed' || (o.filledOn && o.filledOn >= from)).map(o => [o.title, lab(POSITIONS, o.position), o.shift || '—', lab(OPEN_STATUS, o.status), o.headcount, all.filter(c => c.openingId === o.id && atLeast(c.stage, 'assigned')).length, all.filter(c => inPool(c, o)).length, o.targetDate || '—']);
+  const pipeline = STAGES.map((s, i) => [s.key === 'closed' ? '—' : i + 1, L(s), L(PHASES.find(p => p.key === s.phase)), all.filter(c => c.stage === s.key).length]);
+  const activities = S.acts.filter(a => a.date >= from && a.date <= to).sort((a, b) => a.date.localeCompare(b.date)).map(a => [a.date, a.title, lab(ACT_KINDS, a.kind), lab(ACT_STATUS, a.status), a.partner || '—', a.target ?? '—', a.results || '—']);
+  const upcoming = S.acts.filter(a => a.date > to && a.date <= addDays(to, 14) && a.status !== 'cancelled').sort((a, b) => a.date.localeCompare(b.date)).map(a => [a.date, a.title, lab(ACT_KINDS, a.kind), lab(ACT_STATUS, a.status)]);
+  const coordination = coord.sort((a, b) => a.date.localeCompare(b.date)).map(x => [x.date, lab(COORD_KINDS, x.kind), x.title, x.status === 'open' ? t('Abierto', 'Open') : t('Resuelto', 'Resolved'), x.decisions || '—']);
+  const candidates = all.filter(c => inP(c.registeredAt) || inP(c.stageAt) || inP(c.lastContactAt)).map(c => [nameOf(c), stageName(c.stage), srcName(c.source), (c.registeredAt || '').slice(0, 10), (c.shifts || []).map(s => lab(SHIFTS, s)).join(', '), c.firstDay || '—', c.nextAction || '—']);
+  const titles = { daily: t('Reporte diario de reclutamiento', 'Daily Recruiting Report'), weekly: t('Reporte semanal de reclutamiento', 'Weekly Recruiting Report'), monthly: t('Reporte mensual de reclutamiento', 'Monthly Recruiting Report'), custom: t('Reporte de reclutamiento', 'Recruiting Report') };
+  return { st, from, to, title: titles[S.rkind] || titles.daily, period: from === to ? from : `${from} → ${to}`, kpis, funnel, sources, openings, pipeline, activities, upcoming, coordination, candidates,
+    sample: all.some(c => c.sample), comments: (S.rcomments || '').trim() };
+}
+const RCOLS = {
+  kpis: () => [t('Indicador', 'Indicator'), t('Valor', 'Value'), t('Meta / nota', 'Goal / note')],
+  funnel: () => [t('Etapa alcanzada', 'Stage reached'), t('Personas', 'People'), t('% de registrados', '% of registered')],
+  sources: () => [t('Fuente', 'Source'), t('Registrados', 'Registered'), t('Contactados', 'Contacted'), t('Preselecc.', 'Pre-selected'), t('Aprobados', 'Approved'), t('Iniciaron', 'Started'), t('Conversión', 'Conversion'), t('Gasto', 'Spend'), t('Costo / cand.', 'Cost / cand.')],
+  openings: () => [t('Vacante', 'Opening'), t('Puesto', 'Role'), t('Turno', 'Shift'), t('Estado', 'Status'), t('Necesarias', 'Needed'), t('Colocadas', 'Placed'), t('Grupo listo', 'Ready pool'), t('Fecha objetivo', 'Target date')],
+  pipeline: () => ['#', t('Etapa', 'Stage'), t('Fase', 'Phase'), t('Personas', 'People')],
+  activities: () => [t('Fecha', 'Date'), t('Actividad', 'Activity'), t('Tipo', 'Type'), t('Estado', 'Status'), t('Organización', 'Partner'), t('Meta', 'Goal'), t('Resultados', 'Results')],
+  upcoming: () => [t('Fecha', 'Date'), t('Actividad', 'Activity'), t('Tipo', 'Type'), t('Estado', 'Status')],
+  coordination: () => [t('Fecha', 'Date'), t('Tipo', 'Type'), t('Asunto', 'Subject'), t('Estado', 'Status'), t('Decisiones', 'Decisions')],
+  candidates: () => [t('Candidato', 'Candidate'), t('Etapa', 'Stage'), t('Fuente', 'Source'), t('Registro', 'Registered'), t('Turnos', 'Shifts'), t('Primer día', 'First day'), t('Próxima acción', 'Next action')],
+};
+const RSECTIONS = () => [
+  ['kpis', t('Resumen ejecutivo', 'Executive summary')], ['funnel', t('Embudo de reclutamiento (registrados en el período)', 'Recruiting funnel (registered in the period)')],
+  ['sources', t('Fuentes y conversión', 'Sources and conversion')], ['openings', t('Vacantes autorizadas', 'Authorized openings')],
+  ['pipeline', t('Pipeline actual', 'Current pipeline')], ['activities', t('Actividades de reclutamiento del período', 'Recruiting activities in the period')],
+  ['upcoming', t('Próximas actividades (14 días)', 'Upcoming activities (14 days)')], ['coordination', t('Coordinación entre agencias', 'Inter-agency coordination')],
+];
+function reportText(r) {
+  return [`${BRAND.name} — ${r.title}`, BRAND.site, r.period, r.sample ? t('NOTA: incluye datos de EJEMPLO (no son resultados reales).', 'NOTE: includes SAMPLE data (not real results).') : null, '',
+    ...r.kpis.map(([a, b, c]) => `• ${a}: ${b}${c ? ` (${c})` : ''}`), '',
+    t('Vacantes autorizadas (necesarias / colocadas / grupo listo):', 'Authorized openings (needed / placed / ready pool):'),
+    ...(r.openings.length ? r.openings.filter(o => o[3] === lab(OPEN_STATUS, 'authorized')).map(o => `• ${o[0]}: ${o[4]} / ${o[5]} / ${o[6]}`) : [t('• ninguna registrada', '• none recorded')]), '',
+    t('Fuentes (registrados → iniciaron):', 'Sources (registered → started):'), ...(r.sources.length ? r.sources.map(s => `• ${s[0]}: ${s[1]} → ${s[5]}`) : [t('• sin registros', '• no registrations')]),
+    ...(r.comments ? ['', t('Comentarios:', 'Comments:'), r.comments] : [])].filter(x => x !== null).join('\n');
+}
+// Libraries load only when an export is asked for (pinned versions, public CDN).
+const LIBS = { xlsx: 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js', jspdf: 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js', autotable: 'https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js' };
+const loaded = {};
+function loadLib(k) {
+  return loaded[k] ||= new Promise((res, rej) => { const s = document.createElement('script'); s.src = LIBS[k]; s.onload = res; s.onerror = () => { delete loaded[k]; rej(new Error('load')); }; document.head.appendChild(s); });
+}
+const fileBase = r => `TopTierHR_${r.title.replace(/[^A-Za-z0-9]+/g, '_')}_${r.from === r.to ? r.from : r.from + '_to_' + r.to}`;
+async function deliver(name, data) {
+  if (!S.dl) { toast(t('Las descargas no están disponibles en esta vista.', 'Downloads are not available in this view.')); return; }
+  try { await S.dl.save({ filename: name, data }); toast(t('Archivo listo', 'File ready')); }
+  catch (e) { if (!e || e.code !== 'declined') toast(t('No se pudo descargar el archivo.', 'Could not download the file.')); }
+}
+async function exportExcel() {
+  const r = reportData();
+  try { await loadLib('xlsx'); } catch { toast(t('No se pudo cargar el generador de Excel. Revisa tu conexión.', 'Could not load the Excel generator. Check your connection.')); return; }
+  const X = window.XLSX, wb = X.utils.book_new();
+  const head = [[BRAND.name], [BRAND.dba], [BRAND.site], [r.title], [t('Período: ', 'Period: ') + r.period], [t('Preparado por: ', 'Prepared by: ') + (r.st.myName || '—') + ' · ' + t('Generado: ', 'Generated: ') + new Date().toLocaleString(S.lang === 'es' ? 'es-US' : 'en-US')], ...(r.sample ? [[t('NOTA: incluye datos de EJEMPLO', 'NOTE: includes SAMPLE data')]] : []), []];
+  const sheet = (rows, widths) => { const ws = X.utils.aoa_to_sheet(rows); ws['!cols'] = widths.map(w => ({ wch: w })); return ws; };
+  const summary = [...head, RCOLS.kpis(), ...r.kpis, [], ...(r.comments ? [[t('Comentarios', 'Comments')], [r.comments]] : [])];
+  X.utils.book_append_sheet(wb, sheet(summary, [44, 22, 24]), t('Resumen', 'Summary'));
+  X.utils.book_append_sheet(wb, sheet([[r.title + ' — ' + r.period], [], RCOLS.funnel(), ...r.funnel], [30, 12, 18]), t('Embudo', 'Funnel'));
+  X.utils.book_append_sheet(wb, sheet([[r.title + ' — ' + r.period], [], RCOLS.sources(), ...r.sources], [34, 12, 12, 12, 12, 10, 12, 12, 14]), t('Fuentes', 'Sources'));
+  X.utils.book_append_sheet(wb, sheet([[r.title + ' — ' + r.period], [], RCOLS.openings(), ...r.openings], [34, 20, 14, 22, 11, 11, 12, 14]), t('Vacantes', 'Openings'));
+  X.utils.book_append_sheet(wb, sheet([[t('Pipeline al ', 'Pipeline as of ') + today()], [], RCOLS.pipeline(), ...r.pipeline], [5, 40, 26, 10]), 'Pipeline');
+  X.utils.book_append_sheet(wb, sheet([[r.title + ' — ' + r.period], [], RCOLS.activities(), ...r.activities, [], [t('Próximas actividades (14 días)', 'Upcoming activities (14 days)')], RCOLS.upcoming(), ...r.upcoming], [12, 50, 22, 22, 30, 8, 40]), t('Actividades', 'Activities'));
+  X.utils.book_append_sheet(wb, sheet([[r.title + ' — ' + r.period], [t('Solo información operativa; sin datos de candidatos.', 'Operational information only; no candidate data.')], [], RCOLS.coordination(), ...r.coordination], [12, 26, 44, 12, 44]), t('Agencias', 'Agencies'));
+  if (S.rnames) X.utils.book_append_sheet(wb, sheet([[t('USO INTERNO — contiene nombres de candidatos', 'INTERNAL USE — contains candidate names')], [], RCOLS.candidates(), ...r.candidates], [28, 34, 30, 12, 26, 12, 34]), t('Candidatos', 'Candidates'));
+  const buf = X.write(wb, { bookType: 'xlsx', type: 'array' });
+  await deliver(fileBase(r) + '.xlsx', new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+}
+async function exportPdf() {
+  const r = reportData();
+  try { await loadLib('jspdf'); await loadLib('autotable'); } catch { toast(t('No se pudo cargar el generador de PDF. Revisa tu conexión.', 'Could not load the PDF generator. Check your connection.')); return; }
+  const doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'letter' });
+  const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 40;
+  const BROWN = [67, 59, 54], CREAM = [240, 233, 225], GOLD = [201, 162, 74], INK = [33, 30, 28], MUTED = [110, 104, 98];
+  // Cover band in the brand's colors.
+  doc.setFillColor(...BROWN); doc.rect(0, 0, W, 128, 'F');
+  doc.setFillColor(...GOLD); doc.rect(0, 128, W, 4, 'F');
+  doc.setTextColor(...CREAM); doc.setFont('times', 'normal'); doc.setFontSize(30); doc.text(BRAND.name, M, 54);
+  doc.setFontSize(11); doc.text(BRAND.dba, M, 74);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.text(BRAND.site, M, 96);
+  doc.setFont('times', 'bold'); doc.setFontSize(15); doc.text(r.title, W - M, 54, { align: 'right' });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.text(r.period.replace(' → ', t(' al ', ' to ')), W - M, 72, { align: 'right' });
+  doc.text(t('Preparado por: ', 'Prepared by: ') + (r.st.myName || '—'), W - M, 88, { align: 'right' });
+  let y = 156;
+  if (r.sample) { doc.setFillColor(255, 244, 210); doc.rect(M, y - 12, W - 2 * M, 22, 'F'); doc.setTextColor(...INK); doc.setFontSize(9); doc.text(t('NOTA: este reporte incluye datos de EJEMPLO; no son resultados reales.', 'NOTE: this report includes SAMPLE data; these are not real results.'), M + 8, y + 2); y += 24; }
+  // Headline figures.
+  const tiles = [[t('Registros', 'Registrations'), r.kpis[0][1]], [t('Contactados', 'Contacted'), r.kpis[1][1]], [t('Preseleccionados', 'Pre-selected'), r.kpis[3][1]], [t('Se presentaron', 'Showed up'), r.kpis[7][1]], [t('Asistencia 1er día', 'First-day show'), String(r.kpis[9][1]).split(' ')[0]]];
+  const tw = (W - 2 * M - 4 * 8) / 5;
+  tiles.forEach(([lbl, val], i) => {
+    const x = M + i * (tw + 8);
+    doc.setFillColor(246, 242, 237); doc.rect(x, y, tw, 58, 'F'); doc.setFillColor(...GOLD); doc.rect(x, y, 3, 58, 'F');
+    doc.setTextColor(...MUTED); doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.text(lbl.toUpperCase(), x + 10, y + 16);
+    doc.setTextColor(...INK); doc.setFont('times', 'bold'); doc.setFontSize(22); doc.text(String(val), x + 10, y + 44);
+  });
+  y += 80;
+  const section = (title, cols, rows, opts = {}) => {
+    if (y > H - 120) { doc.addPage(); y = 56; }
+    doc.setTextColor(...BROWN); doc.setFont('times', 'bold'); doc.setFontSize(13); doc.text(title, M, y); y += 6;
+    doc.autoTable({ startY: y, head: [cols], body: rows.length ? rows : [[{ content: t('Sin datos en este período.', 'No data for this period.'), colSpan: cols.length }]],
+      theme: 'grid', margin: { left: M, right: M, top: 56, bottom: 46 }, styles: { font: 'helvetica', fontSize: 8.5, cellPadding: 4, textColor: INK, lineColor: [221, 213, 204], lineWidth: 0.5 },
+      headStyles: { fillColor: BROWN, textColor: CREAM, fontStyle: 'bold' }, alternateRowStyles: { fillColor: [250, 247, 243] }, ...opts });
+    y = doc.lastAutoTable.finalY + 24;
+  };
+  section(t('Resumen ejecutivo', 'Executive summary'), RCOLS.kpis(), r.kpis, { columnStyles: { 1: { halign: 'right', fontStyle: 'bold' } } });
+  // Funnel bars drawn to scale (width = share of registrations).
+  if (y > H - 200) { doc.addPage(); y = 56; }
+  doc.setTextColor(...BROWN); doc.setFont('times', 'bold'); doc.setFontSize(13); doc.text(t('Embudo de reclutamiento (registrados en el período)', 'Recruiting funnel (registered in the period)'), M, y); y += 16;
+  const top = Math.max(1, r.funnel[0][1]), barMax = W - 2 * M - 190;
+  r.funnel.forEach(([lbl, v, p]) => {
+    doc.setTextColor(...INK); doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.text(String(lbl), M, y + 10);
+    doc.setFillColor(236, 229, 221); doc.rect(M + 130, y, barMax, 14, 'F');
+    doc.setFillColor(...BROWN); doc.rect(M + 130, y, Math.max(v ? 2 : 0, (v / top) * barMax), 14, 'F');
+    doc.setFont('helvetica', 'bold'); doc.text(`${v}  ·  ${p}`, W - M, y + 10, { align: 'right' }); y += 20;
+  });
+  y += 16;
+  section(t('Fuentes y conversión', 'Sources and conversion'), RCOLS.sources(), r.sources, { columnStyles: Object.fromEntries([1, 2, 3, 4, 5, 6, 7, 8].map(i => [i, { halign: 'right' }])) });
+  section(t('Vacantes autorizadas', 'Authorized openings'), RCOLS.openings(), r.openings, { columnStyles: { 4: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' } } });
+  section(t('Pipeline actual', 'Current pipeline'), RCOLS.pipeline(), r.pipeline.filter(p => p[3] > 0), { columnStyles: { 3: { halign: 'right' } } });
+  section(t('Actividades de reclutamiento del período', 'Recruiting activities in the period'), RCOLS.activities(), r.activities);
+  if (r.upcoming.length) section(t('Próximas actividades (14 días)', 'Upcoming activities (14 days)'), RCOLS.upcoming(), r.upcoming);
+  section(t('Coordinación entre agencias', 'Inter-agency coordination'), RCOLS.coordination(), r.coordination);
+  if (S.rnames) section(t('Candidatos (uso interno)', 'Candidates (internal use)'), RCOLS.candidates(), r.candidates);
+  if (r.comments) {
+    if (y > H - 120) { doc.addPage(); y = 56; }
+    doc.setTextColor(...BROWN); doc.setFont('times', 'bold'); doc.setFontSize(13); doc.text(t('Comentarios y recomendaciones', 'Comments and recommendations'), M, y); y += 16;
+    doc.setTextColor(...INK); doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+    doc.splitTextToSize(r.comments, W - 2 * M).forEach(line => { if (y > H - 50) { doc.addPage(); y = 56; } doc.text(line, M, y); y += 14; });
+  }
+  const pages = doc.getNumberOfPages(), gen = new Date().toLocaleString(S.lang === 'es' ? 'es-US' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' });
+  for (let i = 1; i <= pages; i++) {
+    doc.setPage(i); doc.setDrawColor(221, 213, 204); doc.line(M, H - 32, W - M, H - 32);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(...MUTED);
+    doc.text(`${BRAND.name} · ${BRAND.dba} · ${t('Confidencial — uso interno', 'Confidential — internal use')} · ${t('Generado', 'Generated')} ${gen}`, M, H - 20);
+    doc.text(`${i} / ${pages}`, W - M, H - 20, { align: 'right' });
+  }
+  await deliver(fileBase(r) + '.pdf', doc.output('blob'));
+}
+
+VIEWS.reportes = () => {
+  const d0 = today(), r = reportData();
+  S.lastReport = r;
+  const kinds = [['daily', 'Diario', 'Daily'], ['weekly', 'Semanal', 'Weekly'], ['monthly', 'Mensual', 'Monthly'], ['custom', 'Personalizado', 'Custom']];
+  const table = (cols, rows, numeric = []) => `<div class="scroll"><table><thead><tr>${cols.map((c, i) => `<th class="${numeric.includes(i) ? 'n' : ''}">${esc(c)}</th>`).join('')}</tr></thead><tbody>${rows.length ? rows.map(row => `<tr>${row.map((v, i) => `<td class="${numeric.includes(i) ? 'n' : ''}">${esc(v)}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${cols.length}" class="muted">${t('Sin datos en este período.', 'No data for this period.')}</td></tr>`}</tbody></table></div>`;
+  return `<div class="head"><div><h1>${t('Reportes para la compañía', 'Reports for the company')}</h1><p class="muted">${t('Excel y PDF con la marca de Top Tier HR. Cada cifra sale de tus registros; nada se estima.', 'Excel and PDF with Top Tier HR branding. Every figure comes from your records; nothing is estimated.')}</p></div></div>
+  <section class="panel"><div class="filters">
+    <div class="chips">${kinds.map(([k, es, en]) => `<button class="chip" data-rkind="${k}" aria-pressed="${S.rkind === k}">${t(es, en)}</button>`).join('')}</div>
+    ${S.rkind === 'custom' ? `<label class="f" style="max-width:180px">${t('Desde', 'From')}<input type="date" id="rfrom" value="${r.from}" max="${d0}"></label><label class="f" style="max-width:180px">${t('Hasta', 'To')}<input type="date" id="rto" value="${r.to}" max="${d0}"></label>`
+      : `<label class="f" style="max-width:220px">${S.rkind === 'daily' ? t('Día', 'Day') : S.rkind === 'weekly' ? t('Un día de la semana', 'Any day of the week') : t('Un día del mes', 'Any day of the month')}<input type="date" id="rday" value="${S.rday || d0}" max="${d0}"></label>`}
+  </div>
+  <label class="f">${t('Comentarios y recomendaciones (aparecen en el reporte)', 'Comments and recommendations (included in the report)')}<textarea id="rcomments" maxlength="3000" placeholder="${t('Ej.: Qué funcionó esta semana, qué cambiaremos, apoyo que necesito del cliente.', 'E.g. What worked this week, what we will change, support needed from the client.')}">${esc(S.rcomments || '')}</textarea></label>
+  <label class="check"><input type="checkbox" id="rnames" ${S.rnames ? 'checked' : ''}><span>${t('Incluir lista de candidatos con nombres (solo para uso interno de Top Tier HR; no compartir con el cliente ni con otras agencias)', 'Include the candidate list with names (Top Tier HR internal use only; do not share with the client or other agencies)')}</span></label>
+  <div class="row"><button class="btn" data-act="export-pdf">${t('Descargar PDF', 'Download PDF')}</button><button class="btn" data-act="export-xlsx">${t('Descargar Excel', 'Download Excel')}</button>
+    <button class="btn ghost" data-copy="report-text">${t('Copiar como texto', 'Copy as text')}</button></div>
+  ${r.sample ? `<p class="note">${t('Hay datos de ejemplo cargados; el reporte lo indicará. Quítalos antes de enviarlo.', 'Sample data is loaded; the report will say so. Remove it before sending.')}</p>` : ''}
+  ${!S.dl ? `<p class="note">${t('Las descargas no están disponibles en esta vista. Abre la página en claude.ai.', 'Downloads are not available in this view. Open the page on claude.ai.')}</p>` : ''}</section>
+  <section class="panel"><h2>${esc(r.title)}</h2><p class="small muted">${esc(BRAND.name)} · ${esc(BRAND.dba)} · ${esc(r.period)}</p>
+    ${table(RCOLS.kpis(), r.kpis, [1])}</section>
+  <div class="grid2"><section class="panel"><h3>${t('Embudo (registrados en el período)', 'Funnel (registered in the period)')}</h3>${table(RCOLS.funnel(), r.funnel, [1, 2])}</section>
+    <section class="panel"><h3>${t('Vacantes', 'Openings')}</h3>${table([RCOLS.openings()[0], RCOLS.openings()[4], RCOLS.openings()[5], RCOLS.openings()[6]], r.openings.map(o => [o[0], o[4], o[5], o[6]]), [1, 2, 3])}</section></div>
+  <section class="panel"><h3>${t('Fuentes y conversión', 'Sources and conversion')}</h3>${table(RCOLS.sources(), r.sources, [1, 2, 3, 4, 5, 6, 7, 8])}</section>
+  <section class="panel"><h3>${t('Actividades del período', 'Activities in the period')}</h3>${table(RCOLS.activities(), r.activities)}</section>
+  <section class="panel"><h3>${t('Texto para correo o chat', 'Text for email or chat')}</h3><pre class="msg" id="report-text">${esc(reportText(r))}</pre></section>`;
 };
 
 VIEWS.ajustes = () => {
@@ -1170,7 +1334,8 @@ document.addEventListener('click', async e => {
   else if (act === 'load-plan') { b.disabled = true; for (const a of suggestedPlan()) if (!(await safe(() => put('activities', a)))) break; toast(t('Plan de 90 días cargado (todo sin confirmar)', '90-day plan loaded (all unconfirmed)')); }
   else if (act === 'toggle-past') { S.showPast = !S.showPast; render(); }
   else if (act === 'export-cands') exportCands();
-  else if (act === 'export-report' && S.lastReport) saveCsv(`reporte_${S.lastReport.from}_${S.lastReport.to}.csv`, [[t('Indicador', 'Indicator'), t('Valor', 'Value'), t('Meta / nota', 'Goal / note')], ...S.lastReport.rows]);
+  else if (act === 'export-pdf') { b.disabled = true; await exportPdf(); b.disabled = false; }
+  else if (act === 'export-xlsx') { b.disabled = true; await exportExcel(); b.disabled = false; }
   else if (act === 'set-stage') {
     const c = byId(ds.id), stage = $('#st-stage').value;
     const n = { ...c, stage, closedReason: stage === 'closed' ? $('#st-reason').value : '', recontactOn: stage === 'closed' ? $('#st-recontact').value : c.recontactOn };
@@ -1206,8 +1371,14 @@ document.addEventListener('change', async e => {
   } else if (el.matches('select[data-f]')) { S.f[el.dataset.f] = el.value; renderCandList(); }
   else if (el.id === 'period') { S.period = el.value; render(); }
   else if (el.id === 'rday') { S.rday = el.value || today(); render(); }
+  else if (el.id === 'rfrom') { S.rfrom = el.value; render(); }
+  else if (el.id === 'rto') { S.rto = el.value; render(); }
+  else if (el.id === 'rnames') { S.rnames = el.checked; }
 });
-document.addEventListener('input', e => { if (e.target.id === 'fq') { S.f.q = e.target.value; renderCandList(); } });
+document.addEventListener('input', e => {
+  if (e.target.id === 'fq') { S.f.q = e.target.value; renderCandList(); }
+  if (e.target.id === 'rcomments') { S.rcomments = e.target.value; try { localStorage.setItem('rw.rcomments', e.target.value); } catch {} const p = $('#report-text'); if (p) p.textContent = reportText(reportData()); }
+});
 document.addEventListener('submit', async e => {
   if (e.target.id === 'task-form') {
     e.preventDefault(); const fd = new FormData(e.target);
