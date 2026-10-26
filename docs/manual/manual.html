@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Manual de funcionamiento — Top Tier HR</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap">
+<style>
+  @page { size: Letter; margin: 0.7in 0.75in 0.8in; }
+  :root { --brown: #433B36; --cream: #F0E9E1; --gold: #C9A24A; --ink: #211E1C; --muted: #6E6862; --line: #DDD5CC; --soft: #F7F3EE; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Barlow', Arial, sans-serif; font-size: 10.5pt; line-height: 1.5; color: var(--ink); }
+  h1, h2, h3 { font-family: 'Cormorant Garamond', Georgia, serif; color: var(--brown); line-height: 1.15; margin: 0; }
+  h2 { font-size: 22pt; margin: 0 0 6pt; padding-bottom: 6pt; border-bottom: 2px solid var(--gold); }
+  h3 { font-size: 14pt; margin: 14pt 0 4pt; }
+  p { margin: 0 0 7pt; }
+  ul, ol { margin: 0 0 8pt; padding-left: 18pt; }
+  li { margin-bottom: 3pt; }
+  b, strong { font-weight: 600; }
+  .ui { font-weight: 700; background: var(--soft); border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; white-space: nowrap; }
+  .chapter { break-before: page; }
+  .lead { font-size: 11.5pt; color: var(--muted); margin-bottom: 10pt; }
+  figure { margin: 8pt 0 12pt; break-inside: avoid; }
+  figure img { width: 100%; border: 1px solid var(--line); border-radius: 4px; display: block; }
+  figure.phone img { width: 2.3in; }
+  figcaption { font-size: 8.5pt; color: var(--muted); margin-top: 3pt; }
+  table { width: 100%; border-collapse: collapse; margin: 6pt 0 12pt; font-size: 9.5pt; break-inside: avoid; }
+  th { background: var(--brown); color: var(--cream); text-align: left; padding: 5pt 7pt; font-weight: 600; }
+  td { border-bottom: 1px solid var(--line); padding: 5pt 7pt; vertical-align: top; }
+  tr:nth-child(even) td { background: #FBF8F5; }
+  .tip, .warn { border-left: 4px solid var(--gold); background: #FFF8E6; padding: 7pt 10pt; margin: 8pt 0 12pt; break-inside: avoid; }
+  .warn { border-color: #B3261E; background: #FBEDEA; }
+  .tip b:first-child, .warn b:first-child { display: block; margin-bottom: 2pt; }
+  .steps { counter-reset: s; list-style: none; padding-left: 0; }
+  .steps > li { counter-increment: s; position: relative; padding-left: 24pt; margin-bottom: 5pt; }
+  .steps > li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 16pt; height: 16pt; border-radius: 50%; background: var(--brown); color: var(--cream); font-size: 8.5pt; font-weight: 700; display: grid; place-items: center; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14pt; }
+  /* Cover */
+  .cover { height: 9.4in; display: grid; grid-template-rows: auto 1fr auto; background: var(--brown); color: var(--cream); margin: -0.7in -0.75in 0; padding: 0.9in 0.85in 0.7in; }
+  .cover .brand { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22pt; }
+  .cover .dba { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 12pt; opacity: .85; }
+  .cover h1 { color: var(--cream); font-size: 44pt; margin-top: 1.4in; }
+  .cover .sub { font-size: 14pt; margin-top: 10pt; opacity: .9; }
+  .cover .bar { height: 5px; background: var(--gold); width: 2.2in; margin: 18pt 0; }
+  .cover .author { font-size: 11pt; line-height: 1.6; }
+  .cover .author b { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 18pt; font-weight: 700; display: block; }
+  .toc ol { columns: 2; column-gap: 24pt; padding-left: 16pt; }
+  .toc li { break-inside: avoid; }
+  .kicker { font-size: 8.5pt; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); margin-bottom: 2pt; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <div><div class="brand">Top Tier HR</div><div class="dba">a DBA of OC Staffing and HR Solutions LLC</div></div>
+  <div>
+    <h1>Manual de funcionamiento</h1>
+    <div class="sub">Sistema de reclutamiento · Winit Kentucky<br>Win.It America · 7050 New Buffington Rd, Florence, KY 41042</div>
+    <div class="bar"></div>
+    <div class="author"><b>Gary Ronquillo</b>Onsite Representative<br>Top Tier HR</div>
+  </div>
+  <div style="font-size:9pt;opacity:.75">Versión 1 · Octubre de 2026 · Uso interno</div>
+</section>
+
+<section class="chapter toc">
+  <h2>Contenido</h2>
+  <ol>
+    <li>Qué es y cómo funciona</li>
+    <li>Configuración inicial (primer día)</li>
+    <li>Rutina diaria y semanal</li>
+    <li>Dashboard (panel)</li>
+    <li>Today’s calls (llamadas de hoy)</li>
+    <li>Candidates (candidatos)</li>
+    <li>La ficha del candidato</li>
+    <li>Pipeline y etapas</li>
+    <li>Tasks (tareas automáticas)</li>
+    <li>Openings (vacantes)</li>
+    <li>90-day calendar (calendario)</li>
+    <li>Sources (fuentes)</li>
+    <li>Agencies (coordinación entre agencias)</li>
+    <li>Messages &amp; ads (mensajes y anuncios)</li>
+    <li>Reports (reportes PDF y Excel)</li>
+    <li>QR &amp; flyer kit</li>
+    <li>Registration mode (modo registro)</li>
+    <li>30-day plan</li>
+    <li>Settings &amp; data (ajustes y datos)</li>
+    <li>Reglas de cumplimiento</li>
+    <li>Preguntas frecuentes y solución de problemas</li>
+  </ol>
+  <div class="tip"><b>Cómo leer este manual</b>La página está en inglés. Los nombres de botones y secciones aparecen tal como los ves en pantalla, <span class="ui">así</span>, con la traducción entre paréntesis la primera vez. El botón <span class="ui">EN | ES</span> arriba a la derecha cambia toda la página a español.</div>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 1</div>
+  <h2>Qué es y cómo funciona</h2>
+  <p class="lead">Una sola página web para todo el reclutamiento del sitio Winit Kentucky: candidatos, seguimiento diario, vacantes, coordinación con otras agencias y reportes para la compañía.</p>
+  <h3>Dónde se abre</h3>
+  <p>En <b>https://claude.ai/artifact/Q2tz86VE9MeC4YNpZgmDgT</b>, con tu sesión de claude.ai iniciada. Funciona en computadora, tableta y teléfono. Guárdala en favoritos.</p>
+  <h3>Dónde se guardan los datos</h3>
+  <ul>
+    <li>Los candidatos, tareas, vacantes, actividades y ajustes se guardan en un <b>espacio privado de la página</b>: solo tú los ves, aunque compartas la página con tu supervisor u otras personas.</li>
+    <li>Se guardan solos al pulsar cada botón de guardar. No hay que “subir” nada.</li>
+    <li>Lo que ves en un dispositivo aparece en los demás donde abras la página con tu misma cuenta.</li>
+  </ul>
+  <h3>Qué hace sola y qué haces tú</h3>
+  <table>
+    <tr><th>La página lo hace automáticamente</th><th>Lo haces tú</th></tr>
+    <tr><td>Crea tareas de seguimiento según la etapa de cada candidato</td><td>Llamar y enviar mensajes desde tu teléfono o correo de trabajo</td></tr>
+    <tr><td>Marca posibles duplicados (mismo teléfono, correo o nombre + código postal)</td><td>Decidir si un candidato avanza de etapa</td></tr>
+    <tr><td>Arma la lista de llamadas del día en orden de prioridad</td><td>Confirmar vacantes, pagos y horarios con tu supervisor</td></tr>
+    <tr><td>Calcula indicadores, embudo, conversión por fuente y alertas</td><td>Publicar anuncios desde las cuentas autorizadas</td></tr>
+    <tr><td>Genera reportes PDF/Excel, QR, folletos y tarjetas</td><td>Revisar y enviar los reportes</td></tr>
+  </table>
+  <div class="warn"><b>Importante</b>La página no envía mensajes, no publica en redes y no hace llamadas por sí sola. Prepara el texto y te muestra el número; el envío siempre es tuyo y solo a personas que dieron su consentimiento.</div>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 2</div>
+  <h2>Configuración inicial (primer día)</h2>
+  <ol class="steps">
+    <li>Abre <span class="ui">Settings &amp; data</span> (ajustes y datos). Revisa tu nombre (ya dice Gary Ronquillo), escribe tu <b>teléfono de trabajo</b> y el <b>enlace de preinscripción</b> (por ejemplo, un Formulario de Google o Microsoft que pida solo nombre, teléfono, turnos, experiencia y consentimiento). Pulsa <span class="ui">Save settings</span>.</li>
+    <li>Ajusta las <b>metas de actividad</b> (contactos por día, preseleccionados y entrevistas por semana, asistencia al primer día, retención a 30 días). Son metas de trabajo, no promesas de contratación.</li>
+    <li>Abre <span class="ui">30-day plan</span> y lleva las <b>15 preguntas</b> a tu supervisor. Anota cada respuesta y quién la dio.</li>
+    <li>En <span class="ui">Openings</span> (vacantes) registra las vacantes que el cliente y Top Tier HR autorizaron.</li>
+    <li>En <span class="ui">90-day calendar</span> pulsa <span class="ui">Load suggested 90-day plan</span> para cargar 39 actividades sugeridas (todas sin confirmar).</li>
+    <li>En <span class="ui">Agencies</span> registra las agencias del sitio y tu primera reunión de coordinación.</li>
+    <li>En <span class="ui">QR &amp; flyer kit</span> descarga el folleto y las tarjetas; prueba el QR con tu teléfono antes de imprimir.</li>
+  </ol>
+  <figure><img src="img/14-settings.png"><figcaption>Settings &amp; data: tus datos para mensajes, folletos y reportes.</figcaption></figure>
+  <div class="tip"><b>Para practicar</b>Con la base vacía, el panel ofrece <span class="ui">Load sample data</span>: carga 22 candidatos ficticios llamados “Sample …” con teléfonos 555-01xx. Todo queda marcado como ejemplo. Quítalos con <span class="ui">Remove sample data</span> antes de trabajar con datos reales o de enviar un reporte.</div>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 3</div>
+  <h2>Rutina diaria y semanal</h2>
+  <table>
+    <tr><th style="width:22%">Momento</th><th>Qué hacer</th><th style="width:22%">Sección</th></tr>
+    <tr><td>Al llegar (10 min)</td><td>Revisar registros nuevos, tareas de hoy, seguimientos vencidos y alertas de pocos candidatos</td><td>Dashboard</td></tr>
+    <tr><td>Mañana</td><td>Trabajar la lista de llamadas de arriba hacia abajo; marcar Contestó / No contestó</td><td>Today’s calls</td></tr>
+    <tr><td>Mañana</td><td>Preseleccionar a los interesados contra los requisitos reales de la vacante</td><td>Pipeline / ficha</td></tr>
+    <tr><td>Mediodía</td><td>Confirmar citas y primeros días de mañana</td><td>Today’s calls / Tasks</td></tr>
+    <tr><td>Tarde</td><td>Una acción de captación: publicación aprobada, llamada a una organización, visita</td><td>Calendar / Messages / Kit</td></tr>
+    <tr><td>Cierre (5 min)</td><td>Escribir comentarios del día y descargar o copiar el reporte diario</td><td>Reports</td></tr>
+    <tr><td>Semanal</td><td>Reunión de coordinación entre agencias (copiar la agenda), reporte semanal en PDF</td><td>Agencies / Reports</td></tr>
+    <tr><td>Mensual</td><td>Reporte mensual en PDF con 3 recomendaciones; revisar inactivos de más de 12 meses</td><td>Reports / Settings</td></tr>
+  </table>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 4</div>
+  <h2>Dashboard (panel)</h2>
+  <p>Resumen de todo el reclutamiento. Arriba a la derecha eliges el <b>período</b>: hoy, 7, 30 o 90 días.</p>
+  <figure><img src="img/01-dashboard.png"><figcaption>Bloques “Today” y embudo del período.</figcaption></figure>
+  <table>
+    <tr><th style="width:32%">Bloque</th><th>Qué significa</th></tr>
+    <tr><td>Today</td><td>Registros nuevos hoy, personas contactadas hoy (contra tu meta), tareas de hoy y seguimientos vencidos, más cuántos candidatos llevan días sin contacto.</td></tr>
+    <tr><td>Low candidate pool (alerta roja)</td><td>Una vacante autorizada tiene menos candidatos listos que el mínimo que fijaste o que los puestos que faltan.</td></tr>
+    <tr><td>Funnel</td><td>De las personas registradas en el período, cuántas llegaron alguna vez a cada etapa. Cerrar a alguien no borra hasta dónde llegó.</td></tr>
+    <tr><td>Attendance and retention</td><td>Autorizados para trabajar hoy, asistencia al primer día, y retención a 7/30/60 días según lo que marques en cada ficha.</td></tr>
+    <tr><td>Candidates and conversion by source</td><td>Por fuente: registrados → contactados → preseleccionados → aprobados → iniciaron. Conversión = iniciaron ÷ registrados. El costo aparece solo si registras un gasto mensual real.</td></tr>
+  </table>
+  <figure><img src="img/01b-dashboard.png"><figcaption>Asistencia, retención y conversión por fuente.</figcaption></figure>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 5</div>
+  <h2>Today’s calls (llamadas de hoy)</h2>
+  <p class="lead">Tu lista de trabajo del día. Cada persona aparece una sola vez, con el motivo más urgente.</p>
+  <figure><img src="img/02-calls.png"><figcaption>La barra muestra cuántas personas has contactado hoy contra tu meta.</figcaption></figure>
+  <h3>Orden de prioridad</h3>
+  <ol>
+    <li>Primer día mañana (confirmar) o primer día hoy (¿se presentó?)</li>
+    <li>Cita mañana (recordatorio)</li>
+    <li>Registros nuevos sin ningún contacto</li>
+    <li>Tareas vencidas o de hoy</li>
+    <li>Personas que pidieron recontacto</li>
+    <li>Preseleccionados o aprobados sin contacto en 14 días (confirmar disponibilidad)</li>
+    <li>Candidatos sin contacto en los días que fijaste</li>
+  </ol>
+  <h3>Botones de cada fila</h3>
+  <ul>
+    <li><span class="ui">Copy number</span> copia el teléfono para marcar.</li>
+    <li><span class="ui">Copy message</span> copia el mensaje adecuado en el idioma del candidato (solo si aceptó mensajes escritos).</li>
+    <li><span class="ui">Reached</span> (contestó) registra la llamada, mueve a “Contacted” a los nuevos y cierra sus tareas del día.</li>
+    <li><span class="ui">No answer</span> (no contestó) registra el intento; la persona sigue en tus pendientes.</li>
+  </ul>
+  <p>No aparecen personas sin consentimiento ni personas retenidas porque otra agencia las colocó en el sitio.</p>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 6</div>
+  <h2>Candidates (candidatos)</h2>
+  <figure><img src="img/03-candidates.png"><figcaption>Lista con búsqueda, filtros y etiquetas.</figcaption></figure>
+  <h3>Buscar y filtrar</h3>
+  <ul>
+    <li><b>Search</b>: nombre, teléfono (3+ dígitos) o correo.</li>
+    <li><b>Phase / Stage</b>: fase (interesados, preseleccionados, autorizados, trabajando) o etapa exacta. Por defecto se ocultan los cerrados.</li>
+    <li><b>Source, Shift, Role / experience</b>: fuente, turno disponible y puesto o experiencia.</li>
+    <li>Botones rápidos: <span class="ui">Available now</span>, <span class="ui">No contact 3+ days</span>, <span class="ui">Possible duplicates</span>, <span class="ui">Agency hold</span>, <span class="ui">Include closed</span>.</li>
+  </ul>
+  <h3>Etiquetas</h3>
+  <table>
+    <tr><th style="width:28%">Etiqueta</th><th>Qué hacer</th></tr>
+    <tr><td>Possible duplicate</td><td>Abre los dos registros, conserva uno y elimina el otro, o pulsa <span class="ui">Not a duplicate</span>.</td></tr>
+    <tr><td>Agency hold</td><td>La persona dice que otra agencia la colocó aquí. No la proceses; escala al supervisor.</td></tr>
+    <tr><td>Readiness (0–100)</td><td>Ayuda a ordenar llamadas: disponibilidad, turnos, experiencia en el puesto, equipos y contacto reciente. No decide contrataciones.</td></tr>
+  </table>
+  <h3>Agregar un candidato</h3>
+  <p>Pulsa <span class="ui">Add candidate</span>. Obligatorio: nombre, apellido y teléfono o correo. Marca el consentimiento y por qué canales (texto, WhatsApp, correo). Exporta la lista con <span class="ui">CSV</span>.</p>
+  <figure><img src="img/04-new-candidate.png"><figcaption>Formulario de nuevo candidato: solo datos para un primer contacto.</figcaption></figure>
+  <div class="warn"><b>Nunca registres</b>Número de Seguro Social, identificaciones, datos bancarios, fecha de nacimiento, salud, estatus migratorio, religión ni otros datos personales. Las observaciones son solo laborales.</div>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 7</div>
+  <h2>La ficha del candidato</h2>
+  <p>Haz clic en cualquier nombre para abrirla. Todo lo que pasa con esa persona está aquí.</p>
+  <figure><img src="img/05-candidate.png"><figcaption>Etapa del proceso y registro de contactos.</figcaption></figure>
+  <ul>
+    <li><b>Pipeline stage</b>: elige la nueva etapa y pulsa <span class="ui">Update stage</span>. Al cerrar, elige el motivo y, si la persona lo pide, una fecha de recontacto (se crea la tarea).</li>
+    <li><b>Retention</b> (aparece cuando ya trabaja): marca a los 7, 30 y 60 días si sigue trabajando. Alimenta los indicadores de retención.</li>
+    <li><b>Log a contact</b>: tipo (llamada, texto, WhatsApp, correo, en persona, nota), resultado y resumen breve.</li>
+    <li><b>Prepare a message</b>: elige la plantilla; sale en el idioma del candidato con su nombre, el tuyo y tu teléfono. Si falta algo (fecha, hora, lugar) la página lo avisa. <span class="ui">Copy message</span>, envíalo tú y pulsa <span class="ui">Log as sent</span>.</li>
+    <li><b>Tasks</b>: tareas de esta persona; márcalas al terminar.</li>
+    <li><b>Profile</b>: datos, experiencia, equipos, turnos, puestos, disponibilidad, vacante, cita, primer día, próxima acción, consentimiento y verificación de otra agencia.</li>
+    <li><b>History</b>: todos los contactos y cambios de etapa con fecha y hora.</li>
+    <li><b>Delete</b>: para duplicados o cuando la persona pide que la eliminen. Pide confirmación y no se puede deshacer.</li>
+  </ul>
+  <figure><img src="img/05b-candidate-message.png"><figcaption>Mensaje preparado en el idioma del candidato, con tu nombre y empresa.</figcaption></figure>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 8</div>
+  <h2>Pipeline y etapas</h2>
+  <p>Tablero con las 15 etapas agrupadas en fases. Cambia la etapa desde el selector de cada tarjeta. Las tarjetas se ordenan por preparación.</p>
+  <figure><img src="img/06-pipeline.png"><figcaption>Interesado, preseleccionado y autorizado para trabajar son fases distintas.</figcaption></figure>
+  <table>
+    <tr><th>#</th><th>Etapa</th><th>Fase</th><th>Cuándo usarla</th></tr>
+    <tr><td>1</td><td>New candidate</td><td>Interesado</td><td>Recién registrado</td></tr>
+    <tr><td>2</td><td>Pending contact</td><td>Interesado</td><td>Revisado, falta contactar</td></tr>
+    <tr><td>3</td><td>Contacted</td><td>Interesado</td><td>Ya hablaste con la persona</td></tr>
+    <tr><td>4</td><td>Interested</td><td>Interesado</td><td>Confirma interés</td></tr>
+    <tr><td>5</td><td>Pre-selected</td><td>Preseleccionado</td><td>Cumple los requisitos reales de la vacante</td></tr>
+    <tr><td>6</td><td>Interview / formal application</td><td>Preseleccionado</td><td>En el proceso oficial de Top Tier HR</td></tr>
+    <tr><td>7</td><td>Documents pending</td><td>Preseleccionado</td><td>Papeles de incorporación pendientes</td></tr>
+    <tr><td>8</td><td>Authorized checks pending</td><td>Preseleccionado</td><td>Verificaciones permitidas por la política</td></tr>
+    <tr><td>9</td><td>Approved by hiring process</td><td>Autorizado</td><td>Solo cuando el proceso realmente lo aprobó</td></tr>
+    <tr><td>10</td><td>Available for assignment</td><td>Autorizado</td><td>Esperando colocación</td></tr>
+    <tr><td>11</td><td>Assigned to a shift</td><td>Autorizado</td><td>Tiene turno y fecha de inicio</td></tr>
+    <tr><td>12</td><td>First day confirmed</td><td>Autorizado</td><td>La persona confirmó su primer día</td></tr>
+    <tr><td>13</td><td>Showed up to work</td><td>Trabajando</td><td>Se presentó el primer día</td></tr>
+    <tr><td>14</td><td>Retention follow-up</td><td>Trabajando</td><td>En seguimiento</td></tr>
+    <tr><td>—</td><td>Closed</td><td>Cerrado</td><td>No interesado, no disponible, recontactar, no se presentó, etc. (motivo obligatorio)</td></tr>
+  </table>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 9</div>
+  <h2>Tasks (tareas automáticas)</h2>
+  <figure><img src="img/07-tasks.png"><figcaption>Agrupadas en vencidas, hoy, próximos 7 días y más adelante.</figcaption></figure>
+  <table>
+    <tr><th style="width:38%">Cuando pasa esto…</th><th>…se crea esta tarea</th></tr>
+    <tr><td>Se registra un candidato</td><td>Primer contacto (hoy)</td></tr>
+    <tr><td>Pasa a “Interested”</td><td>Preselección contra la vacante (mañana)</td></tr>
+    <tr><td>Se pone fecha de cita</td><td>Entrevista (el día de la cita)</td></tr>
+    <tr><td>Asignado o primer día confirmado, con fecha</td><td>Confirmar primer día (día anterior) y “¿se presentó?” (ese día)</td></tr>
+    <tr><td>Se presentó a trabajar</td><td>Seguimiento a los 7, 30 y 60 días</td></tr>
+    <tr><td>Se cierra con fecha de recontacto</td><td>Recontactar (en esa fecha)</td></tr>
+  </table>
+  <p>Las tareas de etapas anteriores se cierran solas cuando el candidato avanza. Abajo puedes agregar tareas generales (por ejemplo, “Llamar al KCC Florence”).</p>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 10</div>
+  <h2>Openings (vacantes)</h2>
+  <figure><img src="img/08-openings.png"><figcaption>Necesarias, grupo listo y colocadas por vacante.</figcaption></figure>
+  <ul>
+    <li><span class="ui">Add opening</span>: título, puesto, turno, personas necesarias, estado, fechas.</li>
+    <li>Para marcarla <b>Authorized</b> la página exige <b>quién la autorizó y cuándo</b>.</li>
+    <li><b>Pago y horario</b>: solo cuando estén verificados por escrito. <b>Requisitos</b>: solo los que dio el cliente.</li>
+    <li><b>Ready pool</b> (grupo listo): preseleccionados o autorizados de esa vacante o de ese puesto, sin retención por otra agencia. En rojo si es bajo.</li>
+    <li>Al cubrirla, cambia el estado a <b>Filled</b>: la página calcula el tiempo de cobertura.</li>
+  </ul>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 11</div>
+  <h2>90-day calendar (calendario de 90 días)</h2>
+  <figure><img src="img/09-calendar.png"><figcaption>Actividades agrupadas por semana con su estado.</figcaption></figure>
+  <ul>
+    <li><span class="ui">Load suggested 90-day plan</span> carga 39 actividades: reuniones semanales entre agencias, contactos con KCC Florence, Esperanza Latino Center, Gateway, Brighton Center, Life Learning Center y la biblioteca, campañas digitales, jornadas de entrevistas (si se autorizan) y revisiones mensuales.</li>
+    <li>Estados: <b>Idea</b>, <b>Pending confirmation</b>, <b>Confirmed</b>, <b>Done</b>, <b>Cancelled</b>.</li>
+    <li>Solo marca <b>Confirmed</b> después de verificar con el organizador; la página exige registrar quién lo confirmó o el enlace oficial.</li>
+    <li>Después de cada actividad anota el costo real y los resultados: salen en los reportes.</li>
+  </ul>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 12</div>
+  <h2>Sources (fuentes)</h2>
+  <figure><img src="img/10-sources.png"><figcaption>Mapa de fuentes investigado el 26/10/2026.</figcaption></figure>
+  <p><b>Verified</b> = confirmada en una fuente pública. <b>To confirm</b> = llama antes de usarla. Nada de esto es un acuerdo comercial. A la derecha ves cuántos candidatos llegaron por cada fuente.</p>
+  <div class="tip"><b>Lo que importa medir</b>Conserva los canales que traen personas que <b>se presentan a trabajar</b>, no los que traen más registros. La tabla del panel lo muestra por fuente.</div>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 13</div>
+  <h2>Agencies (coordinación entre agencias)</h2>
+  <figure><img src="img/11-agencies.png"><figcaption>Protocolo, agenda semanal y registro de coordinación.</figcaption></figure>
+  <ul>
+    <li><b>Protocol</b>: las 8 reglas para trabajar con las otras agencias sin competir.</li>
+    <li><b>Weekly meeting agenda</b>: se arma sola con tus vacantes y cantidades, sin nombres. <span class="ui">Copy agenda</span> para compartirla.</li>
+    <li><b>Coordination log</b>: reuniones, solicitudes del cliente, escalamientos, traspasos y acuerdos. Solo información operativa.</li>
+    <li><b>Agencies at this client</b>: nombre, representante, contacto laboral y qué cubre cada agencia.</li>
+  </ul>
+  <div class="warn"><b>Nunca</b>Contactes a un trabajador colocado por otra agencia para transferirlo, ni compartas listas de candidatos o datos personales con otras agencias sin autorización escrita y base legal.</div>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 14</div>
+  <h2>Messages &amp; ads (mensajes y anuncios)</h2>
+  <figure><img src="img/12-messages.png"><figcaption>Cada plantilla en inglés y español, lista para copiar.</figcaption></figure>
+  <p>Incluye: confirmación de registro, primer contacto, seguimiento sin respuesta, solicitud oficial, recordatorio de cita, confirmar disponibilidad, primer día, seguimiento día 7, recontacto, información guardada, respuesta a comentarios, publicación de Facebook, guion de TikTok/Reels y anuncio largo para Indeed o Focus Talent.</p>
+  <p>Los marcadores como <b>{first_name}</b> o <b>{apply_link}</b> se completan con tus ajustes y con los datos de cada candidato. Los <b>[CORCHETES]</b> del anuncio largo se completan solo con información verificada; si no la tienes, borra la línea.</p>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 15</div>
+  <h2>Reports (reportes PDF y Excel)</h2>
+  <figure><img src="img/13-reports.png"><figcaption>Elige el tipo de reporte, escribe tus comentarios y descarga.</figcaption></figure>
+  <ol class="steps">
+    <li>Elige <span class="ui">Daily</span>, <span class="ui">Weekly</span>, <span class="ui">Monthly</span> o <span class="ui">Custom</span> (fechas que tú eliges).</li>
+    <li>Escribe en <b>Comments and recommendations</b> qué funcionó, qué cambiarás y qué apoyo necesitas del cliente. Aparece en el reporte.</li>
+    <li>Pulsa <span class="ui">Download PDF</span> o <span class="ui">Download Excel</span>. También puedes <span class="ui">Copy as text</span> para un correo o chat.</li>
+  </ol>
+  <table>
+    <tr><th style="width:24%">Formato</th><th>Contenido</th></tr>
+    <tr><td>PDF</td><td>Encabezado con la marca Top Tier HR y tu firma; cifras principales; resumen ejecutivo con metas; embudo con barras; fuentes y conversión; vacantes; pipeline; actividades y próximas actividades; coordinación entre agencias; tus comentarios; bloque “Prepared by Gary Ronquillo, Onsite Representative, Top Tier HR”.</td></tr>
+    <tr><td>Excel</td><td>Las mismas tablas en hojas separadas: Summary, Funnel, Sources, Openings, Pipeline, Activities, Agencies.</td></tr>
+  </table>
+  <div class="tip"><b>Datos personales</b>Por defecto los reportes llevan solo cantidades. La casilla “Include the candidate list with names” agrega nombres: úsala solo para uso interno de Top Tier HR, nunca para el cliente ni para otras agencias.</div>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 16</div>
+  <h2>QR &amp; flyer kit</h2>
+  <figure><img src="img/15-kit.png"><figcaption>El QR se genera con el enlace de preinscripción de tus ajustes.</figcaption></figure>
+  <ul>
+    <li><span class="ui">Flyer PDF</span>: folleto bilingüe con la marca, el QR, tu nombre, cargo y teléfono, y el aviso “Registrarse no garantiza empleo”.</li>
+    <li><span class="ui">Cards PDF</span>: 10 tarjetas de presentación por hoja carta, con QR.</li>
+    <li><span class="ui">QR as PNG</span>: imagen del QR para Facebook, WhatsApp o una presentación.</li>
+  </ul>
+  <p>Prueba el QR con tu teléfono antes de imprimir. Coloca folletos solo donde el cliente lo autorice, y usa la marca de Top Tier HR solo con aprobación de la agencia.</p>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 17</div>
+  <h2>Registration mode (modo registro)</h2>
+  <div class="two">
+    <div>
+      <p>Pantalla para que los candidatos se registren solos en tu tableta o teléfono durante una feria, visita o jornada de entrevistas.</p>
+      <ol class="steps">
+        <li>Pulsa <span class="ui">Registration mode</span> (botón amarillo, arriba a la derecha).</li>
+        <li>Elige la <b>fuente</b> de esos registros (por ejemplo, “Job fair”) y pulsa <span class="ui">Start</span>.</li>
+        <li>Entrega el dispositivo. El candidato elige EN o ES, llena el formulario y acepta el consentimiento (obligatorio).</li>
+        <li>Al enviar ve un mensaje de agradecimiento; el formulario se reinicia solo para la siguiente persona.</li>
+        <li>Para salir: <span class="ui">Exit registration mode</span> y confirmar.</li>
+      </ol>
+      <p>La pantalla no muestra a nadie más ni ningún otro dato. Cada registro llega a tu base con su fuente y crea la tarea de primer contacto.</p>
+    </div>
+    <figure class="phone"><img src="img/17-kiosk-phone.png"><figcaption>Modo registro en un teléfono.</figcaption></figure>
+  </div>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 18</div>
+  <h2>30-day plan</h2>
+  <figure><img src="img/16-plan.png"><figcaption>Preguntas para el supervisor y plan de 4 semanas, con avance.</figcaption></figure>
+  <p>Marca cada punto al completarlo; se guarda solo. En las 15 preguntas anota la respuesta confirmada y quién la dio (se guarda al salir del campo). La barra muestra tu avance total.</p>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 19</div>
+  <h2>Settings &amp; data (ajustes y datos)</h2>
+  <ul>
+    <li><b>Your details</b>: empresa, tu nombre, teléfono de trabajo y enlace de preinscripción o solicitud oficial.</li>
+    <li><b>Activity goals</b>: metas diarias y semanales, y alertas (días sin contacto, mínimo de candidatos por vacante).</li>
+    <li><b>Real monthly spend per source</b>: solo gasto real, para calcular costo por candidato.</li>
+    <li><b>Import candidates (CSV)</b>: para respuestas de un Formulario de Google/Microsoft o una hoja de cálculo. Reconoce columnas de nombre, apellido, teléfono, correo, ciudad, código postal, idioma, turno y consentimiento. Omite filas incompletas o duplicadas y solo marca consentimiento si la columna lo dice.</li>
+    <li><b>Export candidates (CSV)</b>: copia de tu base.</li>
+    <li><b>Review inactive 12+ months</b>: lista a quienes llevan más de un año sin actividad para eliminarlos según la política de la agencia.</li>
+    <li><b>Load / Remove sample data</b>: datos de ejemplo para practicar.</li>
+  </ul>
+  <div class="tip"><b>Copia de seguridad</b>Una vez al mes, exporta el CSV de candidatos y guárdalo donde la política de Top Tier HR lo permita.</div>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 20</div>
+  <h2>Reglas de cumplimiento</h2>
+  <table>
+    <tr><th style="width:28%">Tema</th><th>Regla</th></tr>
+    <tr><td>Vacantes</td><td>Recluta solo para vacantes autorizadas por el cliente y Top Tier HR.</td></tr>
+    <tr><td>Información publicada</td><td>Nunca publiques pago, horarios, bonos, beneficios ni fechas no verificados. Di siempre que registrarse no garantiza empleo.</td></tr>
+    <tr><td>Consentimiento</td><td>Contacta solo a quien aceptó, y solo por los canales que aceptó. Respeta “STOP” o “NO” de inmediato: quita el consentimiento en la ficha.</td></tr>
+    <tr><td>Mensajes</td><td>Sin envíos masivos. En horario razonable. Desde el número o correo de trabajo autorizado.</td></tr>
+    <tr><td>Datos personales</td><td>Nada de SSN, identificación, banco, fecha de nacimiento, salud o estatus migratorio. Observaciones solo laborales.</td></tr>
+    <tr><td>No discriminación</td><td>Selecciona solo por requisitos reales del puesto. No uses edad, origen, idioma (salvo que el puesto lo exija), sexo, religión, discapacidad u otras características protegidas.</td></tr>
+    <tr><td>Otras agencias</td><td>Respeta sus asignaciones; comparte solo información operativa autorizada; escala los conflictos el mismo día.</td></tr>
+    <tr><td>Eliminación</td><td>Elimina enseguida a quien lo pida y revisa cada mes los registros inactivos.</td></tr>
+    <tr><td>Marca</td><td>Usa el nombre y logo de Top Tier HR en material para candidatos solo con autorización.</td></tr>
+  </table>
+</section>
+
+<section class="chapter">
+  <div class="kicker">Capítulo 21</div>
+  <h2>Preguntas frecuentes y solución de problemas</h2>
+  <table>
+    <tr><th style="width:36%">Problema</th><th>Solución</th></tr>
+    <tr><td>“Data can’t be saved in this view”</td><td>Abre la página en claude.ai con tu sesión iniciada. Fuera de claude.ai no se puede guardar.</td></tr>
+    <tr><td>“Could not save”</td><td>Revisa tu conexión y vuelve a pulsar guardar.</td></tr>
+    <tr><td>No descarga el PDF o el Excel</td><td>La primera descarga carga el generador desde internet: revisa tu conexión. Acepta la ventana de confirmación de descarga.</td></tr>
+    <tr><td>El kit no muestra el QR</td><td>Falta el enlace de preinscripción en Settings &amp; data.</td></tr>
+    <tr><td>El mensaje dice “Fill in before sending: {my_phone}”</td><td>Escribe tu teléfono de trabajo en Settings &amp; data.</td></tr>
+    <tr><td>Un candidato no aparece en la lista</td><td>Revisa los filtros; los cerrados se ocultan salvo con “Include closed”.</td></tr>
+    <tr><td>Un candidato no aparece en Today’s calls</td><td>No tiene consentimiento, está retenido por otra agencia o no tiene nada pendiente hoy.</td></tr>
+    <tr><td>Las cifras incluyen “Sample”</td><td>Quita los datos de ejemplo desde el Dashboard o Settings &amp; data.</td></tr>
+    <tr><td>Quiero la página en español</td><td>Botón <span class="ui">ES</span> arriba a la derecha.</td></tr>
+    <tr><td>¿Mi supervisor puede ver mis candidatos si comparto la página?</td><td>No. Los candidatos y tus datos se guardan en tu espacio privado. Para informar, envía los reportes PDF o Excel.</td></tr>
+  </table>
+  <p style="margin-top:18pt;color:var(--muted)">Preparado por <b style="color:var(--ink)">Gary Ronquillo</b> · Onsite Representative · Top Tier HR</p>
+</section>
+
+</body>
+</html>
