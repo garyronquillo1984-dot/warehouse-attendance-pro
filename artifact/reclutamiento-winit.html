@@ -715,7 +715,7 @@ VIEWS.mensajes = () => {
 // ---------------------------------------------------------------- reports (screen, Excel, PDF)
 const BRAND = { name: 'Top Tier HR', dba: 'a DBA of OC Staffing and HR Solutions LLC', site: 'Kentucky · Win.It America, 7050 New Buffington Rd, Florence, KY 41042' };
 // Author of every report.
-const AUTHOR = { name: 'Gary Ronquillo', role: 'Onsite Representative', assignment: 'Top Tier HR In house for Winit Kentucky' };
+const AUTHOR = { name: 'Gary Ronquillo', role: 'Onsite Representative', assignment: 'Top Tier HR' };
 function reportRange() {
   const d0 = today(), day = S.rday || d0;
   if (S.rkind === 'weekly') { const wd = new Date(day + 'T12:00:00Z').getUTCDay() || 7, f = addDays(day, 1 - wd); return [f, addDays(f, 6) > d0 ? d0 : addDays(f, 6)]; }
