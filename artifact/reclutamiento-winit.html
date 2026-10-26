@@ -1,4 +1,4 @@
-<title>Reclutamiento Winit Florence</title>
+<title>Winit Florence Recruiting</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap">
@@ -175,16 +175,16 @@ dialog::backdrop { background: rgb(0 0 0 / .45); }
 
 <header class="top">
   <div class="top-in">
-    <div class="brand">Reclutamiento · Winit Florence <small>7050 New Buffington Rd · KY 41042</small></div>
+    <div class="brand">Recruiting · Winit Florence <small>7050 New Buffington Rd · Florence, KY 41042</small></div>
     <div class="spacer"></div>
-    <div class="seg" role="group" aria-label="Idioma / Language">
-      <button id="lang-es" aria-pressed="true">ES</button><button id="lang-en" aria-pressed="false">EN</button>
+    <div class="seg" role="group" aria-label="Language / Idioma">
+      <button id="lang-en" aria-pressed="true">EN</button><button id="lang-es" aria-pressed="false">ES</button>
     </div>
-    <button class="btn sm" id="kiosk-open" style="background:var(--tape);color:var(--tape-ink)">Modo registro</button>
+    <button class="btn sm" id="kiosk-open" style="background:var(--tape);color:var(--tape-ink)">Registration mode</button>
   </div>
-  <nav class="tabs" id="tabs" aria-label="Secciones"></nav>
+  <nav class="tabs" id="tabs" aria-label="Sections"></nav>
 </header>
-<main id="view"><div class="panel empty"><h2>Cargando…</h2><p class="muted">Conectando con tu almacenamiento privado.</p></div></main>
+<main id="view"><div class="panel empty"><h2>Loading…</h2><p class="muted">Connecting to your private storage.</p></div></main>
 <dialog id="dlg"></dialog>
 <div id="kiosk" class="kiosk" hidden></div>
 <div id="toast" class="toast" hidden></div>
@@ -193,7 +193,7 @@ dialog::backdrop { background: rgb(0 0 0 / .45); }
 'use strict';
 // ---------------------------------------------------------------- language
 const S = {
-  lang: (() => { try { return localStorage.getItem('rw.lang') || 'es'; } catch { return 'es'; } })(),
+  lang: (() => { try { return localStorage.getItem('rw.lang2') || 'en'; } catch { return 'en'; } })(),
   tab: (() => { const h = location.hash.slice(1); return h || 'panel'; })(),
   db: null, uid: null, ready: false, offline: false, dl: null,
   cands: [], tasks: [], openings: [], acts: [], agencies: [], coord: [], settings: {},
@@ -1223,8 +1223,8 @@ document.addEventListener('submit', async e => {
     await safe(() => settingsDoc().set(s), t('Ajustes guardados', 'Settings saved'));
   }
 });
-$('#lang-es').onclick = () => { S.lang = 'es'; try { localStorage.setItem('rw.lang', 'es'); } catch {} render(); };
-$('#lang-en').onclick = () => { S.lang = 'en'; try { localStorage.setItem('rw.lang', 'en'); } catch {} render(); };
+$('#lang-es').onclick = () => { S.lang = 'es'; try { localStorage.setItem('rw.lang2', 'es'); } catch {} render(); };
+$('#lang-en').onclick = () => { S.lang = 'en'; try { localStorage.setItem('rw.lang2', 'en'); } catch {} render(); };
 $('#kiosk-open').onclick = () => {
   if (!S.ready) { toast(t('Primero abre la página con tu sesión iniciada en claude.ai.', 'Open the page signed in on claude.ai first.')); return; }
   openDlg(t('Modo registro', 'Registration mode'), `<p>${t('Pantalla para que los candidatos se registren solos en tu tableta o teléfono durante una feria o visita. No muestra a nadie más ni otros datos. Los registros llegan a tu base con la fuente que elijas.', 'A screen where candidates register themselves on your tablet or phone at a fair or visit. It shows no one else and no other data. Registrations land in your database with the source you choose.')}</p>
