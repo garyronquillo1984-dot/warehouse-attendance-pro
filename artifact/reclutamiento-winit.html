@@ -357,7 +357,7 @@ async function boot() {
 function liveRender() { if (S.ready) render(); }
 
 // ---------------------------------------------------------------- domain rules
-const ST = () => ({ stale: 3, lowPool: 3, gContacts: 20, gPrescreen: 10, gInterviews: 5, gShow: 85, gRet30: 70, company: 'Top Tier HR', myName: '', myPhone: '', applyLink: '', spend: {}, ...S.settings });
+const ST = () => ({ stale: 3, lowPool: 3, gContacts: 20, gPrescreen: 10, gInterviews: 5, gShow: 85, gRet30: 70, company: 'Top Tier HR', myName: 'Gary Ronquillo', myPhone: '', applyLink: '', spend: {}, ...S.settings });
 function dupOf(c) {
   const other = S.cands.find(x => x.id !== c.id && ((c.phone && x.phone === c.phone) || (c.email && x.email && x.email === c.email)
     || (c.zip && x.zip === c.zip && x.first.toLowerCase() === c.first.toLowerCase() && x.last.toLowerCase() === c.last.toLowerCase())));
@@ -713,6 +713,8 @@ VIEWS.mensajes = () => {
 
 // ---------------------------------------------------------------- reports (screen, Excel, PDF)
 const BRAND = { name: 'Top Tier HR', dba: 'a DBA of OC Staffing and HR Solutions LLC', site: 'Kentucky · Win.It America, 7050 New Buffington Rd, Florence, KY 41042' };
+// Author of every report.
+const AUTHOR = { name: 'Gary Ronquillo', role: 'Onsite Representative', assignment: 'Top Tier HR In house for Winit Kentucky' };
 function reportRange() {
   const d0 = today(), day = S.rday || d0;
   if (S.rkind === 'weekly') { const wd = new Date(day + 'T12:00:00Z').getUTCDay() || 7, f = addDays(day, 1 - wd); return [f, addDays(f, 6) > d0 ? d0 : addDays(f, 6)]; }
@@ -793,7 +795,7 @@ function reportText(r) {
     t('Vacantes autorizadas (necesarias / colocadas / grupo listo):', 'Authorized openings (needed / placed / ready pool):'),
     ...(r.openings.length ? r.openings.filter(o => o[3] === lab(OPEN_STATUS, 'authorized')).map(o => `• ${o[0]}: ${o[4]} / ${o[5]} / ${o[6]}`) : [t('• ninguna registrada', '• none recorded')]), '',
     t('Fuentes (registrados → iniciaron):', 'Sources (registered → started):'), ...(r.sources.length ? r.sources.map(s => `• ${s[0]}: ${s[1]} → ${s[5]}`) : [t('• sin registros', '• no registrations')]),
-    ...(r.comments ? ['', t('Comentarios:', 'Comments:'), r.comments] : [])].filter(x => x !== null).join('\n');
+    ...(r.comments ? ['', t('Comentarios:', 'Comments:'), r.comments] : []), '', t('Preparado por:', 'Prepared by:'), AUTHOR.name, AUTHOR.role, AUTHOR.assignment].filter(x => x !== null).join('\n');
 }
 // Libraries load only when an export is asked for (pinned versions, public CDN).
 const LIBS = { xlsx: 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js', jspdf: 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js', autotable: 'https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js' };
@@ -811,7 +813,7 @@ async function exportExcel() {
   const r = reportData();
   try { await loadLib('xlsx'); } catch { toast(t('No se pudo cargar el generador de Excel. Revisa tu conexión.', 'Could not load the Excel generator. Check your connection.')); return; }
   const X = window.XLSX, wb = X.utils.book_new();
-  const head = [[BRAND.name], [BRAND.dba], [BRAND.site], [r.title], [t('Período: ', 'Period: ') + r.period], [t('Preparado por: ', 'Prepared by: ') + (r.st.myName || '—') + ' · ' + t('Generado: ', 'Generated: ') + new Date().toLocaleString(S.lang === 'es' ? 'es-US' : 'en-US')], ...(r.sample ? [[t('NOTA: incluye datos de EJEMPLO', 'NOTE: includes SAMPLE data')]] : []), []];
+  const head = [[BRAND.name], [BRAND.dba], [BRAND.site], [r.title], [t('Período: ', 'Period: ') + r.period], [t('Preparado por: ', 'Prepared by: ') + AUTHOR.name], [AUTHOR.role], [AUTHOR.assignment], [t('Generado: ', 'Generated: ') + new Date().toLocaleString(S.lang === 'es' ? 'es-US' : 'en-US')], ...(r.sample ? [[t('NOTA: incluye datos de EJEMPLO', 'NOTE: includes SAMPLE data')]] : []), []];
   const sheet = (rows, widths) => { const ws = X.utils.aoa_to_sheet(rows); ws['!cols'] = widths.map(w => ({ wch: w })); return ws; };
   const summary = [...head, RCOLS.kpis(), ...r.kpis, [], ...(r.comments ? [[t('Comentarios', 'Comments')], [r.comments]] : [])];
   X.utils.book_append_sheet(wb, sheet(summary, [44, 22, 24]), t('Resumen', 'Summary'));
@@ -839,7 +841,8 @@ async function exportPdf() {
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.text(BRAND.site, M, 96);
   doc.setFont('times', 'bold'); doc.setFontSize(15); doc.text(r.title, W - M, 54, { align: 'right' });
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.text(r.period.replace(' → ', t(' al ', ' to ')), W - M, 72, { align: 'right' });
-  doc.text(t('Preparado por: ', 'Prepared by: ') + (r.st.myName || '—'), W - M, 88, { align: 'right' });
+  doc.setFont('helvetica', 'bold'); doc.text(t('Preparado por: ', 'Prepared by: ') + AUTHOR.name, W - M, 90, { align: 'right' });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.text(AUTHOR.role, W - M, 104, { align: 'right' }); doc.text(AUTHOR.assignment, W - M, 117, { align: 'right' });
   let y = 156;
   if (r.sample) { doc.setFillColor(255, 244, 210); doc.rect(M, y - 12, W - 2 * M, 22, 'F'); doc.setTextColor(...INK); doc.setFontSize(9); doc.text(t('NOTA: este reporte incluye datos de EJEMPLO; no son resultados reales.', 'NOTE: this report includes SAMPLE data; these are not real results.'), M + 8, y + 2); y += 24; }
   // Headline figures.
@@ -884,12 +887,20 @@ async function exportPdf() {
     doc.setTextColor(...BROWN); doc.setFont('times', 'bold'); doc.setFontSize(13); doc.text(t('Comentarios y recomendaciones', 'Comments and recommendations'), M, y); y += 16;
     doc.setTextColor(...INK); doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
     doc.splitTextToSize(r.comments, W - 2 * M).forEach(line => { if (y > H - 50) { doc.addPage(); y = 56; } doc.text(line, M, y); y += 14; });
+    y += 10;
   }
+  // Author block closes the report.
+  if (y > H - 130) { doc.addPage(); y = 56; }
+  y += 14; doc.setDrawColor(...GOLD); doc.setLineWidth(1); doc.line(M, y, M + 220, y); y += 18;
+  doc.setTextColor(...MUTED); doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.text(t('PREPARADO POR', 'PREPARED BY'), M, y); y += 18;
+  doc.setTextColor(...INK); doc.setFont('times', 'bold'); doc.setFontSize(15); doc.text(AUTHOR.name, M, y); y += 15;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.text(AUTHOR.role, M, y); y += 13; doc.text(AUTHOR.assignment, M, y);
+  doc.setLineWidth(0.5);
   const pages = doc.getNumberOfPages(), gen = new Date().toLocaleString(S.lang === 'es' ? 'es-US' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' });
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i); doc.setDrawColor(221, 213, 204); doc.line(M, H - 32, W - M, H - 32);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(...MUTED);
-    doc.text(`${BRAND.name} · ${BRAND.dba} · ${t('Confidencial — uso interno', 'Confidential — internal use')} · ${t('Generado', 'Generated')} ${gen}`, M, H - 20);
+    doc.text(`${BRAND.name} · ${AUTHOR.name}, ${AUTHOR.role} · ${t('Confidencial — uso interno', 'Confidential — internal use')} · ${t('Generado', 'Generated')} ${gen}`, M, H - 20);
     doc.text(`${i} / ${pages}`, W - M, H - 20, { align: 'right' });
   }
   await deliver(fileBase(r) + '.pdf', doc.output('blob'));
@@ -913,6 +924,7 @@ VIEWS.reportes = () => {
   ${r.sample ? `<p class="note">${t('Hay datos de ejemplo cargados; el reporte lo indicará. Quítalos antes de enviarlo.', 'Sample data is loaded; the report will say so. Remove it before sending.')}</p>` : ''}
   ${!S.dl ? `<p class="note">${t('Las descargas no están disponibles en esta vista. Abre la página en claude.ai.', 'Downloads are not available in this view. Open the page on claude.ai.')}</p>` : ''}</section>
   <section class="panel"><h2>${esc(r.title)}</h2><p class="small muted">${esc(BRAND.name)} · ${esc(BRAND.dba)} · ${esc(r.period)}</p>
+    <p class="small">${t('Preparado por', 'Prepared by')} <b>${esc(AUTHOR.name)}</b> · ${esc(AUTHOR.role)} · ${esc(AUTHOR.assignment)}</p>
     ${table(RCOLS.kpis(), r.kpis, [1])}</section>
   <div class="grid2"><section class="panel"><h3>${t('Embudo (registrados en el período)', 'Funnel (registered in the period)')}</h3>${table(RCOLS.funnel(), r.funnel, [1, 2])}</section>
     <section class="panel"><h3>${t('Vacantes', 'Openings')}</h3>${table([RCOLS.openings()[0], RCOLS.openings()[4], RCOLS.openings()[5], RCOLS.openings()[6]], r.openings.map(o => [o[0], o[4], o[5], o[6]]), [1, 2, 3])}</section></div>
