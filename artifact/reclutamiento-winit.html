@@ -1,0 +1,1240 @@
+<title>Reclutamiento Winit Florence</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: a warehouse floor board — charcoal frame, concrete floor, one safety-yellow tape line marking where you are. */
+:root {
+  --floor: #ECEEEA;
+  --panel: #FFFFFF;
+  --panel-2: #F5F6F3;
+  --ink: #1B2220;
+  --muted: #59635E;
+  --line: #D2D7D1;
+  --tape: #F2C230;
+  --tape-ink: #1B2220;
+  --go: #1E7A4C;
+  --go-soft: #E2F1E8;
+  --stop: #B3261E;
+  --stop-soft: #FBE9E7;
+  --warn-soft: #FFF4D2;
+  --focus: #2E6BE6;
+  --bar: #1B2220;
+  --bar-ink: #EEF0EC;
+  --display: 'Barlow Semi Condensed', 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;
+  --body: 'Barlow', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --r: 8px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --floor: #121715; --panel: #1A201E; --panel-2: #212825; --ink: #E7ECE8; --muted: #A1ABA6; --line: #333E39;
+    --tape: #E5B620; --tape-ink: #121715; --go: #43A976; --go-soft: #1B3127; --stop: #EF7468; --stop-soft: #3A1E1B;
+    --warn-soft: #39311A; --focus: #7EA6FF; --bar: #0B0F0E; --bar-ink: #E7ECE8; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --floor: #121715; --panel: #1A201E; --panel-2: #212825; --ink: #E7ECE8; --muted: #A1ABA6; --line: #333E39;
+  --tape: #E5B620; --tape-ink: #121715; --go: #43A976; --go-soft: #1B3127; --stop: #EF7468; --stop-soft: #3A1E1B;
+  --warn-soft: #39311A; --focus: #7EA6FF; --bar: #0B0F0E; --bar-ink: #E7ECE8; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--floor); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.45; font-variant-numeric: tabular-nums; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bar); }
+h1, h2, h3 { font-family: var(--display); line-height: 1.1; margin: 0; text-wrap: balance; }
+h1 { font-size: 1.9rem; } h2 { font-size: 1.35rem; } h3 { font-size: 1.08rem; }
+p { margin: 0; max-width: 68ch; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bar); color: var(--bar-ink); border-bottom: 5px solid var(--tape); }
+.top-in { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.brand { font-family: var(--display); font-weight: 700; font-size: 1.15rem; letter-spacing: .01em; }
+.brand small { font-family: var(--body); font-weight: 500; opacity: .7; font-size: .8rem; margin-left: 8px; }
+@media (max-width: 600px) { .brand small { display: none; } }
+.spacer { flex: 1; }
+.seg { display: inline-flex; border: 1.5px solid color-mix(in srgb, var(--bar-ink) 35%, transparent); border-radius: 6px; overflow: hidden; }
+.seg button { font: inherit; font-weight: 700; font-size: .82rem; min-width: 42px; min-height: 34px; border: 0; background: transparent; color: var(--bar-ink); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--tape); color: var(--tape-ink); }
+.tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: thin; padding-left: max(8px, env(safe-area-inset-left, 0px)); padding-right: max(8px, env(safe-area-inset-right, 0px)); }
+.tabs button { flex: none; font: inherit; font-weight: 600; font-size: .93rem; color: color-mix(in srgb, var(--bar-ink) 72%, transparent); background: transparent; border: 0; padding: 10px 12px; min-height: 42px; cursor: pointer; border-bottom: 3px solid transparent; }
+.tabs button[aria-current="page"] { color: var(--bar-ink); border-bottom-color: var(--tape); }
+
+main { max-width: 1100px; margin: 0 auto; padding-block: 24px 80px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 24px; }
+.head { display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; }
+.head > div { display: grid; gap: 4px; min-width: 0; flex: 1 1 260px; }
+.head > .row, .head > .btn, .head > label { flex: 0 0 auto; }
+.muted { color: var(--muted); }
+.small { font-size: .88rem; }
+.mono { font-variant-numeric: tabular-nums; letter-spacing: .01em; }
+.panel { background: var(--panel); border-radius: var(--r); padding: 20px; display: grid; gap: 14px; min-width: 0; align-content: start; }
+.panel.flush { padding: 0; gap: 0; overflow: hidden; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.stack { display: grid; gap: 12px; }
+
+.btn { font: inherit; font-weight: 600; min-height: 42px; padding: 8px 16px; border-radius: 6px; border: 1.5px solid transparent; cursor: pointer; background: var(--ink); color: var(--floor); display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn.ghost:hover { border-color: var(--ink); }
+.btn.go { background: var(--go); color: #fff; }
+.btn.danger { background: transparent; color: var(--stop); border-color: var(--line); }
+.btn.sm { min-height: 34px; padding: 4px 12px; font-size: .88rem; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.linkbtn { font: inherit; font-weight: 600; background: none; border: 0; padding: 0; color: inherit; text-decoration: underline; cursor: pointer; }
+
+label.f { display: grid; gap: 5px; font-weight: 600; font-size: .9rem; min-width: 0; }
+label.f .hint { font-weight: 400; color: var(--muted); font-size: .83rem; }
+input:not([type=checkbox]), select, textarea { font: inherit; font-weight: 400; width: 100%; min-height: 42px; padding: 8px 10px; border: 1.5px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--ink); }
+textarea { min-height: 70px; resize: vertical; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 30%, transparent); }
+.check { display: flex; gap: 10px; align-items: flex-start; font-weight: 500; cursor: pointer; }
+.check input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--ink); flex: none; }
+.fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+.filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; }
+.filters label.f { flex: 1 1 150px; }
+.filters label.f.grow { flex: 2 1 240px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: inherit; font-size: .88rem; padding: 5px 11px; min-height: 34px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--floor); border-color: var(--ink); }
+fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 8px; min-width: 0; }
+legend { font-weight: 600; font-size: .9rem; padding: 0; margin-bottom: 6px; }
+
+.tag { display: inline-block; font-size: .74rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; background: var(--panel-2); border: 1px solid var(--line); color: var(--muted); margin-left: 6px; vertical-align: 2px; white-space: nowrap; }
+.tag.sample { background: var(--warn-soft); border-color: var(--tape); color: var(--ink); }
+.tag.warn { background: var(--stop-soft); color: var(--stop); border-color: transparent; }
+.tag.ok { background: var(--go-soft); color: var(--go); border-color: transparent; }
+.stage { display: inline-block; font-size: .8rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: var(--panel-2); border: 1px solid var(--line); white-space: nowrap; }
+.ph-preselected { background: var(--warn-soft); border-color: transparent; }
+.ph-authorized { background: var(--go-soft); color: var(--go); border-color: transparent; }
+.ph-working { background: var(--go); color: #fff; border-color: transparent; }
+.ph-closed { color: var(--muted); }
+
+.note { padding: 12px 14px; border-radius: 6px; border-left: 4px solid var(--tape); background: var(--warn-soft); }
+.note.bad { border-color: var(--stop); background: var(--stop-soft); }
+.note.good { border-color: var(--go); background: var(--go-soft); }
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border-radius: var(--r); overflow: hidden; }
+.kpi { background: var(--panel); padding: 14px 16px; display: grid; gap: 3px; align-content: start; }
+.kpi b { font-family: var(--display); font-size: 2rem; line-height: 1; }
+.kpi span { font-size: .84rem; color: var(--muted); font-weight: 600; }
+.kpi i { font-style: normal; font-size: .8rem; color: var(--muted); }
+.kpi.lead { box-shadow: inset 5px 0 0 var(--tape); }
+
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+th { text-align: left; font-size: .8rem; color: var(--muted); font-weight: 600; padding: 9px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+td.n, th.n { text-align: right; }
+tr.click { cursor: pointer; }
+tr.click:hover td { background: var(--panel-2); }
+@media (max-width: 700px) {
+  table.cards thead { display: none; }
+  table.cards, table.cards tbody, table.cards tr, table.cards td { display: block; }
+  table.cards tr { padding: 10px 14px; border-bottom: 1px solid var(--line); }
+  table.cards td { border: 0; padding: 2px 0; display: flex; gap: 8px; }
+  table.cards td::before { content: attr(data-l); color: var(--muted); min-width: 96px; font-size: .85rem; }
+  table.cards td:first-child::before { content: none; }
+}
+
+.board { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.col { background: var(--panel); border-radius: var(--r); padding: 10px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.col h3 { font-size: .95rem; display: flex; justify-content: space-between; gap: 6px; }
+.card { border: 1.5px solid var(--line); border-radius: 6px; padding: 8px; display: grid; gap: 4px; background: var(--panel); }
+.card button.name { font: inherit; font-weight: 700; text-align: left; background: none; border: 0; padding: 0; color: inherit; cursor: pointer; }
+.card select { min-height: 34px; padding: 3px 6px; font-size: .85rem; }
+.phase-h { border-left: 6px solid var(--line); padding-left: 10px; }
+.phase-h.preselected { border-color: var(--tape); } .phase-h.authorized { border-color: var(--go); } .phase-h.working { border-color: var(--ink); }
+
+.list { list-style: none; margin: 0; padding: 0; display: grid; align-content: start; }
+.list > li { display: flex; gap: 10px 14px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; padding: 10px 0; border-top: 1px solid var(--line); }
+.list > li:first-child { border-top: 0; }
+.list .grow { flex: 1 1 260px; min-width: 0; }
+.done { text-decoration: line-through; color: var(--muted); }
+.late { color: var(--stop); font-weight: 600; }
+pre.msg { white-space: pre-wrap; font: inherit; margin: 0; padding: 12px 14px; background: var(--panel-2); border-left: 4px solid var(--tape); border-radius: 6px; overflow-wrap: anywhere; }
+.pill { font-size: .78rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: var(--panel-2); border: 1px solid var(--line); white-space: nowrap; }
+.pill.pending { background: var(--warn-soft); border-color: transparent; }
+.pill.ok { background: var(--go-soft); color: var(--go); border-color: transparent; }
+.timeline { list-style: none; margin: 0; padding: 0 0 0 12px; border-left: 3px solid var(--line); display: grid; gap: 8px; }
+ol.proto { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
+
+dialog { border: 0; padding: 0; border-radius: 10px; width: min(860px, calc(100vw - 24px)); max-height: calc(100vh - 32px); background: var(--floor); color: var(--ink); }
+dialog::backdrop { background: rgb(0 0 0 / .45); }
+.dlg-head { position: sticky; top: 0; z-index: 2; background: var(--bar); color: var(--bar-ink); padding: 12px 16px; display: flex; justify-content: space-between; gap: 10px; align-items: center; border-bottom: 4px solid var(--tape); }
+.dlg-head .btn.ghost { color: var(--bar-ink); border-color: color-mix(in srgb, var(--bar-ink) 35%, transparent); }
+.dlg-body { padding: 16px; display: grid; gap: 16px; }
+
+.kiosk { position: fixed; inset: 0; z-index: 50; background: var(--floor); overflow-y: auto; padding-block: calc(16px + env(safe-area-inset-top, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.kiosk-in { max-width: 640px; margin: 0 auto; background: var(--panel); border-radius: 10px; border-left: 10px solid var(--tape); padding: 22px; display: grid; gap: 16px; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--floor); padding: 10px 16px; border-radius: 6px; z-index: 60; font-weight: 600; max-width: calc(100vw - 32px); }
+.empty { text-align: left; padding: 28px 20px; display: grid; gap: 10px; justify-items: start; }
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">Reclutamiento · Winit Florence <small>7050 New Buffington Rd · KY 41042</small></div>
+    <div class="spacer"></div>
+    <div class="seg" role="group" aria-label="Idioma / Language">
+      <button id="lang-es" aria-pressed="true">ES</button><button id="lang-en" aria-pressed="false">EN</button>
+    </div>
+    <button class="btn sm" id="kiosk-open" style="background:var(--tape);color:var(--tape-ink)">Modo registro</button>
+  </div>
+  <nav class="tabs" id="tabs" aria-label="Secciones"></nav>
+</header>
+<main id="view"><div class="panel empty"><h2>Cargando…</h2><p class="muted">Conectando con tu almacenamiento privado.</p></div></main>
+<dialog id="dlg"></dialog>
+<div id="kiosk" class="kiosk" hidden></div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+'use strict';
+// ---------------------------------------------------------------- language
+const S = {
+  lang: (() => { try { return localStorage.getItem('rw.lang') || 'es'; } catch { return 'es'; } })(),
+  tab: (() => { const h = location.hash.slice(1); return h || 'panel'; })(),
+  db: null, uid: null, ready: false, offline: false, dl: null,
+  cands: [], tasks: [], openings: [], acts: [], agencies: [], coord: [], settings: {},
+  f: { q: '', phase: '', stage: '', source: '', shift: '', pos: '', ready: false, stale: false, dup: false, hold: false, closed: false },
+  period: '30', rkind: 'daily', rday: null, kioskSource: 'kiosk',
+};
+const t = (es, en) => (S.lang === 'en' ? en : es);
+const L = o => (o ? o[S.lang] : '');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const $ = s => document.querySelector(s);
+const today = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
+const addDays = (d, n) => { const x = new Date(d + 'T12:00:00Z'); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
+const days = (a, b) => Math.round((Date.parse(b + 'T12:00:00Z') - Date.parse(a + 'T12:00:00Z')) / 864e5);
+const newId = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)).replace(/[^a-zA-Z0-9-]/g, '');
+const fmtPhone = p => (p && p.length === 10 ? `(${p.slice(0, 3)}) ${p.slice(3, 6)}-${p.slice(6)}` : p || '');
+const nameOf = c => `${c.first} ${c.last}`;
+function toast(msg) { const el = $('#toast'); el.textContent = msg; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => (el.hidden = true), 2600); }
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); toast(t('Copiado', 'Copied')); }
+  catch { toast(t('No se pudo copiar: selecciona el texto y cópialo', 'Could not copy: select the text and copy it')); }
+}
+
+// ---------------------------------------------------------------- reference data
+const STAGES = [
+  ['new', 'lead', 'Nuevo candidato', 'New candidate'],
+  ['pending_contact', 'lead', 'Pendiente de contacto', 'Pending contact'],
+  ['contacted', 'lead', 'Contactado', 'Contacted'],
+  ['interested', 'lead', 'Interesado', 'Interested'],
+  ['prescreened', 'preselected', 'Preselección', 'Pre-selected'],
+  ['application', 'preselected', 'Entrevista o solicitud formal', 'Interview / formal application'],
+  ['documents', 'preselected', 'Documentación pendiente', 'Documents pending'],
+  ['checks', 'preselected', 'Verificaciones autorizadas pendientes', 'Authorized checks pending'],
+  ['approved', 'authorized', 'Aprobado según el proceso', 'Approved by hiring process'],
+  ['available', 'authorized', 'Disponible para asignación', 'Available for assignment'],
+  ['assigned', 'authorized', 'Asignado a un turno', 'Assigned to a shift'],
+  ['first_day_confirmed', 'authorized', 'Primer día confirmado', 'First day confirmed'],
+  ['started', 'working', 'Se presentó a trabajar', 'Showed up to work'],
+  ['retention', 'working', 'Seguimiento de retención', 'Retention follow-up'],
+  ['closed', 'closed', 'No interesado / no disponible / recontactar', 'Not interested / unavailable / recontact'],
+].map(([key, phase, es, en]) => ({ key, phase, es, en }));
+const SIDX = Object.fromEntries(STAGES.map((s, i) => [s.key, i]));
+const phaseOf = k => STAGES[SIDX[k] ?? 0].phase;
+const atLeast = (k, min) => k !== 'closed' && SIDX[k] >= SIDX[min];
+const stageName = k => L(STAGES[SIDX[k] ?? 0]);
+const PHASES = [
+  { key: 'lead', es: 'Interesados', en: 'Interested', hint: { es: 'Mostraron interés. Sin preselección ni autorización.', en: 'Showed interest. Not screened, not authorized.' } },
+  { key: 'preselected', es: 'Preseleccionados', en: 'Pre-selected', hint: { es: 'Cumplen requisitos reales del puesto. Proceso sin terminar.', en: 'Meet the real job requirements. Process not finished.' } },
+  { key: 'authorized', es: 'Autorizados para trabajar', en: 'Authorized to work', hint: { es: 'Aprobados por el proceso de contratación. Se pueden asignar.', en: 'Approved by the hiring process. Can be placed.' } },
+  { key: 'working', es: 'Trabajando', en: 'Working', hint: { es: 'Ya empezaron. Seguimiento de retención.', en: 'Started work. Retention follow-up.' } },
+  { key: 'closed', es: 'Cerrados', en: 'Closed', hint: { es: 'Se recontactan solo con consentimiento.', en: 'Recontacted only with consent.' } },
+];
+const opt = (key, es, en) => ({ key, es, en });
+const CLOSED = [opt('not_interested', 'No interesado', 'Not interested'), opt('not_available', 'No disponible', 'Not available'), opt('recontact_later', 'Recontactar más tarde', 'Recontact later'), opt('no_show', 'No se presentó', 'Did not show up'), opt('requirements', 'No cumplió requisitos del puesto', 'Did not meet job requirements'), opt('left', 'Dejó la asignación', 'Left the assignment'), opt('other_agency', 'Trabaja con otra agencia', 'Working with another agency'), opt('duplicate', 'Registro duplicado', 'Duplicate record'), opt('other', 'Otro', 'Other')];
+const POSITIONS = [opt('picking', 'Picking (surtido)', 'Picking'), opt('packing', 'Empaque', 'Packing'), opt('fulfillment', 'Preparación de pedidos', 'Order fulfillment'), opt('sorting', 'Clasificación', 'Sorting'), opt('material', 'Manejo de materiales', 'Material handling'), opt('receiving', 'Recepción', 'Receiving'), opt('shipping', 'Envíos', 'Shipping'), opt('inventory', 'Inventario', 'Inventory'), opt('other', 'Otro puesto aprobado', 'Other approved role')];
+const EXPERIENCE = [...POSITIONS.filter(p => p.key !== 'other'), opt('rf', 'Uso de escáner RF', 'RF scanner use'), opt('quality', 'Control de calidad', 'Quality check'), opt('none', 'Aún sin experiencia', 'No experience yet')];
+const EQUIPMENT = [opt('rf', 'Escáner RF', 'RF scanner'), opt('pallet', 'Patín manual', 'Pallet jack'), opt('epallet', 'Patín eléctrico', 'Electric pallet jack'), opt('forklift', 'Montacargas (certificado)', 'Forklift (certified)'), opt('reach', 'Reach truck', 'Reach truck'), opt('picker', 'Order picker', 'Order picker'), opt('conveyor', 'Banda transportadora', 'Conveyor')];
+const SHIFTS = [opt('first', '1er turno (día)', '1st shift (day)'), opt('second', '2º turno (tarde)', '2nd shift (evening)'), opt('third', '3er turno (noche)', '3rd shift (night)'), opt('weekend', 'Fines de semana', 'Weekends'), opt('flexible', 'Flexible', 'Flexible')];
+const LANGS = [opt('es', 'Español', 'Spanish'), opt('en', 'Inglés', 'English'), opt('other', 'Otro', 'Other')];
+const AGENCY = [opt('unknown', 'Aún no se preguntó', 'Not asked yet'), opt('none', 'No está con otra agencia aquí', 'Not with another agency here'), opt('reported', 'Dice que otra agencia lo colocó aquí — en espera', 'Says another agency placed them here — hold'), opt('cleared', 'Aclarado por el supervisor', 'Cleared by supervisor')];
+const EVENT_KINDS = [opt('call', 'Llamada', 'Call'), opt('sms', 'Mensaje de texto', 'Text'), opt('whatsapp', 'WhatsApp', 'WhatsApp'), opt('email', 'Correo', 'Email'), opt('in_person', 'En persona', 'In person'), opt('note', 'Nota', 'Note')];
+const OUTCOMES = [opt('reached', 'Contestó', 'Reached'), opt('no_answer', 'No contestó', 'No answer'), opt('left_message', 'Dejé mensaje', 'Left message'), opt('replied', 'Respondió', 'Replied'), opt('sent', 'Enviado', 'Sent'), opt('wrong_number', 'Número equivocado', 'Wrong number')];
+const OPEN_STATUS = [opt('draft', 'Borrador (sin autorizar)', 'Draft (not authorized)'), opt('authorized', 'Autorizada', 'Authorized'), opt('on_hold', 'En pausa', 'On hold'), opt('filled', 'Cubierta', 'Filled'), opt('closed', 'Cerrada', 'Closed')];
+const ACT_KINDS = [opt('job_fair', 'Feria de empleo', 'Job fair'), opt('community', 'Visita comunitaria', 'Community visit'), opt('org', 'Contacto con organización', 'Organization contact'), opt('school', 'Institución educativa', 'School meeting'), opt('digital', 'Campaña digital', 'Digital campaign'), opt('interview_day', 'Jornada de entrevistas', 'Interview day'), opt('follow_up', 'Seguimiento posterior', 'Post-event follow-up'), opt('agency', 'Coordinación entre agencias', 'Agency coordination'), opt('review', 'Revisión de resultados', 'Results review')];
+const ACT_STATUS = [opt('idea', 'Idea', 'Idea'), opt('pending', 'Pendiente de confirmación', 'Pending confirmation'), opt('confirmed', 'Confirmado', 'Confirmed'), opt('done', 'Realizado', 'Done'), opt('cancelled', 'Cancelado', 'Cancelled')];
+const COORD_KINDS = [opt('meeting', 'Reunión de coordinación', 'Coordination meeting'), opt('client_request', 'Solicitud del cliente', 'Client request'), opt('escalation', 'Escalamiento al supervisor', 'Escalation'), opt('handoff', 'Traspaso / cobertura', 'Handoff / coverage'), opt('agreement', 'Acuerdo', 'Agreement'), opt('note', 'Nota', 'Note')];
+const lab = (list, k) => (list.find(x => x.key === k) ? L(list.find(x => x.key === k)) : (k || '—'));
+
+// Sources researched on 2026-10-26. verified = confirmed in a public source; the rest need a call first.
+const SOURCES = [
+  { key: 'kcc_florence', es: 'Kentucky Career Center – Florence', en: 'Kentucky Career Center – Florence', kind: 'career', verified: true, url: '', note: { es: '8020 Veterans Memorial Dr, Florence, KY 41042 · (859) 372-8400 (confirmar). Eventos de contratación en sitio: preguntar.', en: '8020 Veterans Memorial Dr, Florence, KY 41042 · (859) 372-8400 (confirm). Ask about on-site hiring events.' } },
+  { key: 'focus_talent', es: 'Focus Talent (bolsa de empleo KCC)', en: 'Focus Talent (KCC job bank)', kind: 'board', verified: true, url: 'https://apps.kcc.ky.gov/employer/focustalent.aspx', note: { es: 'Gratis para empleadores. Soporte: KentuckyCareerCenterSupport@ky.gov · (502) 564-0871. Lo registra quien autorice la agencia.', en: 'Free for employers. Support: KentuckyCareerCenterSupport@ky.gov · (502) 564-0871. Registered by whoever the agency authorizes.' } },
+  { key: 'facebook', es: 'Facebook (página / publicación)', en: 'Facebook (page / post)', kind: 'social', verified: false, url: '', note: { es: 'Orgánico gratis. Solo desde la cuenta autorizada por la agencia.', en: 'Organic is free. Only from the account the agency authorizes.' } },
+  { key: 'fb_groups', es: 'Grupos de Facebook', en: 'Facebook groups', kind: 'social', verified: false, url: '', note: { es: 'Pedir permiso al administrador de cada grupo.', en: 'Ask each group admin for permission.' } },
+  { key: 'tiktok_ig', es: 'TikTok / Instagram', en: 'TikTok / Instagram', kind: 'social', verified: false, url: '', note: { es: 'Solo con aprobación de la agencia; no grabar dentro del cliente sin permiso.', en: 'Only with agency approval; never film inside the client without permission.' } },
+  { key: 'indeed', es: 'Indeed', en: 'Indeed', kind: 'board', verified: false, url: 'https://www.indeed.com/hire', note: { es: 'Gratis o patrocinado. Precios de terceros no coinciden: confirmar con Indeed y la agencia antes de gastar.', en: 'Free or sponsored. Third-party pricing reports disagree: confirm with Indeed and the agency first.' } },
+  { key: 'referral', es: 'Referido de empleado', en: 'Employee referral', kind: 'referral', verified: false, url: '', note: { es: 'Solo si la agencia tiene programa aprobado.', en: 'Only if the agency has an approved program.' } },
+  { key: 'esperanza', es: 'Esperanza Latino Center', en: 'Esperanza Latino Center', kind: 'community', verified: true, url: '', note: { es: '234 Pike St, Covington, KY. Preparación laboral bilingüe, ayuda con solicitudes. Pedir contacto oficial.', en: '234 Pike St, Covington, KY. Bilingual job readiness, application help. Get the official contact.' } },
+  { key: 'gateway', es: 'Gateway CTC (Handshake)', en: 'Gateway CTC (Handshake)', kind: 'school', verified: true, url: 'https://gateway.kctcs.edu/current-students/student-life/career-services/index.aspx', note: { es: 'gw-careerservices@kctcs.edu · (859) 442-1609', en: 'gw-careerservices@kctcs.edu · (859) 442-1609' } },
+  { key: 'brighton', es: 'Brighton Center (formación laboral)', en: 'Brighton Center (employment training)', kind: 'community', verified: false, url: '', note: { es: 'Center for Employment Training. Confirmar contacto y proceso de referidos.', en: 'Center for Employment Training. Confirm contact and referral process.' } },
+  { key: 'llc', es: 'Life Learning Center (segunda oportunidad)', en: 'Life Learning Center (fair chance)', kind: 'community', verified: true, url: '', note: { es: '20 W 18th St, Covington. Reentry Resource Night suele ser a fines de julio (fecha 2027 sin publicar).', en: '20 W 18th St, Covington. Reentry Resource Night is usually late July (2027 date not published).' } },
+  { key: 'library', es: 'Boone County Public Library', en: 'Boone County Public Library', kind: 'community', verified: false, url: 'https://www.bcpl.org', note: { es: 'Preguntar si permiten folletos o eventos para buscadores de empleo.', en: 'Ask about flyers or job-seeker events.' } },
+  { key: 'job_fair', es: 'Feria de empleo', en: 'Job fair', kind: 'fair', verified: false, url: '', note: { es: 'Ninguna confirmada en Florence/Boone después del 26/10/2026. Revisar KCC, NKY Chamber y Gateway cada mes.', en: 'None confirmed in Florence/Boone after 10/26/2026. Check KCC, NKY Chamber and Gateway monthly.' } },
+  { key: 'walk_in', es: 'Presencial / en el sitio', en: 'Walk-in / on site', kind: 'walk', verified: false, url: '', note: null },
+  { key: 'whatsapp', es: 'WhatsApp (con consentimiento)', en: 'WhatsApp (opt-in)', kind: 'messaging', verified: false, url: '', note: { es: 'Solo personas que aceptaron WhatsApp.', en: 'Only people who accepted WhatsApp.' } },
+  { key: 'flyer', es: 'Folleto / QR', en: 'Flyer / QR', kind: 'other', verified: false, url: '', note: null },
+  { key: 'kiosk', es: 'Modo registro (tableta)', en: 'Registration mode (tablet)', kind: 'other', verified: false, url: '', note: null },
+  { key: 'import', es: 'Importado (CSV / formulario)', en: 'Imported (CSV / form)', kind: 'other', verified: false, url: '', note: null },
+  { key: 'other', es: 'Otra', en: 'Other', kind: 'other', verified: false, url: '', note: null },
+];
+const srcName = k => (SOURCES.find(s => s.key === k) ? L(SOURCES.find(s => s.key === k)) : (k || '—'));
+
+// Bilingual message templates. {placeholders} are filled on the candidate card.
+const TEMPLATES = [
+  { code: 'ack', ch: 'sms', es: ['Registro recibido', 'Hola {first_name}, soy {my_name} de {company}. Recibimos tu registro para trabajos de almacén. Te contactaremos cuando haya una vacante que coincida con tu disponibilidad. Registrarte no garantiza empleo. Responde STOP para no recibir más mensajes.'], en: ['Registration received', 'Hi {first_name}, this is {my_name} with {company}. We received your registration for warehouse jobs. We\'ll contact you when an opening matches your availability. Registering does not guarantee a job. Reply STOP to stop messages.'] },
+  { code: 'first', ch: 'any', es: ['Primer contacto', 'Hola {first_name}, soy {my_name} de {company}. Gracias por tu interés en trabajo de almacén. ¿Tienes 5 minutos para hablar sobre tu disponibilidad? También puedes llamarme al {my_phone}.'], en: ['First contact', 'Hi {first_name}, this is {my_name} with {company}. Thanks for your interest in warehouse work. Do you have 5 minutes to talk about your availability? You can also call me at {my_phone}.'] },
+  { code: 'no_answer', ch: 'sms', es: ['Seguimiento (sin respuesta)', 'Hola {first_name}, {my_name} de {company} otra vez. Intenté comunicarme contigo sobre vacantes de almacén. Si sigues interesado/a, respóndeme con la mejor hora para llamarte. Si no, responde NO y no te volveré a contactar.'], en: ['Follow-up (no answer)', 'Hi {first_name}, {my_name} from {company} again. I tried to reach you about warehouse openings. If you\'re still interested, reply with the best time to call. If not, reply NO and I won\'t contact you again.'] },
+  { code: 'apply', ch: 'any', es: ['Solicitud oficial', 'Siguiente paso, {first_name}: completa la solicitud oficial aquí: {apply_link}. Avísame cuando termines para ayudarte con el siguiente paso. ¿Preguntas? {my_phone}'], en: ['Official application', 'Next step, {first_name}: please complete the official application here: {apply_link}. Let me know when you finish so I can help with the next step. Questions? {my_phone}'] },
+  { code: 'interview', ch: 'sms', es: ['Recordatorio de cita', 'Recordatorio, {first_name}: tu cita con {company} es el {date} a las {time}, en {place}. Responde SÍ para confirmar o llama al {my_phone} si necesitas cambiarla.'], en: ['Appointment reminder', 'Reminder, {first_name}: your appointment with {company} is on {date} at {time}, {place}. Reply YES to confirm or call {my_phone} to change it.'] },
+  { code: 'availability', ch: 'sms', es: ['Confirmar disponibilidad', 'Hola {first_name}, {my_name} de {company}. ¿Sigues disponible para {shift}? Responde SÍ o NO para mantener tu información al día.'], en: ['Confirm availability', 'Hi {first_name}, {my_name} from {company}. Are you still available for {shift}? Reply YES or NO so I can keep your information up to date.'] },
+  { code: 'first_day', ch: 'sms', es: ['Recordatorio del primer día', '¡Hola {first_name}! Tu primer día es el {date} a las {time}, en {place}. Trae lo que indican tus instrucciones de incorporación. Responde SÍ para confirmar. ¿Algún problema para llegar? Llama al {my_phone} antes de tu turno.'], en: ['First-day reminder', 'Hi {first_name}! Your first day is {date} at {time}, {place}. Bring what your onboarding instructions list. Reply YES to confirm. Any problem getting there? Call {my_phone} before your shift.'] },
+  { code: 'checkin', ch: 'any', es: ['Seguimiento día 7', 'Hola {first_name}, soy {my_name}. ¿Cómo va tu primera semana? ¿Hay algo en lo que pueda ayudarte (horario, entrenamiento, dudas)? Aquí estoy: {my_phone}.'], en: ['Day-7 check-in', 'Hi {first_name}, it\'s {my_name}. How is your first week going? Anything I can help with (schedule, training, questions)? I\'m here: {my_phone}.'] },
+  { code: 'recontact', ch: 'sms', es: ['Recontacto', 'Hola {first_name}, {my_name} de {company}. Nos pediste que te volviéramos a contactar. Hay vacantes de almacén en este momento. ¿Te interesa? Responde SÍ o NO.'], en: ['Recontact', 'Hi {first_name}, {my_name} from {company}. You asked us to check back with you. There are warehouse openings right now. Interested? Reply YES or NO.'] },
+  { code: 'on_file', ch: 'any', es: ['Información guardada', 'Hola {first_name}, gracias por tu tiempo. La vacante actual ya se cubrió, pero guardamos tu información (con tu permiso) y te contactaremos cuando haya algo que coincida con tu disponibilidad.'], en: ['Kept on file', 'Hi {first_name}, thank you for your time. The current opening was filled, but we kept your information (with your permission) and will reach out when something matches your availability.'] },
+  { code: 'reply', ch: 'social', es: ['Respuesta a comentario', '¡Gracias por tu interés! Para ser considerado/a, regístrate aquí (2 minutos): {apply_link}. Registrarte no garantiza empleo; contactamos a las personas cuando una vacante coincide con su disponibilidad.'], en: ['Reply to a comment', 'Thanks for your interest! To be considered, register here (2 minutes): {apply_link}. Registering does not guarantee a job; we contact people when an opening matches their availability.'] },
+  { code: 'fb_post', ch: 'social', es: ['Publicación de Facebook', 'Trabajos de almacén en Florence, KY — Picking, empaque, clasificación, manejo de materiales. Recibiendo registros para vacantes autorizadas. Pago, turnos y fechas de inicio: el reclutador los comparte una vez confirmados para cada vacante. Regístrate: {apply_link}. Registrarte no garantiza empleo. We speak English.'], en: ['Facebook post', 'Warehouse jobs in Florence, KY — Picking, packing, sorting, material handling. Now taking registrations for authorized openings. Pay, shifts and start dates are shared by the recruiter once confirmed for each opening. Register: {apply_link}. Registering does not guarantee a job. Hablamos español.'] },
+  { code: 'video', ch: 'script', es: ['Guion TikTok / Reels (30 s)', '[0–3 s] Gancho: "¿Buscas trabajo de almacén en Florence, Kentucky?"\n[3–12 s] "Picking, empaque, clasificación. El empleador da el entrenamiento." (Di solo lo confirmado.)\n[12–22 s] "Regístrate en 2 minutos con el enlace del perfil. Llamo a cada persona con el pago, turno y fecha confirmados."\n[22–30 s] En pantalla: "Enlace en el perfil · We speak English · Registrarte no garantiza empleo."'], en: ['TikTok / Reels script (30 s)', '[0–3 s] Hook: "Looking for warehouse work in Florence, Kentucky?"\n[3–12 s] "Picking, packing, sorting. The employer provides training." (Only say what is confirmed.)\n[12–22 s] "Register in 2 minutes with the link in bio. I call everyone back with the confirmed pay, shift and start date."\n[22–30 s] On screen: "Link in bio · Hablamos español · Registering does not guarantee a job."'] },
+  { code: 'long_ad', ch: 'board', es: ['Anuncio largo (Indeed / Focus Talent)', 'Asociado de almacén – [PUESTO] – Florence, KY\nReclutamos para vacantes autorizadas en un centro de distribución en Florence, KY.\nQué harás: [DESCRIPCIÓN DEL PUESTO]\nTurno: [SOLO SI ESTÁ VERIFICADO] · Pago: [SOLO SI ESTÁ VERIFICADO] · Inicio: [SOLO SI ESTÁ VERIFICADO]\nRequisitos: [SOLO LOS CONFIRMADOS POR EL CLIENTE]\nCómo aplicar: {apply_link}. Un reclutador te contactará y te guiará en la solicitud oficial.\nRegistrarte no garantiza empleo. Hablamos inglés y español.'], en: ['Long ad (Indeed / Focus Talent)', 'Warehouse Associate – [POSITION] – Florence, KY\nWe are recruiting for authorized openings at a fulfillment center in Florence, KY.\nWhat you\'ll do: [ROLE DESCRIPTION]\nShift: [ONLY IF VERIFIED] · Pay: [ONLY IF VERIFIED] · Start: [ONLY IF VERIFIED]\nRequirements: [ONLY THOSE CONFIRMED BY THE CLIENT]\nHow to apply: {apply_link}. A recruiter will contact you and guide you through the official application.\nRegistering does not guarantee employment. We speak English and Spanish.'] },
+];
+const fill = (body, v) => body.replace(/\{(\w+)\}/g, (m, k) => (v[k] ? v[k] : m));
+
+// ---------------------------------------------------------------- storage (private per viewer)
+const col = name => S.db.doc(`data/users/${S.uid}/ws`).collection(name);
+const settingsDoc = () => S.db.doc(`data/users/${S.uid}/settings`);
+const LISTS = { candidates: 'cands', tasks: 'tasks', openings: 'openings', activities: 'acts', agencies: 'agencies', coordination: 'coord' };
+// After our own write the local list is updated at once, so a reopened card shows it.
+async function put(name, rec) {
+  const { id, ...body } = rec;
+  const clean = JSON.parse(JSON.stringify(body));
+  await col(name).doc(id).set(clean);
+  const key = LISTS[name], list = S[key], i = list.findIndex(x => x.id === id);
+  if (i >= 0) list[i] = { id, ...clean }; else list.push({ id, ...clean });
+}
+async function del(name, id) { await col(name).doc(id).delete(); S[LISTS[name]] = S[LISTS[name]].filter(x => x.id !== id); }
+async function safe(fn, okMsg) {
+  try { await fn(); if (okMsg) toast(okMsg); return true; }
+  catch (e) {
+    const code = e && e.code;
+    toast(code === 'quota_exceeded' ? t('Almacenamiento lleno: elimina registros antiguos o datos de ejemplo.', 'Storage is full: delete old records or sample data.')
+      : code === 'invalid_argument' ? t('No se pudo guardar: tu acceso a esta página es de solo lectura.', 'Could not save: your access to this page is read-only.')
+      : t('No se pudo guardar. Revisa tu conexión e inténtalo de nuevo.', 'Could not save. Check your connection and try again.'));
+    return false;
+  }
+}
+
+async function boot() {
+  const claude = window.claude;
+  if (!claude || !claude.use) { S.offline = true; render(); return; }
+  const [db, user, dl] = await Promise.all([claude.use('db'), claude.use('user'), claude.use('downloads')]);
+  S.dl = dl;
+  const uid = user ? await user.id() : null;
+  if (!db || !uid) { S.offline = true; render(); return; }
+  S.db = db; S.uid = uid;
+  let pending = Object.keys(LISTS).length + 1;
+  const done = () => { if (--pending === 0) { S.ready = true; render(); } };
+  const firstOf = {};
+  for (const [name, key] of Object.entries(LISTS)) {
+    col(name).onSnapshot(snap => {
+      S[key] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (!firstOf[name]) { firstOf[name] = true; done(); } else liveRender();
+    }, () => { if (!firstOf[name]) { firstOf[name] = true; done(); } });
+  }
+  settingsDoc().onSnapshot(snap => {
+    S.settings = snap.exists ? { ...snap.data() } : {};
+    if (!firstOf.settings) { firstOf.settings = true; done(); } else liveRender();
+  }, () => { if (!firstOf.settings) { firstOf.settings = true; done(); } });
+}
+// Snapshots re-render the current section, never an open editor or the kiosk.
+function liveRender() { if (S.ready) render(); }
+
+// ---------------------------------------------------------------- domain rules
+const ST = () => ({ stale: 3, lowPool: 3, gContacts: 20, gPrescreen: 10, gInterviews: 5, gShow: 85, gRet30: 70, company: 'Staffing team', myName: '', myPhone: '', applyLink: '', spend: {}, ...S.settings });
+function dupOf(c) {
+  const other = S.cands.find(x => x.id !== c.id && ((c.phone && x.phone === c.phone) || (c.email && x.email && x.email === c.email)
+    || (c.zip && x.zip === c.zip && x.first.toLowerCase() === c.first.toLowerCase() && x.last.toLowerCase() === c.last.toLowerCase())));
+  return other ? other.id : null;
+}
+function readiness(c, o) {
+  let s = 0; const r = [];
+  const d = c.availableFrom ? days(today(), c.availableFrom) : 0;
+  if (d <= 0) { s += 30; r.push(t('disponible ya', 'available now')); } else if (d <= 7) { s += 20; r.push(t('disponible en 7 días', 'available within 7 days')); }
+  if ((c.shifts || []).length) { s += 25; r.push(t('turnos indicados', 'shifts given')); }
+  if (o && (c.exp || []).includes(o.position)) { s += 20; r.push(t('experiencia en el puesto', 'role experience')); }
+  else if ((c.exp || []).some(e => e !== 'none')) { s += 10; r.push(t('experiencia en almacén', 'warehouse experience')); }
+  if ((c.equip || []).length) { s += 10; r.push(t('equipos', 'equipment')); }
+  if (c.lastContactAt && days(c.lastContactAt.slice(0, 10), today()) <= 7) { s += 15; r.push(t('contactado esta semana', 'contacted this week')); }
+  return { score: Math.min(100, s), reasons: r };
+}
+function inPool(c, o) {
+  if (!atLeast(c.stage, 'prescreened') || atLeast(c.stage, 'started') || c.agency === 'reported') return false;
+  return c.openingId === o.id || (!c.openingId && ((c.positions || []).includes(o.position) || !(c.positions || []).length));
+}
+// The furthest stage someone ever reached (closing does not erase progress).
+function furthest(c) {
+  let best = c.stage === 'closed' ? -1 : SIDX[c.stage];
+  for (const h of c.hist || []) if (h.to !== 'closed' && SIDX[h.to] > best) best = SIDX[h.to];
+  return best;
+}
+const reached = (c, min) => furthest(c) >= SIDX[min];
+
+// Follow-up tasks that each stage needs. Ids are deterministic so re-saving never duplicates.
+function autoTasks(c, prev) {
+  const out = [], close = [];
+  const mk = (key, kind, es, en, due) => out.push({ id: `${c.id}--${key}`.slice(0, 190), candId: c.id, kind, title: `${t(es, en)}: ${nameOf(c)}`, due, done: false, auto: key });
+  const d0 = today();
+  if (!prev) mk('first_contact', 'first_contact', 'Primer contacto', 'First contact', d0);
+  if (c.stage !== prev?.stage) {
+    if (c.stage === 'interested') mk('prescreen', 'prescreen', 'Preselección contra la vacante', 'Pre-screen against the opening', addDays(d0, 1));
+    if (c.stage === 'started') {
+      const b = c.firstDay || d0;
+      mk('ret7', 'retention', 'Seguimiento día 7', 'Day-7 check-in', addDays(b, 7));
+      mk('ret30', 'retention', 'Seguimiento día 30', 'Day-30 check-in', addDays(b, 30));
+      mk('ret60', 'retention', 'Seguimiento día 60', 'Day-60 check-in', addDays(b, 60));
+    }
+    if (c.stage === 'closed' && c.recontactOn) mk('recontact-' + c.recontactOn, 'recontact', 'Recontactar', 'Recontact', c.recontactOn);
+    if (!['new', 'pending_contact'].includes(c.stage)) close.push(`${c.id}--first_contact`);
+    if (atLeast(c.stage, 'prescreened') || c.stage === 'closed') close.push(`${c.id}--prescreen`);
+    if (atLeast(c.stage, 'started') || c.stage === 'closed') S.tasks.filter(x => x.candId === c.id && ['confirm', 'day_check'].includes(x.kind) && !x.done).forEach(x => close.push(x.id));
+  }
+  if (c.interviewAt && c.interviewAt !== prev?.interviewAt) mk('interview-' + c.interviewAt.replace(/[^0-9]/g, ''), 'interview', 'Entrevista ' + c.interviewAt.slice(11, 16), 'Interview ' + c.interviewAt.slice(11, 16), c.interviewAt.slice(0, 10));
+  if (c.firstDay && ['assigned', 'first_day_confirmed'].includes(c.stage) && (c.firstDay !== prev?.firstDay || c.stage !== prev?.stage)) {
+    const conf = addDays(c.firstDay, -1);
+    mk('confirm-' + c.firstDay, 'confirm', 'Confirmar primer día ' + c.firstDay, 'Confirm first day ' + c.firstDay, conf < d0 ? d0 : conf);
+    mk('daycheck-' + c.firstDay, 'day_check', '¿Se presentó? Primer día', 'Did they show up? First day', c.firstDay);
+  }
+  return { out: out.filter(x => !S.tasks.some(y => y.id === x.id)), close: close.filter(id => S.tasks.some(y => y.id === id && !y.done)) };
+}
+async function saveCandidate(c, prev) {
+  c.dupOf = c.dupOk ? null : dupOf(c);
+  if (!prev || prev.stage !== c.stage) {
+    c.hist = [...(c.hist || []), { at: new Date().toISOString(), from: prev?.stage || null, to: c.stage }];
+    c.stageAt = new Date().toISOString();
+  }
+  if (!c.consent?.contact) c.consent = { ...(c.consent || {}), sms: false, wa: false, email: false };
+  const { out, close } = autoTasks(c, prev);
+  const ok = await safe(() => put('candidates', c));
+  if (!ok) return false;
+  for (const tk of out) await safe(() => put('tasks', tk));
+  for (const id of close) { const tk = S.tasks.find(x => x.id === id); if (tk) await safe(() => put('tasks', { ...tk, done: true, doneAt: new Date().toISOString() })); }
+  return true;
+}
+async function logContact(c, kind, outcome, body) {
+  const now = new Date().toISOString();
+  const n = { ...c, log: [{ at: now, kind, outcome, body }, ...(c.log || [])].slice(0, 120) };
+  if (kind !== 'note') n.lastContactAt = now;
+  if (['reached', 'replied'].includes(outcome) && ['new', 'pending_contact'].includes(c.stage)) n.stage = 'contacted';
+  return saveCandidate(n, c);
+}
+
+// ---------------------------------------------------------------- shared UI bits
+const TABS = [
+  ['panel', 'Panel', 'Dashboard'], ['candidatos', 'Candidatos', 'Candidates'], ['pipeline', 'Pipeline', 'Pipeline'],
+  ['tareas', 'Tareas', 'Tasks'], ['vacantes', 'Vacantes', 'Openings'], ['calendario', 'Calendario 90 días', '90-day calendar'],
+  ['fuentes', 'Fuentes', 'Sources'], ['agencias', 'Agencias', 'Agencies'], ['mensajes', 'Mensajes y anuncios', 'Messages & ads'],
+  ['reportes', 'Reportes', 'Reports'], ['ajustes', 'Ajustes y datos', 'Settings & data'],
+];
+function renderTabs() {
+  $('#tabs').innerHTML = TABS.map(([k, es, en]) => `<button data-tab="${k}" ${S.tab === k ? 'aria-current="page"' : ''}>${t(es, en)}</button>`).join('');
+  $('#lang-es').setAttribute('aria-pressed', S.lang === 'es'); $('#lang-en').setAttribute('aria-pressed', S.lang === 'en');
+  $('#kiosk-open').textContent = t('Modo registro', 'Registration mode');
+  document.documentElement.lang = S.lang;
+}
+const options = (list, cur, blank) => (blank !== undefined ? `<option value="">${esc(blank)}</option>` : '') + list.map(o => `<option value="${o.key}" ${o.key === cur ? 'selected' : ''}>${esc(L(o))}</option>`).join('');
+const chipsField = (name, list, sel, legend) => `<fieldset data-chips="${name}"><legend>${esc(legend)}</legend><div class="chips">${list.map(o => `<button type="button" class="chip" data-v="${o.key}" aria-pressed="${(sel || []).includes(o.key)}">${esc(L(o))}</button>`).join('')}</div></fieldset>`;
+const stagePill = k => `<span class="stage ph-${phaseOf(k)}">${esc(stageName(k))}</span>`;
+const kpi = (label, val, note, lead) => `<div class="kpi${lead ? ' lead' : ''}"><span>${esc(label)}</span><b>${esc(val ?? '—')}</b>${note ? `<i>${esc(note)}</i>` : ''}</div>`;
+const sampleTag = r => (r.sample ? `<span class="tag sample">${t('Ejemplo', 'Sample')}</span>` : '');
+
+function render() {
+  renderTabs();
+  const v = $('#view');
+  if (S.offline) {
+    v.innerHTML = `<div class="panel empty"><h2>${t('No se pueden guardar datos en esta vista', 'Data can’t be saved in this view')}</h2>
+      <p>${t('Abre esta página en claude.ai con tu sesión iniciada para usar la base de candidatos. Mientras tanto puedes consultar las fuentes, los mensajes y el protocolo entre agencias.', 'Open this page on claude.ai while signed in to use the candidate database. Meanwhile you can read the sources, messages and agency protocol.')}</p></div>`;
+    if (['fuentes', 'mensajes', 'agencias'].includes(S.tab)) v.innerHTML += VIEWS[S.tab]();
+    return;
+  }
+  if (!S.ready) return;
+  v.innerHTML = (VIEWS[S.tab] || VIEWS.panel)();
+  if (S.tab === 'candidatos') renderCandList();
+}
+
+// ---------------------------------------------------------------- views
+const VIEWS = {};
+
+VIEWS.panel = () => {
+  const st = ST(), d0 = today();
+  const from = S.period === '1' ? d0 : addDays(d0, -(Number(S.period) - 1));
+  const inP = iso => iso && iso.slice(0, 10) >= from && iso.slice(0, 10) <= d0;
+  const all = S.cands, cohort = all.filter(c => inP(c.registeredAt));
+  const r = min => cohort.filter(c => reached(c, min)).length;
+  const contactsToday = all.filter(c => (c.log || []).some(l => l.kind !== 'note' && l.at.slice(0, 10) === d0)).length;
+  const open = S.tasks.filter(x => !x.done);
+  const stale = all.filter(c => c.stage !== 'closed' && !atLeast(c.stage, 'started') && days((c.lastContactAt || c.registeredAt).slice(0, 10), d0) >= st.stale).length;
+  const fdPeople = all.filter(c => c.firstDay && c.firstDay >= from && c.firstDay < d0 && (atLeast(c.stage, 'assigned') || c.closedReason === 'no_show'));
+  const showed = fdPeople.filter(c => atLeast(c.stage, 'started') || (c.hist || []).some(h => h.to === 'started')).length;
+  const ret = ['d7', 'd30', 'd60'].map(k => { const el = all.filter(c => c.ret && c.ret[k]); return { k, n: el.length, y: el.filter(c => c.ret[k] === 'yes').length }; });
+  const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
+  const alerts = S.openings.filter(o => o.status === 'authorized').map(o => {
+    const placed = all.filter(c => c.openingId === o.id && atLeast(c.stage, 'assigned')).length;
+    return { o, pool: all.filter(c => inPool(c, o)).length, need: Math.max(0, (o.headcount || 1) - placed) };
+  }).filter(a => a.need > 0 && a.pool < Math.max(st.lowPool, a.need));
+  const filled = S.openings.filter(o => o.filledOn && o.filledOn >= from);
+  const ttf = filled.length ? Math.round(filled.reduce((s, o) => s + days(o.openedOn, o.filledOn), 0) / filled.length) : null;
+  const hasSample = all.some(c => c.sample);
+  const months = Math.max(1, (days(from, d0) + 1) / 30.4);
+  const bySrc = {};
+  cohort.forEach(c => { (bySrc[c.source || 'other'] ||= []).push(c); });
+  const srcRows = Object.entries(bySrc).sort((a, b) => b[1].length - a[1].length).map(([k, cs]) => {
+    const started = cs.filter(c => reached(c, 'started')).length, spend = st.spend?.[k];
+    return `<tr><td>${esc(srcName(k))}</td><td class="n">${cs.length}</td><td class="n">${cs.filter(c => reached(c, 'contacted')).length}</td><td class="n">${cs.filter(c => reached(c, 'prescreened')).length}</td><td class="n">${cs.filter(c => reached(c, 'approved')).length}</td><td class="n">${started}</td><td class="n">${pct(started, cs.length)}</td><td class="n">${spend ? '$' + ((spend * months) / cs.length).toFixed(2) : '—'}</td></tr>`;
+  }).join('');
+  return `
+  <div class="head"><div><h1>${t('Panel de reclutamiento', 'Recruiting dashboard')}</h1><p class="muted">${from === d0 ? d0 : from + ' → ' + d0}</p></div>
+    <label class="f" style="min-width:180px">${t('Período', 'Period')}<select id="period">
+      ${[['1', 'Hoy', 'Today'], ['7', 'Últimos 7 días', 'Last 7 days'], ['30', 'Últimos 30 días', 'Last 30 days'], ['90', 'Últimos 90 días', 'Last 90 days']].map(([k, es, en]) => `<option value="${k}" ${S.period === k ? 'selected' : ''}>${t(es, en)}</option>`).join('')}</select></label></div>
+  ${hasSample ? `<div class="note"><b>${t('Hay datos de ejemplo cargados.', 'Sample data is loaded.')}</b> ${t('Las filas “Ejemplo …” son ficticias y están incluidas en estas cifras. Elimínalas antes de reportar resultados reales.', 'Rows named “Sample …” are fictional and included in these numbers. Remove them before reporting real results.')} <button class="linkbtn" data-act="samples-off">${t('Quitar datos de ejemplo', 'Remove sample data')}</button></div>` : ''}
+  ${!all.length ? `<div class="panel empty"><h2>${t('Tu base de candidatos está vacía', 'Your candidate database is empty')}</h2>
+    <p class="muted">${t('Agrega a la primera persona, abre el Modo registro en una tableta durante un evento, o importa respuestas de un formulario (Ajustes y datos). Para practicar, carga datos de ejemplo identificados.', 'Add the first person, open Registration mode on a tablet at an event, or import form responses (Settings & data). To practice, load labelled sample data.')}</p>
+    <div class="row"><button class="btn" data-act="new-cand">${t('Agregar candidato', 'Add candidate')}</button><button class="btn ghost" data-act="samples-on">${t('Cargar datos de ejemplo', 'Load sample data')}</button></div></div>` : ''}
+  <section class="stack"><h2>${t('Hoy', 'Today')}</h2><div class="kpis">
+    ${kpi(t('Nuevos registros hoy', 'New registrations today'), all.filter(c => (c.registeredAt || '').slice(0, 10) === d0).length, null, true)}
+    ${kpi(t('Personas contactadas hoy', 'People contacted today'), contactsToday, t('meta', 'goal') + ' ' + st.gContacts)}
+    ${kpi(t('Tareas para hoy', 'Tasks due today'), open.filter(x => x.due === d0).length)}
+    ${kpi(t('Seguimientos vencidos', 'Overdue follow-ups'), open.filter(x => x.due < d0).length, stale ? t(`${stale} sin contacto ${st.stale}+ días`, `${stale} without contact ${st.stale}+ days`) : null)}
+  </div></section>
+  ${alerts.length ? `<div class="note bad"><b>${t('Pocos candidatos listos', 'Low candidate pool')}</b><br>${alerts.map(a => `${esc(a.o.title)}: ${a.pool} ${t('listos para', 'ready for')} ${a.need} ${t('puestos', 'spots')}`).join('<br>')}</div>` : ''}
+  <section class="stack"><h2>${t('Embudo — registrados en el período', 'Funnel — registered in the period')}</h2><div class="kpis">
+    ${kpi(t('Registrados', 'Registered'), cohort.length, t(`${all.length} en la base`, `${all.length} in database`), true)}
+    ${kpi(t('Contactados', 'Contacted'), r('contacted'))}${kpi(t('Interesados', 'Interested'), r('interested'))}
+    ${kpi(t('Preseleccionados', 'Pre-selected'), r('prescreened'))}${kpi(t('Completaron el proceso', 'Completed process'), r('approved'))}
+    ${kpi(t('Incorporaciones confirmadas', 'Confirmed starts'), r('first_day_confirmed'))}
+    ${kpi(t('Entrevistas en el período', 'Interviews in period'), all.filter(c => inP(c.interviewAt)).length, t(`${all.filter(c => c.interviewAt && c.interviewAt.slice(0, 10) >= d0).length} próximas`, `${all.filter(c => c.interviewAt && c.interviewAt.slice(0, 10) >= d0).length} upcoming`))}
+  </div></section>
+  <section class="stack"><h2>${t('Asistencia y retención', 'Attendance and retention')}</h2><div class="kpis">
+    ${kpi(t('Autorizados para trabajar ahora', 'Authorized to work now'), all.filter(c => phaseOf(c.stage) === 'authorized').length, null, true)}
+    ${kpi(t('Asistencia al primer día', 'First-day show rate'), pct(showed, fdPeople.length), `${showed} / ${fdPeople.length} · ${t('meta', 'goal')} ${st.gShow}%`)}
+    ${ret.map(x => kpi(t('Retención ', 'Retention ') + x.k.slice(1) + t(' días', ' days'), pct(x.y, x.n), x.n ? `${x.y} / ${x.n}` : t('sin datos aún', 'no data yet'))).join('')}
+  </div><p class="small muted">${t('La retención se registra en cada candidato (seguimiento día 7/30/60: ¿sigue trabajando?). Tiempo promedio de cobertura: ', 'Retention is recorded on each candidate (day 7/30/60 check-in: still working?). Average time to fill: ')}${ttf === null ? t('ninguna vacante cubierta en el período', 'no openings filled in the period') : ttf + t(' días', ' days')}.</p></section>
+  <section class="panel flush"><div style="padding:16px 20px 6px"><h2>${t('Candidatos y conversión por fuente', 'Candidates and conversion by source')}</h2>
+    <p class="small muted">${t('Conversión = iniciaron ÷ registrados. El costo aparece solo si registras un gasto mensual real en Ajustes.', 'Conversion = started ÷ registered. Cost appears only when you enter a real monthly spend in Settings.')}</p></div>
+    <div class="scroll"><table><thead><tr><th>${t('Fuente', 'Source')}</th><th class="n">${t('Registrados', 'Registered')}</th><th class="n">${t('Contactados', 'Contacted')}</th><th class="n">${t('Preselecc.', 'Pre-sel.')}</th><th class="n">${t('Aprobados', 'Approved')}</th><th class="n">${t('Iniciaron', 'Started')}</th><th class="n">${t('Conversión', 'Conversion')}</th><th class="n">${t('Costo / cand.', 'Cost / cand.')}</th></tr></thead>
+    <tbody>${srcRows || `<tr><td colspan="8" class="muted">${t('Sin registros en este período.', 'No registrations in this period.')}</td></tr>`}</tbody></table></div></section>
+  <div class="grid2">
+    <section class="panel"><h2>${t('Pipeline actual', 'Pipeline now')}</h2><ul class="list">${PHASES.map(p => `<li><div class="grow"><b style="font-size:1.3rem">${all.filter(c => phaseOf(c.stage) === p.key).length}</b> ${esc(L(p))}<div class="small muted">${esc(L(p.hint))}</div></div></li>`).join('')}</ul></section>
+    <section class="panel"><h2>${t('Próximas tareas', 'Next tasks')}</h2>${taskList(open.sort((a, b) => a.due.localeCompare(b.due)).slice(0, 8))}</section>
+  </div>`;
+};
+
+function taskList(list) {
+  if (!list.length) return `<p class="muted">${t('Nada pendiente.', 'Nothing pending.')}</p>`;
+  const d0 = today();
+  return `<ul class="list">${list.map(x => `<li><label class="check grow"><input type="checkbox" data-task="${esc(x.id)}" ${x.done ? 'checked' : ''}>
+    <span class="${x.done ? 'done' : ''}">${x.candId ? `<button class="linkbtn" data-open="${esc(x.candId)}">${esc(x.title)}</button>` : esc(x.title)}
+    <span class="small ${!x.done && x.due < d0 ? 'late' : 'muted'}"> · ${esc(x.due)}</span></span></label></li>`).join('')}</ul>`;
+}
+
+VIEWS.candidatos = () => {
+  const f = S.f, st = ST();
+  const sel = (k, label, list, blank) => `<label class="f">${esc(label)}<select data-f="${k}">${options(list, f[k], blank)}</select></label>`;
+  const tg = (k, es, en) => `<button class="chip" data-ftoggle="${k}" aria-pressed="${!!f[k]}">${t(es, en)}</button>`;
+  return `<div class="head"><div><h1>${t('Candidatos', 'Candidates')}</h1><p class="muted" id="cand-count"></p></div>
+    <div class="row"><button class="btn ghost" data-act="export-cands">CSV</button><button class="btn" data-act="new-cand">${t('Agregar candidato', 'Add candidate')}</button></div></div>
+  <div class="filters">
+    <label class="f grow">${t('Buscar', 'Search')}<input id="fq" type="search" value="${esc(f.q)}" placeholder="${t('Nombre, teléfono o correo', 'Name, phone or email')}"></label>
+    ${sel('phase', t('Fase', 'Phase'), PHASES, t('Todos abiertos', 'All open'))}
+    ${sel('stage', t('Etapa', 'Stage'), STAGES.map(s => ({ key: s.key, es: s.es, en: s.en })), t('Cualquiera', 'Any'))}
+    ${sel('source', t('Fuente', 'Source'), SOURCES, t('Todas', 'All'))}
+    ${sel('shift', t('Turno', 'Shift'), SHIFTS, t('Cualquiera', 'Any'))}
+    ${sel('pos', t('Puesto / experiencia', 'Role / experience'), POSITIONS, t('Cualquiera', 'Any'))}
+  </div>
+  <div class="chips">${tg('ready', 'Disponibles ya', 'Available now')}${tg('stale', `Sin contacto ${st.stale}+ días`, `No contact ${st.stale}+ days`)}${tg('dup', 'Posibles duplicados', 'Possible duplicates')}${tg('hold', 'En espera (otra agencia)', 'Agency hold')}${tg('closed', 'Incluir cerrados', 'Include closed')}</div>
+  <section class="panel flush" id="cand-list"></section>`;
+};
+function filteredCands() {
+  const f = S.f, d0 = today(), st = ST();
+  const q = f.q.trim().toLowerCase(), dig = q.replace(/\D/g, '');
+  return S.cands.filter(c => {
+    if (f.phase ? phaseOf(c.stage) !== f.phase : (!f.stage && !f.closed && c.stage === 'closed')) return false;
+    if (f.stage && c.stage !== f.stage) return false;
+    if (f.source && c.source !== f.source) return false;
+    if (f.shift && !(c.shifts || []).includes(f.shift)) return false;
+    if (f.pos && !(c.positions || []).includes(f.pos) && !(c.exp || []).includes(f.pos)) return false;
+    if (f.ready && c.availableFrom && c.availableFrom > d0) return false;
+    if (f.dup && !c.dupOf) return false;
+    if (f.hold && c.agency !== 'reported') return false;
+    if (f.stale && (c.stage === 'closed' || atLeast(c.stage, 'started') || days((c.lastContactAt || c.registeredAt).slice(0, 10), d0) < st.stale)) return false;
+    if (q && !(nameOf(c).toLowerCase().includes(q) || (c.email || '').includes(q) || (dig.length >= 3 && (c.phone || '').includes(dig)))) return false;
+    return true;
+  }).sort((a, b) => (b.registeredAt || '').localeCompare(a.registeredAt || ''));
+}
+function renderCandList() {
+  const box = $('#cand-list'); if (!box) return;
+  const list = filteredCands(), d0 = today();
+  $('#cand-count').textContent = t(`${list.length} de ${S.cands.length} mostrados`, `${list.length} of ${S.cands.length} shown`);
+  if (!S.cands.length) { box.innerHTML = `<div class="empty"><p class="muted">${t('Aún no hay candidatos. Usa “Agregar candidato” o el Modo registro.', 'No candidates yet. Use “Add candidate” or Registration mode.')}</p></div>`; return; }
+  if (!list.length) { box.innerHTML = `<p class="muted" style="padding:16px 20px">${t('Nadie coincide con estos filtros.', 'No one matches these filters.')}</p>`; return; }
+  box.innerHTML = `<div class="scroll"><table class="cards"><thead><tr><th>${t('Nombre', 'Name')}</th><th>${t('Etapa', 'Stage')}</th><th>${t('Teléfono', 'Phone')}</th><th>${t('Turnos', 'Shifts')}</th><th>${t('Último contacto', 'Last contact')}</th><th>${t('Próxima acción', 'Next action')}</th></tr></thead><tbody>
+  ${list.slice(0, 400).map(c => { const lc = c.lastContactAt ? days(c.lastContactAt.slice(0, 10), d0) : null; return `<tr class="click" data-open="${esc(c.id)}">
+    <td><b>${esc(nameOf(c))}</b>${sampleTag(c)}${c.dupOf ? `<span class="tag warn">${t('Posible duplicado', 'Possible duplicate')}</span>` : ''}${c.agency === 'reported' ? `<span class="tag warn">${t('Otra agencia', 'Agency hold')}</span>` : ''}<div class="small muted">${t('Preparación', 'Readiness')} ${readiness(c).score}</div></td>
+    <td data-l="${t('Etapa', 'Stage')}">${stagePill(c.stage)}</td>
+    <td data-l="${t('Teléfono', 'Phone')}" class="mono">${esc(fmtPhone(c.phone) || c.email || '')}</td>
+    <td data-l="${t('Turnos', 'Shifts')}">${esc((c.shifts || []).map(s => lab(SHIFTS, s)).join(', ') || '—')}</td>
+    <td data-l="${t('Último contacto', 'Last contact')}">${lc === null ? `<span class="muted">${t('Nunca', 'Never')}</span>` : lc === 0 ? t('Hoy', 'Today') : t(`hace ${lc} d`, `${lc} d ago`)}</td>
+    <td data-l="${t('Próxima acción', 'Next action')}">${esc(c.nextAction || '—')}${c.nextDue ? `<span class="small ${c.nextDue < d0 ? 'late' : 'muted'}"> · ${esc(c.nextDue)}</span>` : ''}</td></tr>`; }).join('')}
+  </tbody></table></div>${list.length > 400 ? `<p class="small muted" style="padding:10px 20px">${t('Se muestran 400. Ajusta los filtros.', 'Showing 400. Narrow the filters.')}</p>` : ''}`;
+}
+
+VIEWS.pipeline = () => `<div class="head"><div><h1>${t('Pipeline de selección y contratación', 'Selection and hiring pipeline')}</h1>
+  <p class="muted">${t('Interesado, preseleccionado y autorizado para trabajar son fases distintas. Tarjetas ordenadas por preparación.', 'Interested, pre-selected and authorized to work are separate phases. Cards sorted by readiness.')}</p></div></div>
+  ${PHASES.filter(p => p.key !== 'closed').map(p => `<section class="stack"><div><h2 class="phase-h ${p.key}">${esc(L(p))}</h2><p class="small muted">${esc(L(p.hint))}</p></div>
+  <div class="board">${STAGES.filter(s => s.phase === p.key).map(s => { const cs = S.cands.filter(c => c.stage === s.key).sort((a, b) => readiness(b).score - readiness(a).score); return `<div class="col"><h3><span>${esc(L(s))}</span><span class="muted">${cs.length}</span></h3>
+    ${cs.slice(0, 40).map(c => `<div class="card"><button class="name" data-open="${esc(c.id)}">${esc(nameOf(c))}</button>${sampleTag(c)}<span class="small muted">${t('Preparación', 'Readiness')} ${readiness(c).score}${c.nextDue ? ' · ' + esc(c.nextDue) : ''}</span>
+    <select aria-label="${t('Mover a etapa', 'Move to stage')}" data-move="${esc(c.id)}">${STAGES.map(x => `<option value="${x.key}" ${x.key === c.stage ? 'selected' : ''}>${esc(L(x))}</option>`).join('')}</select></div>`).join('')}
+    ${cs.length > 40 ? `<span class="small muted">+${cs.length - 40}</span>` : ''}</div>`; }).join('')}</div></section>`).join('')}
+  <p class="small muted">${t('Cerrados:', 'Closed:')} ${S.cands.filter(c => c.stage === 'closed').length}</p>`;
+
+VIEWS.tareas = () => {
+  const d0 = today(), open = S.tasks.filter(x => !x.done).sort((a, b) => a.due.localeCompare(b.due));
+  const doneRecent = S.tasks.filter(x => x.done && (x.doneAt || '').slice(0, 10) >= addDays(d0, -7));
+  const grp = [[t('Vencidas', 'Overdue'), open.filter(x => x.due < d0)], [t('Hoy', 'Today'), open.filter(x => x.due === d0)], [t('Próximos 7 días', 'Next 7 days'), open.filter(x => x.due > d0 && x.due <= addDays(d0, 7))], [t('Más adelante', 'Later'), open.filter(x => x.due > addDays(d0, 7))], [t('Hechas (7 días)', 'Done (7 days)'), doneRecent]];
+  return `<div class="head"><div><h1>${t('Tareas y recordatorios', 'Tasks and reminders')}</h1><p class="muted">${t('Se crean solas: primer contacto, preselección, entrevista, confirmar primer día, ¿se presentó?, seguimiento 7/30/60 días, recontacto.', 'Created automatically: first contact, pre-screen, interview, confirm first day, did they show?, 7/30/60-day check-ins, recontact.')}</p></div></div>
+  ${grp.filter(([, l]) => l.length).map(([n, l]) => `<section class="panel"><h2>${esc(n)} <span class="muted">${l.length}</span></h2>${taskList(l)}</section>`).join('') || `<p class="muted">${t('Nada pendiente.', 'Nothing pending.')}</p>`}
+  <form class="panel" id="task-form"><h2>${t('Tarea general', 'General task')}</h2><div class="fields">
+    <label class="f" style="grid-column:span 2">${t('Tarea', 'Task')}<input name="title" maxlength="160" required placeholder="${t('p. ej. Llamar al KCC Florence por eventos', 'e.g. Call KCC Florence about events')}"></label>
+    <label class="f">${t('Fecha', 'Due')}<input name="due" type="date" value="${d0}" required></label></div><div><button class="btn">${t('Agregar', 'Add')}</button></div></form>`;
+};
+
+VIEWS.vacantes = () => {
+  const st = ST();
+  return `<div class="head"><div><h1>${t('Vacantes autorizadas', 'Authorized openings')}</h1><p class="muted">${t('Recluta solo para vacantes autorizadas por el cliente y tu empleador. Pago, horario y requisitos: solo información verificada.', 'Recruit only for openings authorized by the client and your employer. Pay, schedule and requirements: verified information only.')}</p></div>
+  <button class="btn" data-act="new-opening">${t('Agregar vacante', 'Add opening')}</button></div>
+  ${S.openings.length ? `<section class="panel flush"><div class="scroll"><table class="cards"><thead><tr><th>${t('Vacante', 'Opening')}</th><th>${t('Estado', 'Status')}</th><th class="n">${t('Necesarias', 'Needed')}</th><th class="n">${t('Grupo listo', 'Ready pool')}</th><th class="n">${t('Colocadas', 'Placed')}</th></tr></thead><tbody>
+  ${S.openings.map(o => { const pool = S.cands.filter(c => inPool(c, o)).length, placed = S.cands.filter(c => c.openingId === o.id && atLeast(c.stage, 'assigned')).length, low = o.status === 'authorized' && pool < Math.max(st.lowPool, o.headcount - placed);
+    return `<tr class="click" data-opening="${esc(o.id)}"><td><b>${esc(o.title)}</b>${sampleTag(o)}<div class="small muted">${esc(lab(POSITIONS, o.position))}${o.shift ? ' · ' + esc(o.shift) : ''}${o.authorizedBy ? ' · ' + t('autorizó', 'authorized by') + ' ' + esc(o.authorizedBy) : ''}</div></td>
+    <td data-l="${t('Estado', 'Status')}">${esc(lab(OPEN_STATUS, o.status))}</td><td data-l="${t('Necesarias', 'Needed')}" class="n">${o.headcount}</td><td data-l="${t('Grupo listo', 'Ready pool')}" class="n ${low ? 'late' : ''}">${pool}${low ? ' · ' + t('bajo', 'low') : ''}</td><td data-l="${t('Colocadas', 'Placed')}" class="n">${placed}</td></tr>`; }).join('')}
+  </tbody></table></div></section>` : `<div class="panel empty"><p class="muted">${t('Aún no hay vacantes. Confirma con tu supervisor cuáles están autorizadas y agrégalas aquí.', 'No openings yet. Confirm the authorized ones with your supervisor and add them here.')}</p></div>`}`;
+};
+
+VIEWS.calendario = () => {
+  const d0 = today(), list = S.acts.filter(a => S.showPast || a.date >= d0 || a.status === 'pending').sort((a, b) => (a.date + (a.time || '')).localeCompare(b.date + (b.time || '')));
+  const weeks = {};
+  list.forEach(a => { const d = new Date(a.date + 'T12:00:00Z'), wd = d.getUTCDay() || 7; (weeks[addDays(a.date, 1 - wd)] ||= []).push(a); });
+  return `<div class="head"><div><h1>${t('Calendario de reclutamiento — 90 días', 'Recruiting calendar — 90 days')}</h1><p class="muted">${t('Marca “Confirmado” solo después de verificarlo con el organizador; registra quién lo confirmó o el enlace oficial.', 'Mark “Confirmed” only after checking with the organizer; record who confirmed it or the official link.')}</p></div>
+  <div class="row">${!S.acts.length ? `<button class="btn ghost" data-act="load-plan">${t('Cargar plan sugerido de 90 días', 'Load suggested 90-day plan')}</button>` : ''}<button class="btn" data-act="new-act">${t('Agregar actividad', 'Add activity')}</button></div></div>
+  <div class="chips"><button class="chip" data-act="toggle-past" aria-pressed="${!!S.showPast}">${t('Incluir pasadas', 'Include past')}</button></div>
+  ${Object.keys(weeks).length ? Object.entries(weeks).map(([wk, as]) => `<section class="panel"><h2>${t('Semana del', 'Week of')} ${wk}</h2><ul class="list">${as.map(a => `<li><span class="mono small" style="min-width:96px">${esc(a.date)}${a.time ? ' ' + esc(a.time) : ''}</span>
+    <div class="grow"><button class="linkbtn" data-activity="${esc(a.id)}">${esc(a.title)}</button>${sampleTag(a)}<div class="small muted">${esc(lab(ACT_KINDS, a.kind))}${a.partner ? ' · ' + esc(a.partner) : ''}${a.target ? ' · ' + t('meta', 'goal') + ' ' + a.target : ''}${a.cost ? ' · $' + a.cost : ''}${a.results ? ' — ' + esc(a.results) : ''}</div></div>
+    <span class="pill ${a.status === 'confirmed' || a.status === 'done' ? 'ok' : a.status === 'pending' ? 'pending' : ''}">${esc(lab(ACT_STATUS, a.status))}</span></li>`).join('')}</ul></section>`).join('') : `<div class="panel empty"><p class="muted">${t('Nada programado. Carga el plan sugerido: 39 actividades sin confirmar (reuniones semanales entre agencias, contactos con organizaciones, campañas, jornadas de entrevistas si se autorizan).', 'Nothing scheduled. Load the suggested plan: 39 unconfirmed activities (weekly agency meetings, organization contacts, campaigns, interview days if authorized).')}</p></div>`}`;
+};
+function suggestedPlan() {
+  const d0 = today(), wd = new Date(d0 + 'T12:00:00Z').getUTCDay() || 7, mon = addDays(d0, (8 - wd) % 7), d = n => addDays(mon, n);
+  const A = (date, kind, status, es, en, extra = {}) => ({ id: newId(), date, kind, status, title: t(es, en), ...extra });
+  const items = [
+    A(d0, 'org', 'pending', 'Reunión con el contacto del cliente: vacantes autorizadas, requisitos y reglas', 'Meet the client contact: authorized openings, requirements and rules', { partner: 'Win.It America – Florence' }),
+    A(addDays(d0, 1), 'agency', 'pending', 'Presentarse con los representantes de las otras agencias', 'Introduce yourself to the other agency representatives'),
+    A(addDays(d0, 2), 'digital', 'idea', 'Cuenta de empleador en Focus Talent (si la agencia lo autoriza)', 'Employer account on Focus Talent (if the agency authorizes it)', { url: 'https://apps.kcc.ky.gov/employer/focustalent.aspx', cost: 0 }),
+    A(addDays(d0, 3), 'org', 'idea', 'Llamar al KCC Florence: eventos de contratación en sitio', 'Call KCC Florence: on-site hiring events', { partner: 'Kentucky Career Center – Florence' }),
+    A(d(7), 'digital', 'idea', 'Publicación de Facebook EN + ES aprobada', 'Approved Facebook post EN + ES', { cost: 0, target: 15 }),
+    A(d(8), 'digital', 'idea', 'Folleto con QR en lugares autorizados', 'QR flyer at approved locations', { materials: t('Folletos bilingües', 'Bilingual flyers'), permits: t('Permiso del cliente por lugar', 'Client permission per location') }),
+    A(d(9), 'org', 'idea', 'Esperanza Latino Center: presentación y folletos', 'Esperanza Latino Center: introduction and flyers', { partner: 'Esperanza Latino Center, 234 Pike St, Covington' }),
+    A(d(10), 'school', 'idea', 'Gateway CTC: publicar en Handshake', 'Gateway CTC: post on Handshake', { partner: 'gw-careerservices@kctcs.edu · (859) 442-1609' }),
+    A(d(14), 'org', 'idea', 'Brighton Center – formación laboral', 'Brighton Center – employment training', { partner: 'Brighton Center' }),
+    A(d(15), 'org', 'idea', 'Life Learning Center: referidos de segunda oportunidad', 'Life Learning Center: fair-chance referrals', { partner: 'Life Learning Center, 20 W 18th St, Covington' }),
+    A(d(16), 'community', 'idea', 'Biblioteca de Boone County: folletos / eventos', 'Boone County Public Library: flyers / events', { partner: 'Boone County Public Library' }),
+    A(d(17), 'digital', 'idea', 'Video TikTok / Reels EN + ES (con aprobación)', 'TikTok / Reels video EN + ES (with approval)', { cost: 0 }),
+    A(d(21), 'job_fair', 'idea', 'Revisar ferias de empleo NKY (KCC, Chamber, Gateway)', 'Check NKY job fairs (KCC, Chamber, Gateway)'),
+    A(d(25), 'review', 'idea', 'Revisión de canales: ¿cuáles traen gente que se presenta?', 'Channel review: which bring people who show up?'),
+    A(d(32), 'review', 'idea', 'Revisión mensual con el supervisor', 'Monthly review with the supervisor'),
+    A(d(35), 'job_fair', 'idea', 'Revisar ferias de empleo diciembre–enero', 'Check job fairs December–January'),
+    A(d(42), 'follow_up', 'idea', 'Recontactar cerrados que pidieron llamada (con consentimiento)', 'Recontact closed candidates who asked (with consent)'),
+    A(d(60), 'review', 'idea', 'Revisión mensual con el supervisor', 'Monthly review with the supervisor'),
+    A(d(63), 'job_fair', 'idea', 'Revisar ferias de empleo de febrero', 'Check February job fairs'),
+    A(d(84), 'review', 'idea', 'Revisión de 90 días: resultados y recomendaciones', '90-day review: results and recommendations'),
+  ];
+  for (let w = 0; w < 13; w++) items.push(A(d(w * 7 + 2), 'agency', 'pending', 'Reunión semanal de coordinación entre agencias', 'Weekly agency coordination meeting'));
+  for (const n of [17, 45, 73]) {
+    items.push(A(d(n), 'interview_day', 'idea', 'Jornada de entrevistas (solo si se autoriza; lugar por confirmar)', 'Interview day (only if authorized; place to confirm)', { target: 10, materials: t('QR, hoja sin datos sensibles, tableta en Modo registro', 'QR, sign-in sheet without sensitive data, tablet in Registration mode'), permits: t('Autorización de la agencia + lugar', 'Agency authorization + venue') }));
+    items.push(A(d(n + 1), 'follow_up', 'idea', 'Seguimiento a cada persona de la jornada', 'Follow up everyone from the interview day'));
+  }
+  return items;
+}
+
+VIEWS.fuentes = () => {
+  const counts = {}; S.cands.forEach(c => { counts[c.source || 'other'] = (counts[c.source || 'other'] || 0) + 1; });
+  return `<div class="head"><div><h1>${t('Mapa de fuentes', 'Source map')}</h1><p class="muted">${t('Investigado el 26/10/2026. “Verificada” = confirmada en una fuente pública; las demás requieren una llamada antes de usarlas. Nada de esto es un acuerdo comercial.', 'Researched 10/26/2026. “Verified” = confirmed in a public source; the rest need a call before use. None of this is a business agreement.')}</p></div></div>
+  <section class="panel"><ul class="list">${SOURCES.filter(s => !['kiosk', 'import', 'other'].includes(s.key)).map(s => `<li><div class="grow"><b>${esc(L(s))}</b> ${s.verified ? `<span class="tag ok">${t('Verificada', 'Verified')}</span>` : `<span class="tag">${t('Por confirmar', 'To confirm')}</span>`}
+    ${s.note ? `<div class="small muted">${esc(L(s.note))}</div>` : ''}${s.url ? `<div class="small"><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.url)}</a></div>` : ''}</div>
+    <span class="small muted">${counts[s.key] || 0} ${t('candidatos', 'candidates')}</span></li>`).join('')}</ul></section>
+  <section class="panel"><h2>${t('Qué medir en cada fuente', 'What to measure per source')}</h2><p>${t('Registros → contactados → preseleccionados → aprobados → se presentaron a trabajar. Conserva los canales con más personas que se presentan, no con más registros. Si pagas por una fuente, anota el gasto mensual real en Ajustes para ver el costo por candidato.', 'Registrations → contacted → pre-selected → approved → showed up. Keep the channels with the most people who show up, not the most registrations. If you pay for a source, enter its real monthly spend in Settings to see cost per candidate.')}</p></section>`;
+};
+
+VIEWS.agencias = () => {
+  const ready = S.ready;
+  const auth = S.openings.filter(o => o.status === 'authorized');
+  const openIssues = S.coord.filter(x => x.status === 'open');
+  const agenda = [t('Coordinación semanal — ', 'Weekly coordination — ') + today(), t('1. Necesidades del cliente esta semana (según el contacto del sitio)', '1. Client needs this week (from the site contact)'),
+    ...(auth.length ? auth.map(o => `• ${o.title}: ${t('necesarias', 'needed')} ${o.headcount}, ${t('colocadas por nosotros', 'placed by us')} ${S.cands.filter(c => c.openingId === o.id && atLeast(c.stage, 'assigned')).length}, ${t('grupo listo', 'ready pool')} ${S.cands.filter(c => inPool(c, o)).length}`) : [t('• (agregar vacantes autorizadas)', '• (add authorized openings)')]),
+    t('2. Cobertura: qué agencia cubre qué puestos / turnos', '2. Coverage: which agency covers which positions / shifts'), t(`3. Pendientes abiertos: ${openIssues.length}`, `3. Open items: ${openIssues.length}`), ...openIssues.slice(0, 10).map(x => '• ' + x.title),
+    t('4. Asistencia / primer día (sin datos personales en notas compartidas)', '4. Attendance / first day (no personal data in shared notes)'), t('5. Acuerdos y responsables', '5. Agreements and owners')].join('\n');
+  return `<div class="head"><div><h1>${t('Coordinación entre agencias', 'Inter-agency coordination')}</h1><p class="muted">${t('El cliente quiere que las agencias trabajen juntas, no que compitan. Aquí solo hay información operativa; nunca datos de candidatos.', 'The client wants agencies to work together, not compete. Only operational information here; never candidate data.')}</p></div></div>
+  <section class="panel"><h2>${t('Protocolo', 'Protocol')}</h2><ol class="proto">
+    <li>${t('Semana 1: preséntate con cada representante y con el contacto del cliente. Acuerden un canal de coordinación diaria.', 'Week 1: introduce yourself to each representative and the client contact. Agree on one daily coordination channel.')}</li>
+    <li>${t('Respeta las asignaciones: nunca contactes a un trabajador colocado aquí por otra agencia para transferirlo. Si un candidato dice que está con otra agencia aquí, márcalo “en espera” y escala.', 'Respect assignments: never contact a worker placed here by another agency to move them. If a candidate says they are with another agency here, mark “hold” and escalate.')}</li>
+    <li>${t('Comparte solo información operativa autorizada: vacantes, cantidades, turnos, horarios, reglas del sitio. Nada de listas de candidatos ni datos personales sin autorización escrita y base legal.', 'Share only authorized operational information: openings, headcount, shifts, schedules, site rules. No candidate lists or personal data without written authorization and a legal basis.')}</li>
+    <li>${t('Duplicados: busca antes de registrar (la página marca mismo teléfono, correo o nombre + código postal). Si la persona ya está en proceso con otra agencia, se queda con esa agencia.', 'Duplicates: search before registering (the page flags same phone, email or name + ZIP). If the person is already in process with another agency, they stay with that agency.')}</li>
+    <li>${t('Las necesidades vienen del contacto del cliente y se registran como “Solicitud del cliente”, para que todos trabajen con las mismas cifras.', 'Needs come from the client contact and are logged as “Client request”, so everyone works from the same numbers.')}</li>
+    <li>${t('Lo que no se resuelva entre agencias va a tu supervisor el mismo día (“Escalamiento”), solo con hechos.', 'Anything not resolved between agencies goes to your supervisor the same day (“Escalation”), facts only.')}</li>
+    <li>${t('Reunión semanal, mismo día y hora. El reporte conjunto de necesidades se comparte solo si el cliente y los empleadores lo aprueban.', 'Weekly meeting, same day and time. A joint needs report is shared only when the client and employers approve it.')}</li>
+    <li>${t('Medimos servicio al cliente (vacantes cubiertas, asistencia al primer día, retención, tiempo de respuesta), nunca “victorias” frente a otras agencias.', 'We measure service to the client (openings covered, first-day attendance, retention, response time), never “wins” against other agencies.')}</li></ol></section>
+  ${ready ? `<section class="panel"><h2>${t('Agenda de la reunión semanal', 'Weekly meeting agenda')}</h2><p class="small muted">${t('Solo vacantes y cantidades.', 'Openings and counts only.')}</p><pre class="msg" id="agenda">${esc(agenda)}</pre><div><button class="btn ghost" data-copy="agenda">${t('Copiar agenda', 'Copy agenda')}</button></div></section>
+  <section class="panel"><div class="row" style="justify-content:space-between"><h2>${t('Registro de coordinación', 'Coordination log')}</h2><button class="btn" data-act="new-coord">${t('Agregar registro', 'Add entry')}</button></div>
+    ${S.coord.length ? `<ul class="list">${[...S.coord].sort((a, b) => b.date.localeCompare(a.date)).map(x => `<li><span class="mono small" style="min-width:96px">${esc(x.date)}</span><div class="grow"><button class="linkbtn" data-coord="${esc(x.id)}">${esc(x.title)}</button><div class="small muted">${esc(lab(COORD_KINDS, x.kind))}${x.agencyId ? ' · ' + esc(S.agencies.find(a => a.id === x.agencyId)?.name || '') : ''}${x.decisions ? ' — ' + esc(x.decisions) : ''}</div></div><span class="pill ${x.status === 'open' ? 'pending' : 'ok'}">${x.status === 'open' ? t('Abierto', 'Open') : t('Resuelto', 'Resolved')}</span></li>`).join('')}</ul>` : `<p class="muted">${t('Aún no hay registros.', 'No entries yet.')}</p>`}</section>
+  <section class="panel"><div class="row" style="justify-content:space-between"><h2>${t('Agencias en este cliente', 'Agencies at this client')}</h2><button class="btn ghost" data-act="new-agency">${t('Agregar agencia', 'Add agency')}</button></div>
+    <p class="small muted">${t('Solo datos de contacto laboral de los representantes, tal como te los compartieron.', 'Only the representatives’ work contact details, as they shared them.')}</p>
+    ${S.agencies.length ? `<ul class="list">${S.agencies.map(a => `<li><div class="grow"><button class="linkbtn" data-agency="${esc(a.id)}">${esc(a.name)}</button><div class="small muted">${esc([a.rep, a.phone, a.email].filter(Boolean).join(' · '))}${a.scope ? ' — ' + esc(a.scope) : ''}</div></div></li>`).join('')}</ul>` : `<p class="muted">${t('Ninguna registrada.', 'None recorded.')}</p>`}</section>` : ''}`;
+};
+
+VIEWS.mensajes = () => {
+  const st = S.ready ? ST() : { company: 'Staffing team' };
+  return `<div class="head"><div><h1>${t('Mensajes, anuncios y guiones', 'Messages, ads and scripts')}</h1><p class="muted">${t('Inglés y español. Nunca publiques pago, horarios, bonos o fechas no verificados. Los {marcadores} se completan en la ficha de cada candidato.', 'English and Spanish. Never publish unverified pay, schedules, bonuses or dates. {Placeholders} are filled on each candidate’s card.')}</p></div></div>
+  <div class="grid2">${TEMPLATES.map(tp => ['es', 'en'].map(lg => `<section class="panel"><div class="row" style="justify-content:space-between"><h3>${esc(tp[lg][0])} <span class="tag">${lg.toUpperCase()}</span></h3></div>
+    <pre class="msg" id="tpl-${tp.code}-${lg}">${esc(fill(tp[lg][1], { company: st.company, my_name: st.myName, my_phone: st.myPhone, apply_link: st.applyLink }))}</pre><div><button class="btn ghost sm" data-copy="tpl-${tp.code}-${lg}">${t('Copiar', 'Copy')}</button></div></section>`).join('')).join('')}</div>`;
+};
+
+VIEWS.reportes = () => {
+  const st = ST(), d0 = today(), day = S.rday || d0;
+  const wd = new Date(day + 'T12:00:00Z').getUTCDay() || 7;
+  const from = S.rkind === 'daily' ? day : addDays(day, 1 - wd);
+  const to = S.rkind === 'daily' ? day : (addDays(from, 6) > d0 ? d0 : addDays(from, 6));
+  const inP = iso => iso && iso.slice(0, 10) >= from && iso.slice(0, 10) <= to;
+  const all = S.cands, moves = {};
+  all.forEach(c => (c.hist || []).forEach(h => { if (inP(h.at)) moves[h.to] = (moves[h.to] || 0) + 1; }));
+  const contacts = all.flatMap(c => (c.log || []).filter(l => l.kind !== 'note' && inP(l.at)).map(() => c.id));
+  const nDays = S.rkind === 'daily' ? 1 : Math.min(5, days(from, to) + 1);
+  const fd = all.filter(c => c.firstDay && c.firstDay >= from && c.firstDay <= to && c.firstDay < d0 && (atLeast(c.stage, 'assigned') || c.closedReason === 'no_show'));
+  const showed = fd.filter(c => atLeast(c.stage, 'started')).length;
+  const r30 = all.filter(c => c.ret && c.ret.d30);
+  const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
+  const coord = S.coord.filter(x => x.date >= from && x.date <= to);
+  const rows = [
+    [t('Nuevos registros', 'New registrations'), all.filter(c => inP(c.registeredAt)).length, ''],
+    [t('Personas contactadas', 'People contacted'), new Set(contacts).size, `${t('meta', 'goal')} ${st.gContacts * nDays}`],
+    [t('Intentos de contacto registrados', 'Contact attempts logged'), contacts.length, ''],
+    [t('Pasaron a preselección', 'Moved to pre-selected'), moves.prescreened || 0, `${t('meta', 'goal')} ${S.rkind === 'weekly' ? st.gPrescreen : Math.ceil(st.gPrescreen / 5)}`],
+    [t('Entrevistas / citas en el período', 'Interviews in period'), all.filter(c => inP(c.interviewAt)).length, `${t('meta', 'goal')} ${S.rkind === 'weekly' ? st.gInterviews : Math.ceil(st.gInterviews / 5)}`],
+    [t('Aprobados por el proceso', 'Approved by hiring process'), moves.approved || 0, ''],
+    [t('Primeros días confirmados', 'First days confirmed'), moves.first_day_confirmed || 0, ''],
+    [t('Se presentaron (primer día)', 'Showed up (first day)'), moves.started || 0, ''],
+    [t('No se presentaron', 'No-shows'), all.filter(c => c.closedReason === 'no_show' && inP(c.stageAt)).length, ''],
+    [t('Asistencia al primer día', 'First-day show rate'), pct(showed, fd.length), `${t('meta', 'goal')} ${st.gShow}%`],
+    [t('Retención a 30 días (acumulada)', '30-day retention (to date)'), pct(r30.filter(c => c.ret.d30 === 'yes').length, r30.length), `${t('meta', 'goal')} ${st.gRet30}%`],
+    [t('Autorizados aún sin colocar', 'Authorized, not yet placed'), all.filter(c => ['approved', 'available'].includes(c.stage)).length, ''],
+    [t('Seguimientos vencidos ahora', 'Overdue follow-ups now'), S.tasks.filter(x => !x.done && x.due < d0).length, ''],
+    [t('Registros de coordinación entre agencias', 'Agency coordination entries'), coord.length, `${coord.filter(x => x.kind === 'escalation').length} ${t('escalamientos', 'escalations')}`],
+  ];
+  const opens = S.openings.filter(o => o.status === 'authorized').map(o => `• ${o.title}: ${o.headcount} / ${all.filter(c => c.openingId === o.id && atLeast(c.stage, 'assigned')).length} / ${all.filter(c => inPool(c, o)).length}`);
+  const srcCount = {}; all.filter(c => inP(c.registeredAt)).forEach(c => { const k = c.source || 'other'; srcCount[k] ||= [0, 0]; srcCount[k][0]++; if (reached(c, 'started')) srcCount[k][1]++; });
+  const title = S.rkind === 'daily' ? t('Reporte diario de reclutamiento', 'Daily recruiting report') : t('Reporte semanal de reclutamiento', 'Weekly recruiting report');
+  const text = [`${title} — ${st.company} — ${from === to ? from : from + ' → ' + to}`,
+    all.some(c => c.sample) ? t('NOTA: incluye datos de EJEMPLO (no son resultados reales).', 'NOTE: includes SAMPLE data (not real results).') : null, '',
+    ...rows.map(([a, b, c]) => `• ${a}: ${b}${c ? ` (${c})` : ''}`), '',
+    t('Vacantes autorizadas (necesarias / colocadas / grupo listo):', 'Authorized openings (needed / placed / ready pool):'), ...(opens.length ? opens : [t('• ninguna registrada', '• none recorded')]), '',
+    t('Fuentes del período (registrados → iniciaron):', 'Sources this period (registered → started):'), ...(Object.keys(srcCount).length ? Object.entries(srcCount).map(([k, [a, b]]) => `• ${srcName(k)}: ${a} → ${b}`) : [t('• sin registros', '• no registrations')])].filter(x => x !== null).join('\n');
+  S.lastReport = { text, rows, title, from, to };
+  return `<div class="head"><div><h1>${t('Reportes para mi supervisor', 'Reports for my supervisor')}</h1><p class="muted">${t('Solo cantidades: sin nombres, teléfonos ni correos.', 'Counts only: no names, phones or emails.')}</p></div></div>
+  <div class="filters"><div class="chips"><button class="chip" data-rkind="daily" aria-pressed="${S.rkind === 'daily'}">${t('Diario', 'Daily')}</button><button class="chip" data-rkind="weekly" aria-pressed="${S.rkind === 'weekly'}">${t('Semanal', 'Weekly')}</button></div>
+    <label class="f" style="max-width:220px">${S.rkind === 'daily' ? t('Día', 'Day') : t('Un día de la semana', 'Any day of the week')}<input type="date" id="rday" value="${day}" max="${d0}"></label></div>
+  <section class="panel"><h2>${esc(title)}</h2><p class="small muted">${from === to ? from : from + ' → ' + to}</p>
+    <div class="scroll"><table><tbody>${rows.map(([a, b, c]) => `<tr><td>${esc(a)}</td><td class="n"><b>${esc(b)}</b></td><td class="small muted">${esc(c)}</td></tr>`).join('')}</tbody></table></div></section>
+  <section class="panel"><h2>${t('Texto para correo o chat', 'Text for email or chat')}</h2><pre class="msg" id="report-text">${esc(text)}</pre>
+    <div class="row"><button class="btn" data-copy="report-text">${t('Copiar reporte', 'Copy report')}</button>${S.dl ? `<button class="btn ghost" data-act="export-report">CSV</button>` : ''}</div></section>`;
+};
+
+VIEWS.ajustes = () => {
+  const st = ST();
+  const n = (k, es, en, min, max) => `<label class="f">${t(es, en)}<input type="number" name="${k}" min="${min}" max="${max}" value="${esc(st[k])}"></label>`;
+  return `<div class="head"><div><h1>${t('Ajustes y datos', 'Settings & data')}</h1></div></div>
+  <form class="panel" id="settings-form"><h2>${t('Tus datos para los mensajes', 'Your details for messages')}</h2><div class="fields">
+    <label class="f">${t('Nombre de la empresa / equipo', 'Company / team name')}<input name="company" maxlength="120" value="${esc(st.company)}"><span class="hint">${t('Usa el nombre de tu empleador solo si está autorizado.', 'Use your employer’s name only if authorized.')}</span></label>
+    <label class="f">${t('Mi nombre', 'My name')}<input name="myName" maxlength="80" value="${esc(st.myName)}"></label>
+    <label class="f">${t('Mi teléfono de trabajo', 'My work phone')}<input name="myPhone" maxlength="30" value="${esc(st.myPhone)}"></label>
+    <label class="f">${t('Enlace de la solicitud oficial o preinscripción', 'Official application / pre-registration link')}<input name="applyLink" maxlength="300" value="${esc(st.applyLink)}"><span class="hint">${t('El que te dé la agencia (o un formulario de Google/Microsoft que luego importas).', 'The one your agency gives you (or a Google/Microsoft form you import later).')}</span></label></div>
+  <h2>${t('Metas de actividad (no promesas de contratación)', 'Activity goals (not hiring promises)')}</h2><div class="fields">
+    ${n('gContacts', 'Personas contactadas por día', 'People contacted per day', 0, 500)}${n('gPrescreen', 'Preseleccionados por semana', 'Pre-selected per week', 0, 500)}${n('gInterviews', 'Entrevistas por semana', 'Interviews per week', 0, 500)}
+    ${n('gShow', 'Meta asistencia primer día (%)', 'First-day show goal (%)', 0, 100)}${n('gRet30', 'Meta retención 30 días (%)', '30-day retention goal (%)', 0, 100)}
+    ${n('stale', 'Marcar sin contacto después de (días)', 'Flag without contact after (days)', 1, 60)}${n('lowPool', 'Alerta si una vacante tiene menos de … listos', 'Alert when an opening has fewer than … ready', 0, 500)}</div>
+  <h2>${t('Gasto mensual real por fuente ($)', 'Real monthly spend per source ($)')}</h2><p class="small muted">${t('Solo gasto real. Déjalo vacío si es gratis o no lo sabes.', 'Real spend only. Leave empty if free or unknown.')}</p><div class="fields">
+    ${SOURCES.filter(s => ['indeed', 'facebook', 'tiktok_ig', 'job_fair', 'flyer', 'referral'].includes(s.key)).map(s => `<label class="f">${esc(L(s))}<input type="number" min="0" step="0.01" name="spend.${s.key}" value="${esc(st.spend?.[s.key] ?? '')}"></label>`).join('')}</div>
+  <div><button class="btn">${t('Guardar ajustes', 'Save settings')}</button></div></form>
+  <section class="panel"><h2>${t('Importar candidatos (CSV)', 'Import candidates (CSV)')}</h2>
+    <p class="small muted">${t('Para respuestas de un formulario de Google/Microsoft o una hoja de cálculo. Columnas reconocidas: nombre/first name, apellido/last name, teléfono/phone, correo/email, ciudad/city, código postal/zip, idioma/language, turno/shift, consentimiento/consent (sí/yes). Solo se marca consentimiento si la columna lo dice.', 'For Google/Microsoft form responses or a spreadsheet. Recognized columns: first name, last name, phone, email, city, zip, language, shift, consent (yes/sí). Consent is set only when the column says so.')}</p>
+    <input type="file" id="csv-file" accept=".csv,text/csv"><textarea id="csv-text" placeholder="${t('…o pega aquí el CSV', '…or paste the CSV here')}"></textarea><div><button class="btn ghost" data-act="import">${t('Importar', 'Import')}</button></div></section>
+  <section class="panel"><h2>${t('Privacidad y datos', 'Privacy and data')}</h2>
+    <p>${t('Tus candidatos se guardan en un espacio privado de esta página: solo tú los ves, aunque compartas la página. No pidas ni escribas aquí Seguro Social, identificaciones, datos bancarios, fecha de nacimiento, salud ni estatus migratorio.', 'Your candidates are stored in a private space of this page: only you see them, even if you share the page. Never ask for or type here SSN, ID numbers, bank details, date of birth, health or immigration status.')}</p>
+    <p class="small muted">${t('Conservación: borra cada mes a quienes llevan más de 12 meses sin actividad (o lo que diga la política de tu agencia), y elimina enseguida a quien lo pida.', 'Retention: each month delete people with no activity for 12+ months (or per your agency’s policy), and delete anyone who asks right away.')}</p>
+    <div class="row">${S.dl ? `<button class="btn ghost" data-act="export-cands">${t('Exportar candidatos (CSV)', 'Export candidates (CSV)')}</button>` : ''}<button class="btn ghost" data-act="purge-old">${t('Revisar inactivos +12 meses', 'Review inactive 12+ months')}</button>
+    ${S.cands.some(c => c.sample) ? `<button class="btn ghost" data-act="samples-off">${t('Quitar datos de ejemplo', 'Remove sample data')}</button>` : `<button class="btn ghost" data-act="samples-on">${t('Cargar datos de ejemplo', 'Load sample data')}</button>`}</div></section>`;
+};
+
+// ---------------------------------------------------------------- dialogs
+function openDlg(title, html, onReady) {
+  const d = $('#dlg');
+  d.innerHTML = `<div class="dlg-head"><h2>${esc(title)}</h2><button class="btn ghost sm" data-close>${t('Cerrar', 'Close')}</button></div><div class="dlg-body">${html}</div>`;
+  if (!d.open) d.showModal();
+  d.querySelector('[data-close]').onclick = () => d.close();
+  onReady && onReady(d);
+}
+function chipsVal(root, name) { return [...root.querySelectorAll(`[data-chips="${name}"] .chip[aria-pressed="true"]`)].map(b => b.dataset.v); }
+function wireChips(root) { root.querySelectorAll('[data-chips] .chip').forEach(b => (b.onclick = () => b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true'))); }
+
+function candidateForm(c) {
+  const isNew = !c.id;
+  return `<form id="cand-form" class="stack" novalidate>
+  <div class="fields">
+    <label class="f">${t('Nombre', 'First name')}<input name="first" required maxlength="80" value="${esc(c.first)}"></label>
+    <label class="f">${t('Apellido', 'Last name')}<input name="last" required maxlength="80" value="${esc(c.last)}"></label>
+    <label class="f">${t('Teléfono', 'Phone')}<input name="phone" type="tel" inputmode="tel" value="${esc(fmtPhone(c.phone))}" placeholder="(859) 555-0100"></label>
+    <label class="f">Email<input name="email" type="email" maxlength="160" value="${esc(c.email)}"></label>
+    <label class="f">${t('Ciudad', 'City')}<input name="city" maxlength="80" value="${esc(c.city)}"></label>
+    <label class="f">${t('Código postal', 'ZIP code')}<input name="zip" inputmode="numeric" maxlength="5" value="${esc(c.zip)}"></label>
+    <label class="f">${t('Idioma preferido', 'Preferred language')}<select name="lang">${options(LANGS, c.lang || S.lang)}</select></label>
+    <label class="f">${t('Fuente', 'Source')}<select name="source">${options(SOURCES, c.source, '—')}</select></label>
+    <label class="f">${t('Detalle de la fuente', 'Source detail')}<input name="sourceDetail" maxlength="120" value="${esc(c.sourceDetail)}" placeholder="${t('grupo, evento, gafete de quien refirió', 'group, event, referrer badge')}"></label>
+  </div>
+  ${chipsField('exp', EXPERIENCE, c.exp, t('Experiencia relevante', 'Relevant experience'))}
+  ${chipsField('equip', EQUIPMENT, c.equip, t('Equipos que sabe usar', 'Equipment they can use'))}
+  ${chipsField('shifts', SHIFTS, c.shifts, t('Turnos disponibles', 'Shifts available'))}
+  ${chipsField('positions', POSITIONS, c.positions, t('Puestos de interés', 'Positions of interest'))}
+  <div class="fields">
+    <label class="f">${t('Puede comenzar desde', 'Can start from')}<input name="availableFrom" type="date" value="${esc(c.availableFrom)}"></label>
+    <label class="f">${t('Vacante', 'Opening')}<select name="openingId"><option value="">—</option>${S.openings.filter(o => o.status === 'authorized' || o.id === c.openingId).map(o => `<option value="${esc(o.id)}" ${o.id === c.openingId ? 'selected' : ''}>${esc(o.title)}</option>`).join('')}</select></label>
+    <label class="f">${t('Entrevista / cita', 'Interview / appointment')}<input name="interviewAt" type="datetime-local" value="${esc(c.interviewAt)}"></label>
+    <label class="f">${t('Primer día', 'First day')}<input name="firstDay" type="date" value="${esc(c.firstDay)}"></label>
+    <label class="f">${t('Próxima acción', 'Next action')}<input name="nextAction" maxlength="160" value="${esc(c.nextAction)}"></label>
+    <label class="f">${t('Fecha de la próxima acción', 'Next action due')}<input name="nextDue" type="date" value="${esc(c.nextDue)}"></label>
+    <label class="f">${t('¿Ya colocado aquí por otra agencia?', 'Already placed here by another agency?')}<select name="agency">${options(AGENCY, c.agency || 'unknown')}</select></label>
+  </div>
+  <fieldset><legend>${t('Consentimiento de contacto', 'Consent to be contacted')}</legend>
+    <label class="check"><input type="checkbox" name="cContact" ${c.consent?.contact ? 'checked' : ''}><span>${t('Aceptó ser contactado/a sobre oportunidades de empleo.', 'Agreed to be contacted about job opportunities.')}</span></label>
+    <div class="row"><label class="check"><input type="checkbox" name="cSms" ${c.consent?.sms ? 'checked' : ''}><span>${t('Mensajes de texto', 'Text messages')}</span></label>
+    <label class="check"><input type="checkbox" name="cWa" ${c.consent?.wa ? 'checked' : ''}><span>WhatsApp</span></label>
+    <label class="check"><input type="checkbox" name="cEmail" ${c.consent?.email ? 'checked' : ''}><span>Email</span></label>
+    <select name="cMethod" style="width:auto">${options([opt('verbal', 'Verbal', 'Verbal'), opt('paper', 'Formulario en papel', 'Paper form'), opt('kiosk', 'Modo registro', 'Registration mode'), opt('web', 'Formulario web', 'Web form'), opt('other', 'Otro', 'Other')], c.consent?.method || 'verbal')}</select></div></fieldset>
+  <label class="f">${t('Observaciones profesionales', 'Professional notes')}<textarea name="notes" maxlength="1000">${esc(c.notes)}</textarea><span class="hint">${t('Solo hechos laborales. Sin salud, familia, situación migratoria, religión ni otros datos personales.', 'Job-related facts only. No health, family, immigration, religion or other personal details.')}</span></label>
+  <p id="cand-err" class="late" hidden></p>
+  <div class="row"><button class="btn">${isNew ? t('Agregar candidato', 'Add candidate') : t('Guardar cambios', 'Save changes')}</button></div></form>`;
+}
+function readCandForm(form, base) {
+  const fd = new FormData(form), g = k => String(fd.get(k) || '').trim();
+  const phone = g('phone').replace(/\D/g, '').replace(/^1(?=\d{10}$)/, '');
+  const err = !g('first') || !g('last') ? t('Escribe nombre y apellido.', 'Enter first and last name.')
+    : !phone && !g('email') ? t('Escribe un teléfono o un correo.', 'Enter a phone or an email.')
+    : phone && phone.length !== 10 ? t('El teléfono debe tener 10 dígitos.', 'Phone numbers have 10 digits.')
+    : g('zip') && !/^\d{5}$/.test(g('zip')) ? t('El código postal tiene 5 dígitos.', 'ZIP code has 5 digits.') : null;
+  if (err) return { err };
+  const contact = fd.get('cContact') === 'on';
+  return { c: { ...base, first: g('first'), last: g('last'), phone, email: g('email').toLowerCase(), city: g('city'), zip: g('zip'), lang: g('lang'),
+    source: g('source'), sourceDetail: g('sourceDetail'), exp: chipsVal(form, 'exp'), equip: chipsVal(form, 'equip'), shifts: chipsVal(form, 'shifts'), positions: chipsVal(form, 'positions'),
+    availableFrom: g('availableFrom'), openingId: g('openingId'), interviewAt: g('interviewAt'), firstDay: g('firstDay'), nextAction: g('nextAction'), nextDue: g('nextDue'), agency: g('agency'), notes: g('notes'),
+    consent: { contact, sms: contact && fd.get('cSms') === 'on', wa: contact && fd.get('cWa') === 'on', email: contact && fd.get('cEmail') === 'on', method: contact ? g('cMethod') : '', at: contact ? (base.consent?.at || new Date().toISOString()) : '' } } };
+}
+function newCandidate() {
+  openDlg(t('Nuevo candidato', 'New candidate'), `<p class="small muted">${t('Solo lo necesario para un primer contacto. Nunca pidas aquí número de Seguro Social, identificación, datos bancarios, fecha de nacimiento ni información médica.', 'Only what a first contact needs. Never ask here for SSN, ID numbers, bank details, date of birth or health information.')}</p>` + candidateForm({}), d => {
+    wireChips(d);
+    d.querySelector('#cand-form').onsubmit = async e => {
+      e.preventDefault();
+      const { c, err } = readCandForm(e.target, { id: newId(), stage: 'new', registeredAt: new Date().toISOString(), log: [], hist: [] });
+      if (err) { const p = d.querySelector('#cand-err'); p.textContent = err; p.hidden = false; return; }
+      if (await saveCandidate(c, null)) { toast(c.dupOf ? t('Guardado. Ojo: posible duplicado.', 'Saved. Note: possible duplicate.') : t('Candidato agregado', 'Candidate added')); openCandidate(c.id); }
+    };
+  });
+}
+function openCandidate(id) {
+  const c = S.cands.find(x => x.id === id);
+  if (!c) { setTimeout(() => S.cands.find(x => x.id === id) && openCandidate(id), 400); return; }
+  const st = ST(), msgLang = c.lang === 'es' ? 'es' : 'en', r = readiness(c, S.openings.find(o => o.id === c.openingId));
+  const dup = c.dupOf && S.cands.find(x => x.id === c.dupOf);
+  const myTasks = S.tasks.filter(x => x.candId === c.id).sort((a, b) => a.due.localeCompare(b.due));
+  const tplOpts = TEMPLATES.filter(x => !['social', 'script', 'board'].includes(x.ch));
+  openDlg(nameOf(c), `
+  <div class="row">${stagePill(c.stage)}${sampleTag(c)}<span class="small muted">${t('Registrado', 'Registered')} ${esc((c.registeredAt || '').slice(0, 10))} · ${t('Preparación', 'Readiness')} ${r.score}/100 (${esc(r.reasons.join(', ') || '—')})</span></div>
+  ${c.consent?.contact ? `<p>${c.phone ? `<b class="mono">${esc(fmtPhone(c.phone))}</b> <button class="btn ghost sm" data-copytext="${esc(c.phone)}">${t('Copiar número', 'Copy number')}</button> ` : ''}${c.email ? `<span class="mono">${esc(c.email)}</span>` : ''}</p>` : `<p class="note bad">${t('Sin consentimiento de contacto: no contactar.', 'No consent to contact: do not reach out.')}</p>`}
+  ${dup ? `<div class="note">${t('Posible duplicado de', 'Possible duplicate of')} <button class="linkbtn" data-open="${esc(dup.id)}">${esc(nameOf(dup))}</button>. ${t('Conserva un solo registro.', 'Keep one record.')} <button class="linkbtn" data-act="not-dup" data-id="${esc(c.id)}">${t('No es duplicado', 'Not a duplicate')}</button></div>` : ''}
+  ${c.agency === 'reported' ? `<div class="note bad">${t('Dice que otra agencia lo colocó en este cliente. No lo proceses ni intentes transferirlo. Escala a tu supervisor y registra el resultado en Agencias.', 'Says another agency placed them at this client. Do not process or try to move them. Escalate to your supervisor and record the outcome under Agencies.')}</div>` : ''}
+  <section class="panel"><h3>${t('Etapa del proceso', 'Pipeline stage')}</h3>
+    <div class="fields"><label class="f">${t('Etapa', 'Stage')}<select id="st-stage">${STAGES.map((s, i) => `<option value="${s.key}" ${s.key === c.stage ? 'selected' : ''}>${s.key === 'closed' ? '—' : i + 1 + '.'} ${esc(L(s))}</option>`).join('')}</select></label>
+    <label class="f">${t('Motivo (si se cierra)', 'Reason (if closing)')}<select id="st-reason">${options(CLOSED, c.closedReason || 'not_interested')}</select></label>
+    <label class="f">${t('Recontactar el', 'Recontact on')}<input type="date" id="st-recontact" value="${esc(c.recontactOn)}"></label></div>
+    <p class="small muted">${t('Mueve a “Aprobado” solo cuando el proceso de contratación del empleador realmente lo haya aprobado.', 'Move to “Approved” only when the employer’s hiring process has actually approved them.')}</p>
+    <div><button class="btn" data-act="set-stage" data-id="${esc(c.id)}">${t('Actualizar etapa', 'Update stage')}</button></div></section>
+  ${atLeast(c.stage, 'started') ? `<section class="panel"><h3>${t('Retención: ¿sigue trabajando?', 'Retention: still working?')}</h3><div class="fields">${['d7', 'd30', 'd60'].map(k => `<label class="f">${t('Día ', 'Day ')}${k.slice(1)}<select data-ret="${k}" data-id="${esc(c.id)}">${options([opt('', '—', '—'), opt('yes', 'Sí', 'Yes'), opt('no', 'No', 'No')], c.ret?.[k] || '')}</select></label>`).join('')}</div></section>` : ''}
+  <form class="panel" id="log-form"><h3>${t('Registrar un contacto', 'Log a contact')}</h3><div class="fields">
+    <label class="f">${t('Tipo', 'Type')}<select name="kind">${options(EVENT_KINDS, 'call')}</select></label>
+    <label class="f">${t('Resultado', 'Result')}<select name="outcome">${options(OUTCOMES, 'reached')}</select></label>
+    <label class="f" style="grid-column:span 2">${t('Resumen', 'Summary')}<input name="body" maxlength="500"></label></div><div><button class="btn">${t('Guardar contacto', 'Save contact')}</button></div></form>
+  ${c.consent?.contact ? `<section class="panel"><h3>${t('Preparar un mensaje', 'Prepare a message')} <span class="tag">${msgLang.toUpperCase()}</span></h3>
+    <p class="small muted">${t('En el idioma del candidato. Nada se envía solo: cópialo y envíalo desde tu teléfono o correo de trabajo.', 'In the candidate’s language. Nothing is sent automatically: copy it and send it from your work phone or email.')}</p>
+    <div class="fields"><label class="f">${t('Plantilla', 'Template')}<select id="m-tpl">${tplOpts.map(x => `<option value="${x.code}">${esc(x[msgLang][0])}</option>`).join('')}</select></label>
+    <label class="f">${t('Fecha', 'Date')}<input id="m-date"></label><label class="f">${t('Hora', 'Time')}<input id="m-time"></label><label class="f">${t('Lugar', 'Place')}<input id="m-place"></label></div>
+    <pre class="msg" id="m-text"></pre><p class="small late" id="m-missing" hidden></p>
+    <div class="row"><button class="btn ghost" data-copy="m-text">${t('Copiar mensaje', 'Copy message')}</button>
+    ${c.phone && c.consent.wa ? `<a class="btn ghost" id="m-wa" target="_blank" rel="noopener" href="#">${t('Abrir WhatsApp', 'Open WhatsApp')}</a>` : ''}
+    <button class="btn ghost" data-act="mark-sent" data-id="${esc(c.id)}">${t('Registrar como enviado', 'Log as sent')}</button></div>
+    ${!c.consent.sms && !c.consent.wa && !c.consent.email ? `<p class="small muted">${t('No aceptó mensajes escritos: usa llamada.', 'No written-message consent: call instead.')}</p>` : ''}</section>` : ''}
+  <section class="panel"><h3>${t('Tareas', 'Tasks')}</h3>${taskList(myTasks)}</section>
+  <section class="panel"><h3>${t('Perfil', 'Profile')}</h3>${candidateForm(c)}</section>
+  <section class="panel"><h3>${t('Historial', 'History')}</h3><ol class="timeline">
+    ${[...(c.log || []).map(l => ({ at: l.at, txt: `<b>${esc(lab(EVENT_KINDS, l.kind))}</b>${l.outcome ? ' · ' + esc(lab(OUTCOMES, l.outcome)) : ''}${l.body ? ' — ' + esc(l.body) : ''}` })),
+       ...(c.hist || []).map(h => ({ at: h.at, txt: `<b>${t('Cambio de etapa', 'Stage change')}</b> → ${esc(stageName(h.to))}` }))].sort((a, b) => b.at.localeCompare(a.at)).map(x => `<li><span class="small muted">${esc(new Date(x.at).toLocaleString(S.lang === 'es' ? 'es-US' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' }))}</span><br>${x.txt}</li>`).join('')}
+  </ol></section>
+  <section class="panel"><h3>${t('Eliminar este registro', 'Delete this record')}</h3><p class="small muted">${t('Para duplicados y para personas que piden ser eliminadas. Borra perfil, historial y tareas. No se puede deshacer.', 'For duplicates and people who ask to be removed. Deletes profile, history and tasks. Cannot be undone.')}</p>
+    <div class="row" id="del-row"><button class="btn danger" data-act="del-ask" data-id="${esc(c.id)}">${t('Eliminar…', 'Delete…')}</button></div></section>`, d => {
+    wireChips(d);
+    d.querySelector('#cand-form').onsubmit = async e => {
+      e.preventDefault();
+      const { c: n, err } = readCandForm(e.target, c);
+      if (err) { const p = d.querySelector('#cand-err'); p.textContent = err; p.hidden = false; return; }
+      if (await saveCandidate(n, c)) { toast(t('Guardado', 'Saved')); openCandidate(c.id); }
+    };
+    d.querySelector('#log-form').onsubmit = async e => {
+      e.preventDefault(); const fd = new FormData(e.target);
+      const kind = fd.get('kind');
+      if (await logContact(c, kind, kind === 'note' ? '' : fd.get('outcome'), String(fd.get('body') || '').trim())) { toast(t('Contacto registrado', 'Contact logged')); openCandidate(c.id); }
+    };
+    const tpl = d.querySelector('#m-tpl');
+    if (tpl) {
+      const upd = () => {
+        const tp = TEMPLATES.find(x => x.code === tpl.value), o = S.openings.find(x => x.id === c.openingId);
+        const text = fill(tp[msgLang][1], { first_name: c.first, my_name: st.myName, my_phone: st.myPhone, company: st.company, apply_link: st.applyLink,
+          position: o ? (msgLang === 'es' ? lab(POSITIONS, o.position) : POSITIONS.find(p => p.key === o.position)?.en) : '',
+          shift: (c.shifts || []).map(s => SHIFTS.find(x => x.key === s)?.[msgLang]).join(' / '), date: d.querySelector('#m-date').value, time: d.querySelector('#m-time').value, place: d.querySelector('#m-place').value });
+        d.querySelector('#m-text').textContent = text;
+        const miss = [...new Set(text.match(/\{\w+\}/g) || [])], mm = d.querySelector('#m-missing');
+        mm.hidden = !miss.length; mm.textContent = t('Completa antes de enviar: ', 'Fill in before sending: ') + miss.join(' ') + (miss.some(m => ['{my_name}', '{my_phone}', '{apply_link}'].includes(m)) ? t(' (tus datos van en Ajustes)', ' (your details go in Settings)') : '');
+        const wa = d.querySelector('#m-wa'); if (wa) wa.href = `https://wa.me/1${c.phone}?text=${encodeURIComponent(text)}`;
+      };
+      ['#m-tpl', '#m-date', '#m-time', '#m-place'].forEach(s => d.querySelector(s).addEventListener('input', upd));
+      upd();
+    }
+  });
+}
+function openingDlg(o) {
+  const isNew = !o.id;
+  openDlg(isNew ? t('Nueva vacante', 'New opening') : o.title, `<form id="op-form" class="stack"><div class="fields">
+    <label class="f" style="grid-column:span 2">${t('Título', 'Title')}<input name="title" required maxlength="120" value="${esc(o.title)}"></label>
+    <label class="f">${t('Puesto', 'Role')}<select name="position">${options(POSITIONS, o.position || 'picking')}</select></label>
+    <label class="f">${t('Turno', 'Shift')}<input name="shift" maxlength="80" value="${esc(o.shift)}"></label>
+    <label class="f">${t('Personas necesarias', 'People needed')}<input name="headcount" type="number" min="1" max="1000" value="${esc(o.headcount || 1)}"></label>
+    <label class="f">${t('Estado', 'Status')}<select name="status">${options(OPEN_STATUS, o.status || 'draft')}</select></label>
+    <label class="f">${t('Autorizada por (nombre / cargo)', 'Authorized by (name / role)')}<input name="authorizedBy" maxlength="120" value="${esc(o.authorizedBy)}"></label>
+    <label class="f">${t('Fecha de autorización', 'Authorized on')}<input name="authorizedOn" type="date" value="${esc(o.authorizedOn)}"></label>
+    <label class="f">${t('Abierta el', 'Opened on')}<input name="openedOn" type="date" value="${esc(o.openedOn || today())}"></label>
+    <label class="f">${t('Fecha objetivo', 'Target date')}<input name="targetDate" type="date" value="${esc(o.targetDate)}"></label>
+    <label class="f">${t('Cubierta el', 'Filled on')}<input name="filledOn" type="date" value="${esc(o.filledOn)}"></label>
+    <label class="f">${t('Pago verificado (opcional)', 'Verified pay (optional)')}<input name="pay" maxlength="200" value="${esc(o.pay)}"><span class="hint">${t('Vacío hasta confirmarlo por escrito.', 'Empty until confirmed in writing.')}</span></label>
+    <label class="f">${t('Horario verificado (opcional)', 'Verified schedule (optional)')}<input name="schedule" maxlength="200" value="${esc(o.schedule)}"></label></div>
+    <label class="f">${t('Requisitos reales del puesto (del cliente)', 'Real job requirements (from the client)')}<textarea name="reqs" maxlength="500">${esc(o.reqs)}</textarea></label>
+    <p class="late" id="op-err" hidden></p><div class="row"><button class="btn">${t('Guardar', 'Save')}</button>${!isNew ? `<button type="button" class="btn danger" data-act="del-opening" data-id="${esc(o.id)}">${t('Eliminar', 'Delete')}</button>` : ''}</div></form>`, d => {
+    d.querySelector('#op-form').onsubmit = async e => {
+      e.preventDefault(); const fd = new FormData(e.target), g = k => String(fd.get(k) || '').trim();
+      const n = { ...o, id: o.id || newId(), title: g('title'), position: g('position'), shift: g('shift'), headcount: Math.max(1, Number(g('headcount')) || 1), status: g('status'), authorizedBy: g('authorizedBy'), authorizedOn: g('authorizedOn'), openedOn: g('openedOn') || today(), targetDate: g('targetDate'), filledOn: g('status') === 'filled' ? (g('filledOn') || today()) : g('filledOn'), pay: g('pay'), schedule: g('schedule'), reqs: g('reqs') };
+      if (!n.title) return;
+      if (n.status === 'authorized' && (!n.authorizedBy || !n.authorizedOn)) { const p = d.querySelector('#op-err'); p.textContent = t('Una vacante autorizada necesita quién la autorizó y cuándo.', 'An authorized opening needs who authorized it and when.'); p.hidden = false; return; }
+      if (await safe(() => put('openings', n), t('Vacante guardada', 'Opening saved'))) d_close();
+    };
+  });
+}
+function activityDlg(a) {
+  const isNew = !a.id;
+  openDlg(isNew ? t('Nueva actividad', 'New activity') : a.title, `<form id="act-form" class="stack"><label class="f">${t('Título', 'Title')}<input name="title" required maxlength="160" value="${esc(a.title)}"></label><div class="fields">
+    <label class="f">${t('Tipo', 'Type')}<select name="kind">${options(ACT_KINDS, a.kind || 'job_fair')}</select></label>
+    <label class="f">${t('Estado', 'Status')}<select name="status">${options(ACT_STATUS, a.status || 'pending')}</select></label>
+    <label class="f">${t('Fecha', 'Date')}<input name="date" type="date" required value="${esc(a.date || today())}"></label>
+    <label class="f">${t('Hora', 'Time')}<input name="time" type="time" value="${esc(a.time)}"></label>
+    <label class="f">${t('Lugar', 'Location')}<input name="location" maxlength="200" value="${esc(a.location)}"></label>
+    <label class="f">${t('Responsable', 'Owner')}<input name="owner" maxlength="120" value="${esc(a.owner)}"></label>
+    <label class="f">${t('Organización / organizador', 'Partner / organizer')}<input name="partner" maxlength="160" value="${esc(a.partner)}"></label>
+    <label class="f">${t('Enlace oficial (verificación)', 'Official link (verification)')}<input name="url" type="url" maxlength="300" value="${esc(a.url)}"></label>
+    <label class="f">${t('Costo estimado ($)', 'Estimated cost ($)')}<input name="cost" type="number" min="0" step="0.01" value="${esc(a.cost ?? '')}"></label>
+    <label class="f">${t('Costo real ($)', 'Actual cost ($)')}<input name="actualCost" type="number" min="0" step="0.01" value="${esc(a.actualCost ?? '')}"></label>
+    <label class="f">${t('Meta de candidatos', 'Candidate goal')}<input name="target" type="number" min="0" value="${esc(a.target ?? '')}"></label></div>
+    <label class="f">${t('Materiales', 'Materials')}<input name="materials" maxlength="500" value="${esc(a.materials)}"></label>
+    <label class="f">${t('Permisos / aprobaciones', 'Permits / approvals')}<input name="permits" maxlength="500" value="${esc(a.permits)}"></label>
+    <label class="f">${t('Resultados', 'Results')}<textarea name="results" maxlength="1000">${esc(a.results)}</textarea></label>
+    <p class="late" id="act-err" hidden></p><div class="row"><button class="btn">${t('Guardar', 'Save')}</button>${!isNew ? `<button type="button" class="btn danger" data-act="del-act" data-id="${esc(a.id)}">${t('Eliminar', 'Delete')}</button>` : ''}</div></form>`, d => {
+    d.querySelector('#act-form').onsubmit = async e => {
+      e.preventDefault(); const fd = new FormData(e.target), g = k => String(fd.get(k) || '').trim(), num = k => (g(k) === '' ? null : Number(g(k)));
+      const n = { ...a, id: a.id || newId(), title: g('title'), kind: g('kind'), status: g('status'), date: g('date'), time: g('time'), location: g('location'), owner: g('owner'), partner: g('partner'), url: g('url'), cost: num('cost'), actualCost: num('actualCost'), target: num('target'), materials: g('materials'), permits: g('permits'), results: g('results') };
+      if (n.status === 'confirmed' && !n.partner && !n.url) { const p = d.querySelector('#act-err'); p.textContent = t('Para marcarlo como confirmado, registra quién lo confirmó (organización) o el enlace oficial.', 'To mark it confirmed, record who confirmed it (partner) or the official link.'); p.hidden = false; return; }
+      if (await safe(() => put('activities', n), t('Actividad guardada', 'Activity saved'))) d_close();
+    };
+  });
+}
+function coordDlg(x) {
+  openDlg(x.id ? x.title : t('Nuevo registro de coordinación', 'New coordination entry'), `<form id="co-form" class="stack"><div class="fields">
+    <label class="f">${t('Tipo', 'Type')}<select name="kind">${options(COORD_KINDS, x.kind || 'meeting')}</select></label>
+    <label class="f">${t('Fecha', 'Date')}<input name="date" type="date" value="${esc(x.date || today())}"></label>
+    <label class="f">${t('Agencia', 'Agency')}<select name="agencyId"><option value="">—</option>${S.agencies.map(a => `<option value="${esc(a.id)}" ${a.id === x.agencyId ? 'selected' : ''}>${esc(a.name)}</option>`).join('')}</select></label>
+    <label class="f">${t('Estado', 'Status')}<select name="status">${options([opt('open', 'Abierto', 'Open'), opt('resolved', 'Resuelto', 'Resolved')], x.status || 'open')}</select></label></div>
+    <label class="f">${t('Título', 'Title')}<input name="title" required maxlength="160" value="${esc(x.title)}"></label>
+    <label class="f">${t('Asistentes (cargos)', 'Attendees (roles)')}<input name="attendees" maxlength="300" value="${esc(x.attendees)}"></label>
+    <label class="f">${t('Resumen (solo operativo, sin datos personales de candidatos)', 'Summary (operational only, no candidate personal data)')}<textarea name="summary" maxlength="2000">${esc(x.summary)}</textarea></label>
+    <label class="f">${t('Decisiones', 'Decisions')}<input name="decisions" maxlength="1000" value="${esc(x.decisions)}"></label>
+    <label class="f">${t('Seguimiento (quién / cuándo)', 'Follow-up (who / when)')}<input name="followUp" maxlength="500" value="${esc(x.followUp)}"></label>
+    <div class="row"><button class="btn">${t('Guardar', 'Save')}</button></div></form>`, d => {
+    d.querySelector('#co-form').onsubmit = async e => {
+      e.preventDefault(); const fd = new FormData(e.target), g = k => String(fd.get(k) || '').trim();
+      const n = { ...x, id: x.id || newId(), kind: g('kind'), date: g('date') || today(), agencyId: g('agencyId'), status: g('status'), title: g('title'), attendees: g('attendees'), summary: g('summary'), decisions: g('decisions'), followUp: g('followUp') };
+      if (!n.title) return;
+      if (await safe(() => put('coordination', n), t('Registro guardado', 'Entry saved'))) d_close();
+    };
+  });
+}
+function agencyDlg(a) {
+  openDlg(a.id ? a.name : t('Nueva agencia', 'New agency'), `<form id="ag-form" class="stack"><div class="fields">
+    <label class="f">${t('Agencia', 'Agency')}<input name="name" required maxlength="120" value="${esc(a.name)}"></label>
+    <label class="f">${t('Representante', 'Representative')}<input name="rep" maxlength="120" value="${esc(a.rep)}"></label>
+    <label class="f">${t('Teléfono de trabajo', 'Work phone')}<input name="phone" maxlength="40" value="${esc(a.phone)}"></label>
+    <label class="f">${t('Correo de trabajo', 'Work email')}<input name="email" maxlength="160" value="${esc(a.email)}"></label></div>
+    <label class="f">${t('Cobertura (puestos / turnos)', 'Coverage (positions / shifts)')}<input name="scope" maxlength="500" value="${esc(a.scope)}"></label>
+    <div class="row"><button class="btn">${t('Guardar', 'Save')}</button>${a.id ? `<button type="button" class="btn danger" data-act="del-agency" data-id="${esc(a.id)}">${t('Eliminar', 'Delete')}</button>` : ''}</div></form>`, d => {
+    d.querySelector('#ag-form').onsubmit = async e => {
+      e.preventDefault(); const fd = new FormData(e.target), g = k => String(fd.get(k) || '').trim();
+      const n = { ...a, id: a.id || newId(), name: g('name'), rep: g('rep'), phone: g('phone'), email: g('email'), scope: g('scope') };
+      if (!n.name) return;
+      if (await safe(() => put('agencies', n), t('Agencia guardada', 'Agency saved'))) d_close();
+    };
+  });
+}
+
+// ---------------------------------------------------------------- kiosk (registration mode)
+function openKiosk() {
+  const k = $('#kiosk'); k.hidden = false;
+  const lg = S.kioskLang || S.lang, T = (es, en) => (lg === 'en' ? en : es), Lk = o => o[lg];
+  const ch = (name, list, legend) => `<fieldset data-chips="${name}"><legend>${legend}</legend><div class="chips">${list.map(o => `<button type="button" class="chip" data-v="${o.key}" aria-pressed="false">${esc(Lk(o))}</button>`).join('')}</div></fieldset>`;
+  const company = ST().company;
+  k.innerHTML = `<div class="kiosk-in"><div class="row" style="justify-content:space-between"><span class="small muted">${esc(company)}</span>
+    <div class="seg" style="border-color:var(--line)"><button data-klang="es" aria-pressed="${lg === 'es'}" style="color:var(--ink)">ES</button><button data-klang="en" aria-pressed="${lg === 'en'}" style="color:var(--ink)">EN</button></div></div>
+    <form id="kiosk-form" class="stack" novalidate>
+    <h1>${T('Trabajos de almacén – Florence, KY', 'Warehouse jobs – Florence, KY')}</h1>
+    <p class="muted">${T('Preinscripción en 2 minutos. Registrarte no garantiza empleo; te contactamos cuando una vacante autorizada coincida con tu disponibilidad.', 'Pre-registration in 2 minutes. Registering does not guarantee a job; we contact you when an authorized opening matches your availability.')}</p>
+    <div class="grid2"><label class="f">${T('Nombre', 'First name')}<input name="first" autocomplete="off" maxlength="80"></label><label class="f">${T('Apellido', 'Last name')}<input name="last" autocomplete="off" maxlength="80"></label>
+    <label class="f">${T('Teléfono celular', 'Mobile phone')}<input name="phone" type="tel" inputmode="tel" autocomplete="off"></label><label class="f">${T('Correo (opcional)', 'Email (optional)')}<input name="email" type="email" autocomplete="off" maxlength="160"></label>
+    <label class="f">${T('Ciudad', 'City')}<input name="city" autocomplete="off" maxlength="80"></label><label class="f">${T('Código postal', 'ZIP code')}<input name="zip" inputmode="numeric" maxlength="5" autocomplete="off"></label></div>
+    ${ch('shifts', SHIFTS, T('¿En qué turnos puedes trabajar?', 'Which shifts can you work?'))}
+    <label class="f">${T('¿Cuándo puedes empezar?', 'When can you start?')}<input name="availableFrom" type="date"></label>
+    ${ch('positions', POSITIONS, T('Trabajos que te interesan', 'Jobs you are interested in'))}
+    ${ch('exp', EXPERIENCE, T('Experiencia en almacén', 'Warehouse experience'))}
+    ${ch('equip', EQUIPMENT, T('Equipos que sabes usar', 'Equipment you can use'))}
+    <fieldset style="background:var(--panel-2);padding:12px;border-radius:6px"><legend>${T('Permiso para contactarte', 'Permission to contact you')}</legend>
+      <label class="check"><input type="checkbox" name="cContact"><span>${T(`Acepto que ${company} me contacte sobre oportunidades de empleo y guarde esta información con ese fin.`, `I agree that ${company} may contact me about job opportunities and keep this information for that purpose.`)}</span></label>
+      <label class="check"><input type="checkbox" name="cSms"><span>${T('Pueden enviarme mensajes de texto. Responde STOP para detenerlos.', 'You may text me. Reply STOP to stop.')}</span></label>
+      <label class="check"><input type="checkbox" name="cWa"><span>${T('Pueden escribirme por WhatsApp.', 'You may message me on WhatsApp.')}</span></label>
+      <label class="check"><input type="checkbox" name="cEmail"><span>${T('Pueden enviarme correos.', 'You may email me.')}</span></label></fieldset>
+    <p class="small muted">${T('No escribas tu número de Seguro Social, identificación, datos bancarios, fecha de nacimiento ni información de salud. Nunca los pediremos aquí.', 'Do not write your Social Security number, ID numbers, bank details, date of birth or health information. We will never ask for them here.')}</p>
+    <p class="late" id="k-err" hidden></p>
+    <button class="btn" style="min-height:52px;font-size:1.05rem">${T('Enviar registro', 'Send registration')}</button></form>
+    <div class="row" style="justify-content:flex-end" id="k-exit"><button class="linkbtn small muted" data-kexit="ask">${t('Salir del modo registro', 'Exit registration mode')}</button></div></div>`;
+  wireChips(k);
+  k.querySelector('#kiosk-form').onsubmit = async e => {
+    e.preventDefault();
+    const fd = new FormData(e.target), g = n => String(fd.get(n) || '').trim(), err = k.querySelector('#k-err');
+    const phone = g('phone').replace(/\D/g, '').replace(/^1(?=\d{10}$)/, '');
+    const msg = !g('first') || !g('last') ? T('Escribe tu nombre y apellido.', 'Please enter your first and last name.')
+      : !phone && !g('email') ? T('Escribe un teléfono o un correo para poder contactarte.', 'Enter a phone or email so we can reach you.')
+      : phone && phone.length !== 10 ? T('El teléfono debe tener 10 dígitos.', 'Phone numbers have 10 digits.')
+      : fd.get('cContact') !== 'on' ? T('Necesitamos tu permiso para contactarte sobre empleos.', 'We need your permission to contact you about jobs.') : null;
+    if (msg) { err.textContent = msg; err.hidden = false; return; }
+    const form = e.target;
+    const c = { id: newId(), stage: 'new', registeredAt: new Date().toISOString(), log: [], hist: [], first: g('first'), last: g('last'), phone, email: g('email').toLowerCase(), city: g('city'),
+      zip: /^\d{5}$/.test(g('zip')) ? g('zip') : '', lang: lg, source: S.kioskSource || 'kiosk', sourceDetail: '', shifts: chipsVal(form, 'shifts'), positions: chipsVal(form, 'positions'), exp: chipsVal(form, 'exp'), equip: chipsVal(form, 'equip'),
+      availableFrom: g('availableFrom'), agency: 'unknown', consent: { contact: true, sms: !!phone && fd.get('cSms') === 'on', wa: !!phone && fd.get('cWa') === 'on', email: !!g('email') && fd.get('cEmail') === 'on', method: 'kiosk', at: new Date().toISOString() } };
+    if (!(await saveCandidate(c, null))) return;
+    k.querySelector('.kiosk-in').innerHTML = `<div class="stack" style="padding:20px 0"><h1>${T('¡Gracias! Recibimos tu registro.', 'Thank you! We received your registration.')}</h1>
+      <p>${T('Un reclutador te contactará cuando una vacante autorizada coincida con tu disponibilidad. Registrarte no garantiza empleo.', 'A recruiter will contact you when an authorized opening matches your availability. Registering does not guarantee a job.')}</p>
+      <p class="muted small">${T('El formulario se reinicia en unos segundos para la siguiente persona.', 'The form resets in a few seconds for the next person.')}</p></div>`;
+    setTimeout(() => { if (!$('#kiosk').hidden) openKiosk(); }, 6000);
+  };
+}
+
+// ---------------------------------------------------------------- CSV
+const csvCell = v => { let s = String(v ?? ''); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+async function saveCsv(name, rows) {
+  if (!S.dl) { toast(t('Las descargas no están disponibles en esta vista.', 'Downloads are not available in this view.')); return; }
+  try { await S.dl.save({ filename: name, data: '﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n') + '\r\n' }); }
+  catch (e) { if (e && e.code !== 'declined') toast(t('No se pudo descargar el archivo.', 'Could not download the file.')); }
+}
+function exportCands() {
+  saveCsv(`candidatos_${today()}.csv`, [[t('Nombre', 'First name'), t('Apellido', 'Last name'), t('Teléfono', 'Phone'), 'Email', t('Ciudad', 'City'), 'ZIP', t('Idioma', 'Language'), t('Etapa', 'Stage'), t('Fuente', 'Source'), t('Registro', 'Registered'), t('Turnos', 'Shifts'), t('Disponible desde', 'Available from'), t('Último contacto', 'Last contact'), t('Próxima acción', 'Next action'), t('Consentimiento', 'Consent'), t('Ejemplo', 'Sample')],
+    ...S.cands.map(c => [c.first, c.last, fmtPhone(c.phone), c.email, c.city, c.zip, c.lang, stageName(c.stage), srcName(c.source), (c.registeredAt || '').slice(0, 10), (c.shifts || []).join(' '), c.availableFrom, (c.lastContactAt || '').slice(0, 10), c.nextAction, c.consent?.contact ? 'yes' : 'no', c.sample ? 'SAMPLE' : ''])]);
+}
+function parseCsv(text) {
+  const rows = []; let row = [], cell = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) { if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += ch; }
+    else if (ch === '"') q = true; else if (ch === ',') { row.push(cell); cell = ''; } else if (ch === '\n' || ch === '\r') { if (ch === '\r' && text[i + 1] === '\n') i++; row.push(cell); rows.push(row); row = []; cell = ''; } else cell += ch;
+  }
+  if (cell || row.length) { row.push(cell); rows.push(row); }
+  return rows.filter(r => r.some(x => x.trim()));
+}
+async function importCsv(text) {
+  const rows = parseCsv(text.replace(/^﻿/, ''));
+  if (rows.length < 2) { toast(t('El CSV no tiene filas.', 'The CSV has no rows.')); return; }
+  const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z]/g, '');
+  const H = rows[0].map(norm), find = (...keys) => H.findIndex(h => keys.some(k => h.includes(k)));
+  const ix = { first: find('nombre', 'firstname', 'first'), last: find('apellido', 'lastname', 'last'), phone: find('telefono', 'phone', 'celular', 'mobile'), email: find('correo', 'email', 'mail'),
+    city: find('ciudad', 'city'), zip: find('codigopostal', 'zip', 'postal'), lang: find('idioma', 'language'), shift: find('turno', 'shift'), consent: find('consent', 'permiso', 'acepto') };
+  if (ix.first < 0 || ix.last < 0) { toast(t('Faltan columnas de nombre y apellido.', 'Missing first and last name columns.')); return; }
+  let added = 0, skipped = 0;
+  for (const r of rows.slice(1)) {
+    const g = i => (i >= 0 ? String(r[i] || '').trim() : '');
+    const phone = g(ix.phone).replace(/\D/g, '').replace(/^1(?=\d{10}$)/, '');
+    if (!g(ix.first) || !g(ix.last) || (!phone && !g(ix.email)) || (phone && phone.length !== 10)) { skipped++; continue; }
+    const yes = /^(s|si|sí|y|yes|true|1|x|acepto|i agree)/i.test(g(ix.consent));
+    const sh = norm(g(ix.shift));
+    const c = { id: newId(), stage: 'new', registeredAt: new Date().toISOString(), log: [], hist: [], first: g(ix.first), last: g(ix.last), phone, email: g(ix.email).toLowerCase(), city: g(ix.city), zip: /^\d{5}$/.test(g(ix.zip)) ? g(ix.zip) : '',
+      lang: /es|spa/.test(norm(g(ix.lang))) ? 'es' : g(ix.lang) ? 'en' : S.lang, source: 'import', shifts: [sh.includes('1') || sh.includes('dia') || sh.includes('day') || sh.includes('first') ? 'first' : null, sh.includes('2') || sh.includes('tarde') || sh.includes('second') || sh.includes('evening') ? 'second' : null, sh.includes('3') || sh.includes('noche') || sh.includes('night') || sh.includes('third') ? 'third' : null].filter(Boolean),
+      exp: [], equip: [], positions: [], agency: 'unknown', consent: { contact: yes, sms: false, wa: false, email: false, method: yes ? 'web' : '', at: yes ? new Date().toISOString() : '' } };
+    if (dupOf(c)) { skipped++; continue; }
+    if (await saveCandidate(c, null)) added++; else break;
+  }
+  toast(t(`${added} importados, ${skipped} omitidos (incompletos o duplicados)`, `${added} imported, ${skipped} skipped (incomplete or duplicate)`));
+}
+
+// ---------------------------------------------------------------- sample data (clearly labelled)
+async function loadSamples() {
+  const firsts = ['Ana', 'Ben', 'Carla', 'Dev', 'Elena', 'Femi', 'Gabe', 'Hana', 'Ivan', 'Jade', 'Kofi', 'Luz', 'Mo', 'Nia', 'Omar', 'Paz', 'Quinn', 'Rosa', 'Sam', 'Tere', 'Uri', 'Vera'];
+  const stages = ['new', 'new', 'pending_contact', 'contacted', 'contacted', 'interested', 'interested', 'prescreened', 'prescreened', 'application', 'documents', 'checks', 'approved', 'available', 'assigned', 'first_day_confirmed', 'started', 'started', 'retention', 'closed', 'closed', 'closed'];
+  const srcs = ['facebook', 'indeed', 'referral', 'kcc_florence', 'job_fair', 'flyer'], pos = ['picking', 'packing', 'sorting', 'material', 'fulfillment'], sh = ['first', 'second', 'third', 'weekend'];
+  const d0 = today(), op = { id: 'sample-opening', sample: true, title: t('EJEMPLO – Picker / Packer', 'SAMPLE – Picker / Packer'), position: 'picking', shift: '1st', headcount: 8, status: 'authorized', authorizedBy: 'SAMPLE DATA', authorizedOn: addDays(d0, -14), openedOn: addDays(d0, -14), targetDate: addDays(d0, 7) };
+  if (!(await safe(() => put('openings', op)))) return;
+  for (let i = 0; i < firsts.length; i++) {
+    const reg = addDays(d0, -((i * 37) % 28)) + 'T14:00:00.000Z', stg = stages[i], idx = SIDX[stg];
+    const hist = STAGES.slice(0, stg === 'closed' ? 4 : idx + 1).map((s, j) => ({ at: addDays(reg.slice(0, 10), j) + 'T15:00:00.000Z', from: j ? STAGES[j - 1].key : null, to: s.key }));
+    if (stg === 'closed') hist.push({ at: addDays(reg.slice(0, 10), 4) + 'T15:00:00.000Z', from: 'interested', to: 'closed' });
+    const c = { id: 'sample-' + i, sample: true, first: t('Ejemplo ', 'Sample ') + firsts[i], last: 'Candidato', phone: '85955501' + String(i + 1).padStart(2, '0'), email: `sample${i + 1}@example.com`, city: ['Florence', 'Erlanger', 'Burlington', 'Covington', 'Independence', 'Hebron'][i % 6], zip: ['41042', '41018', '41005', '41011', '41051', '41048'][i % 6],
+      lang: i % 3 === 0 ? 'es' : 'en', source: srcs[i % srcs.length], registeredAt: reg, stage: stg, stageAt: hist[hist.length - 1].at, hist, closedReason: stg === 'closed' ? ['not_interested', 'recontact_later', 'not_available'][i % 3] : '',
+      exp: i % 4 === 0 ? ['none'] : [pos[i % 5], 'rf'], equip: i % 5 === 0 ? ['pallet'] : [], shifts: [sh[i % 4]], positions: [pos[(i + 1) % 5]], availableFrom: addDays(d0, i % 10),
+      openingId: idx >= SIDX.prescreened && stg !== 'closed' ? op.id : '', firstDay: ['assigned', 'first_day_confirmed'].includes(stg) ? addDays(d0, 2) : ['started', 'retention'].includes(stg) ? addDays(d0, -(i % 20) - 8) : '',
+      lastContactAt: idx > 1 && stg !== 'new' ? addDays(reg.slice(0, 10), 1) + 'T16:00:00.000Z' : '', log: idx > 1 ? [{ at: addDays(reg.slice(0, 10), 1) + 'T16:00:00.000Z', kind: 'call', outcome: 'reached', body: t('EJEMPLO: primera llamada', 'SAMPLE: first call') }] : [],
+      ret: ['started', 'retention'].includes(stg) ? { d7: i % 2 ? 'yes' : 'no' } : {}, nextAction: atLeast(stg, 'started') || stg === 'closed' ? '' : t('Siguiente paso de ejemplo', 'Sample next step'), nextDue: addDays(d0, (i % 5) - 2), agency: 'none',
+      consent: { contact: true, sms: i % 2 === 0, wa: false, email: false, method: 'kiosk', at: reg } };
+    if (!(await safe(() => put('candidates', c)))) return;
+    if (['new', 'pending_contact'].includes(stg)) await safe(() => put('tasks', { id: `${c.id}--first_contact`, candId: c.id, kind: 'first_contact', title: `${t('Primer contacto', 'First contact')}: ${nameOf(c)}`, due: d0, done: false, auto: 'first_contact', sample: true }));
+  }
+  toast(t('Datos de ejemplo cargados', 'Sample data loaded'));
+}
+async function removeSamples() {
+  for (const c of S.cands.filter(x => x.sample || String(x.id).startsWith('sample-'))) await safe(() => del('candidates', c.id));
+  for (const x of S.tasks.filter(x => x.sample || String(x.candId || '').startsWith('sample-'))) await safe(() => del('tasks', x.id));
+  for (const o of S.openings.filter(x => x.sample)) await safe(() => del('openings', o.id));
+  toast(t('Datos de ejemplo eliminados', 'Sample data removed'));
+}
+
+// ---------------------------------------------------------------- events
+document.addEventListener('click', async e => {
+  const b = e.target.closest('button, a, tr[data-open], [data-open]');
+  if (!b) return;
+  const ds = b.dataset;
+  if (ds.tab) { S.tab = ds.tab; try { history.replaceState(null, '', '#' + ds.tab); } catch {} render(); window.scrollTo(0, 0); return; }
+  if (ds.open) { e.preventDefault(); openCandidate(ds.open); return; }
+  if (ds.opening) { openingDlg(S.openings.find(o => o.id === ds.opening)); return; }
+  if (ds.activity) { activityDlg(S.acts.find(a => a.id === ds.activity)); return; }
+  if (ds.coord) { coordDlg(S.coord.find(x => x.id === ds.coord)); return; }
+  if (ds.agency) { agencyDlg(S.agencies.find(x => x.id === ds.agency)); return; }
+  if (ds.copy) { copy(document.getElementById(ds.copy).textContent); return; }
+  if (ds.copytext) { copy(ds.copytext); return; }
+  if (ds.ftoggle) { S.f[ds.ftoggle] = !S.f[ds.ftoggle]; b.setAttribute('aria-pressed', S.f[ds.ftoggle]); renderCandList(); return; }
+  if (ds.rkind) { S.rkind = ds.rkind; render(); return; }
+  if (ds.klang) { S.kioskLang = ds.klang; openKiosk(); return; }
+  if (ds.kexit === 'ask') { $('#k-exit').innerHTML = `<span class="small">${t('¿Salir? Solo el reclutador.', 'Exit? Recruiter only.')}</span><button class="btn sm" data-kexit="yes">${t('Sí, salir', 'Yes, exit')}</button><button class="btn ghost sm" data-kexit="no">${t('No', 'No')}</button>`; return; }
+  if (ds.kexit === 'yes') { $('#kiosk').hidden = true; $('#kiosk').innerHTML = ''; render(); return; }
+  if (ds.kexit === 'no') { $('#k-exit').innerHTML = `<button class="linkbtn small muted" data-kexit="ask">${t('Salir del modo registro', 'Exit registration mode')}</button>`; return; }
+  const act = ds.act; if (!act) return;
+  const byId = id => S.cands.find(x => x.id === id);
+  if (act === 'new-cand') newCandidate();
+  else if (act === 'new-opening') openingDlg({});
+  else if (act === 'new-act') activityDlg({});
+  else if (act === 'new-coord') coordDlg({});
+  else if (act === 'new-agency') agencyDlg({});
+  else if (act === 'samples-on') { b.disabled = true; await loadSamples(); }
+  else if (act === 'samples-off') { b.disabled = true; await removeSamples(); }
+  else if (act === 'load-plan') { b.disabled = true; for (const a of suggestedPlan()) if (!(await safe(() => put('activities', a)))) break; toast(t('Plan de 90 días cargado (todo sin confirmar)', '90-day plan loaded (all unconfirmed)')); }
+  else if (act === 'toggle-past') { S.showPast = !S.showPast; render(); }
+  else if (act === 'export-cands') exportCands();
+  else if (act === 'export-report' && S.lastReport) saveCsv(`reporte_${S.lastReport.from}_${S.lastReport.to}.csv`, [[t('Indicador', 'Indicator'), t('Valor', 'Value'), t('Meta / nota', 'Goal / note')], ...S.lastReport.rows]);
+  else if (act === 'set-stage') {
+    const c = byId(ds.id), stage = $('#st-stage').value;
+    const n = { ...c, stage, closedReason: stage === 'closed' ? $('#st-reason').value : '', recontactOn: stage === 'closed' ? $('#st-recontact').value : c.recontactOn };
+    if (await saveCandidate(n, c)) { toast(t('Etapa actualizada', 'Stage updated')); openCandidate(c.id); }
+  }
+  else if (act === 'mark-sent') { const c = byId(ds.id); if (await logContact(c, c.consent?.wa ? 'whatsapp' : c.consent?.sms ? 'sms' : 'email', 'sent', TEMPLATES.find(x => x.code === $('#m-tpl').value)?.[c.lang === 'es' ? 'es' : 'en'][0])) { toast(t('Registrado como enviado', 'Logged as sent')); openCandidate(c.id); } }
+  else if (act === 'not-dup') { const c = byId(ds.id); if (await safe(() => put('candidates', { ...c, dupOf: null, dupOk: true }))) { toast(t('Marcado como persona distinta', 'Marked as a different person')); setTimeout(() => openCandidate(c.id), 300); } }
+  else if (act === 'del-ask') { $('#del-row').innerHTML = `<button class="btn danger" data-act="del-yes" data-id="${esc(ds.id)}">${t('Sí, eliminar definitivamente', 'Yes, delete permanently')}</button><button class="btn ghost" data-act="del-no" data-id="${esc(ds.id)}">${t('Cancelar', 'Cancel')}</button>`; }
+  else if (act === 'del-no') { $('#del-row').innerHTML = `<button class="btn danger" data-act="del-ask" data-id="${esc(ds.id)}">${t('Eliminar…', 'Delete…')}</button>`; }
+  else if (act === 'del-yes') { const id = ds.id; if (!id) return; for (const x of S.tasks.filter(x => x.candId === id)) await safe(() => del('tasks', x.id)); if (await safe(() => del('candidates', id), t('Registro eliminado', 'Record deleted'))) d_close(); }
+  else if (act === 'del-opening') { if (await safe(() => del('openings', ds.id), t('Vacante eliminada', 'Opening deleted'))) d_close(); }
+  else if (act === 'del-act') { if (await safe(() => del('activities', ds.id), t('Actividad eliminada', 'Activity deleted'))) d_close(); }
+  else if (act === 'del-agency') { if (await safe(() => del('agencies', ds.id), t('Agencia eliminada', 'Agency deleted'))) d_close(); }
+  else if (act === 'import') { const f = $('#csv-file').files[0]; const text = f ? await f.text() : $('#csv-text').value; if (text.trim()) await importCsv(text); }
+  else if (act === 'purge-old') {
+    const cut = addDays(today(), -365), old = S.cands.filter(c => !atLeast(c.stage, 'started') && ((c.lastContactAt || c.registeredAt || '').slice(0, 10) < cut));
+    openDlg(t('Inactivos más de 12 meses', 'Inactive 12+ months'), old.length ? `<p>${t(`${old.length} registros sin actividad en 12 meses. Elimínalos si la política de tu agencia lo indica.`, `${old.length} records with no activity in 12 months. Delete them if your agency’s policy says so.`)}</p><ul class="list">${old.map(c => `<li>${esc(nameOf(c))} <span class="small muted">${esc((c.lastContactAt || c.registeredAt).slice(0, 10))}</span></li>`).join('')}</ul><div><button class="btn danger" data-act="purge-yes">${t('Eliminar estos registros', 'Delete these records')}</button></div>` : `<p>${t('No hay registros inactivos por más de 12 meses.', 'No records inactive for more than 12 months.')}</p>`);
+    S._purge = old.map(c => c.id);
+  }
+  else if (act === 'purge-yes') { for (const id of S._purge || []) { for (const x of S.tasks.filter(x => x.candId === id)) await safe(() => del('tasks', x.id)); await safe(() => del('candidates', id)); } toast(t('Registros eliminados', 'Records deleted')); d_close(); }
+});
+document.addEventListener('change', async e => {
+  const el = e.target;
+  if (el.matches('input[data-task]')) {
+    const tk = S.tasks.find(x => x.id === el.dataset.task);
+    if (tk) await safe(() => put('tasks', { ...tk, done: el.checked, doneAt: el.checked ? new Date().toISOString() : '' }));
+  } else if (el.matches('select[data-move]')) {
+    const c = S.cands.find(x => x.id === el.dataset.move);
+    if (c) await saveCandidate({ ...c, stage: el.value, closedReason: el.value === 'closed' ? 'other' : '' }, c);
+  } else if (el.matches('select[data-ret]')) {
+    const c = S.cands.find(x => x.id === el.dataset.id);
+    if (c) await safe(() => put('candidates', { ...c, ret: { ...(c.ret || {}), [el.dataset.ret]: el.value } }), t('Guardado', 'Saved'));
+  } else if (el.matches('select[data-f]')) { S.f[el.dataset.f] = el.value; renderCandList(); }
+  else if (el.id === 'period') { S.period = el.value; render(); }
+  else if (el.id === 'rday') { S.rday = el.value || today(); render(); }
+});
+document.addEventListener('input', e => { if (e.target.id === 'fq') { S.f.q = e.target.value; renderCandList(); } });
+document.addEventListener('submit', async e => {
+  if (e.target.id === 'task-form') {
+    e.preventDefault(); const fd = new FormData(e.target);
+    await safe(() => put('tasks', { id: newId(), candId: '', kind: 'other', title: String(fd.get('title')).trim(), due: String(fd.get('due')), done: false }), t('Tarea agregada', 'Task added'));
+  } else if (e.target.id === 'settings-form') {
+    e.preventDefault(); const fd = new FormData(e.target), spend = {};
+    const s = { ...S.settings };
+    for (const [k, v] of fd.entries()) {
+      if (k.startsWith('spend.')) { if (String(v).trim() !== '') spend[k.slice(6)] = Number(v); }
+      else s[k] = ['company', 'myName', 'myPhone', 'applyLink'].includes(k) ? String(v).trim() : Number(v);
+    }
+    s.spend = spend;
+    await safe(() => settingsDoc().set(s), t('Ajustes guardados', 'Settings saved'));
+  }
+});
+$('#lang-es').onclick = () => { S.lang = 'es'; try { localStorage.setItem('rw.lang', 'es'); } catch {} render(); };
+$('#lang-en').onclick = () => { S.lang = 'en'; try { localStorage.setItem('rw.lang', 'en'); } catch {} render(); };
+$('#kiosk-open').onclick = () => {
+  if (!S.ready) { toast(t('Primero abre la página con tu sesión iniciada en claude.ai.', 'Open the page signed in on claude.ai first.')); return; }
+  openDlg(t('Modo registro', 'Registration mode'), `<p>${t('Pantalla para que los candidatos se registren solos en tu tableta o teléfono durante una feria o visita. No muestra a nadie más ni otros datos. Los registros llegan a tu base con la fuente que elijas.', 'A screen where candidates register themselves on your tablet or phone at a fair or visit. It shows no one else and no other data. Registrations land in your database with the source you choose.')}</p>
+    <label class="f">${t('Fuente para estos registros', 'Source for these registrations')}<select id="k-src">${options(SOURCES, S.kioskSource || 'kiosk')}</select></label>
+    <div><button class="btn" id="k-start">${t('Empezar', 'Start')}</button></div>`, d => {
+    d.querySelector('#k-start').onclick = () => { S.kioskSource = d.querySelector('#k-src').value; d.close(); openKiosk(); };
+  });
+};
+var d_close;
+d_close = () => { const d = $('#dlg'); if (d.open) d.close(); };
+render();
+boot();
+</script>
