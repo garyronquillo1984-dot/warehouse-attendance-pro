@@ -1,4 +1,4 @@
-<title>Winit Florence Recruiting</title>
+<title>Top Tier HR</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap">
@@ -175,7 +175,7 @@ dialog::backdrop { background: rgb(0 0 0 / .45); }
 
 <header class="top">
   <div class="top-in">
-    <div class="brand">Recruiting · Winit Florence <small>7050 New Buffington Rd · Florence, KY 41042</small></div>
+    <div class="brand">Top Tier HR <small>Recruiting · Winit Florence · 7050 New Buffington Rd, Florence, KY 41042</small></div>
     <div class="spacer"></div>
     <div class="seg" role="group" aria-label="Language / Idioma">
       <button id="lang-en" aria-pressed="true">EN</button><button id="lang-es" aria-pressed="false">ES</button>
@@ -354,7 +354,7 @@ async function boot() {
 function liveRender() { if (S.ready) render(); }
 
 // ---------------------------------------------------------------- domain rules
-const ST = () => ({ stale: 3, lowPool: 3, gContacts: 20, gPrescreen: 10, gInterviews: 5, gShow: 85, gRet30: 70, company: 'Staffing team', myName: '', myPhone: '', applyLink: '', spend: {}, ...S.settings });
+const ST = () => ({ stale: 3, lowPool: 3, gContacts: 20, gPrescreen: 10, gInterviews: 5, gShow: 85, gRet30: 70, company: 'Top Tier HR', myName: '', myPhone: '', applyLink: '', spend: {}, ...S.settings });
 function dupOf(c) {
   const other = S.cands.find(x => x.id !== c.id && ((c.phone && x.phone === c.phone) || (c.email && x.email && x.email === c.email)
     || (c.zip && x.zip === c.zip && x.first.toLowerCase() === c.first.toLowerCase() && x.last.toLowerCase() === c.last.toLowerCase())));
@@ -702,7 +702,7 @@ VIEWS.agencias = () => {
 };
 
 VIEWS.mensajes = () => {
-  const st = S.ready ? ST() : { company: 'Staffing team' };
+  const st = S.ready ? ST() : { company: 'Top Tier HR' };
   return `<div class="head"><div><h1>${t('Mensajes, anuncios y guiones', 'Messages, ads and scripts')}</h1><p class="muted">${t('Inglés y español. Nunca publiques pago, horarios, bonos o fechas no verificados. Los {marcadores} se completan en la ficha de cada candidato.', 'English and Spanish. Never publish unverified pay, schedules, bonuses or dates. {Placeholders} are filled on each candidate’s card.')}</p></div></div>
   <div class="grid2">${TEMPLATES.map(tp => ['es', 'en'].map(lg => `<section class="panel"><div class="row" style="justify-content:space-between"><h3>${esc(tp[lg][0])} <span class="tag">${lg.toUpperCase()}</span></h3></div>
     <pre class="msg" id="tpl-${tp.code}-${lg}">${esc(fill(tp[lg][1], { company: st.company, my_name: st.myName, my_phone: st.myPhone, apply_link: st.applyLink }))}</pre><div><button class="btn ghost sm" data-copy="tpl-${tp.code}-${lg}">${t('Copiar', 'Copy')}</button></div></section>`).join('')).join('')}</div>`;
