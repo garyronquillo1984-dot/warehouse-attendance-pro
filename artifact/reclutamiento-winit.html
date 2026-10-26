@@ -437,10 +437,10 @@ async function logContact(c, kind, outcome, body) {
 
 // ---------------------------------------------------------------- shared UI bits
 const TABS = [
-  ['panel', 'Panel', 'Dashboard'], ['candidatos', 'Candidatos', 'Candidates'], ['pipeline', 'Pipeline', 'Pipeline'],
+  ['panel', 'Panel', 'Dashboard'], ['llamadas', 'Llamadas de hoy', 'Today’s calls'], ['candidatos', 'Candidatos', 'Candidates'], ['pipeline', 'Pipeline', 'Pipeline'],
   ['tareas', 'Tareas', 'Tasks'], ['vacantes', 'Vacantes', 'Openings'], ['calendario', 'Calendario 90 días', '90-day calendar'],
   ['fuentes', 'Fuentes', 'Sources'], ['agencias', 'Agencias', 'Agencies'], ['mensajes', 'Mensajes y anuncios', 'Messages & ads'],
-  ['reportes', 'Reportes', 'Reports'], ['ajustes', 'Ajustes y datos', 'Settings & data'],
+  ['reportes', 'Reportes', 'Reports'], ['kit', 'Kit QR y folletos', 'QR & flyer kit'], ['plan', 'Plan 30 días', '30-day plan'], ['ajustes', 'Ajustes y datos', 'Settings & data'],
 ];
 function renderTabs() {
   $('#tabs').innerHTML = TABS.map(([k, es, en]) => `<button data-tab="${k}" ${S.tab === k ? 'aria-current="page"' : ''}>${t(es, en)}</button>`).join('');
@@ -466,6 +466,7 @@ function render() {
   if (!S.ready) return;
   v.innerHTML = (VIEWS[S.tab] || VIEWS.panel)();
   if (S.tab === 'candidatos') renderCandList();
+  if (S.tab === 'kit') paintQr();
 }
 
 // ---------------------------------------------------------------- views
@@ -798,7 +799,7 @@ function reportText(r) {
     ...(r.comments ? ['', t('Comentarios:', 'Comments:'), r.comments] : []), '', t('Preparado por:', 'Prepared by:'), AUTHOR.name, AUTHOR.role, AUTHOR.assignment].filter(x => x !== null).join('\n');
 }
 // Libraries load only when an export is asked for (pinned versions, public CDN).
-const LIBS = { xlsx: 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js', jspdf: 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js', autotable: 'https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js' };
+const LIBS = { qr: 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js', xlsx: 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js', jspdf: 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js', autotable: 'https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js' };
 const loaded = {};
 function loadLib(k) {
   return loaded[k] ||= new Promise((res, rej) => { const s = document.createElement('script'); s.src = LIBS[k]; s.onload = res; s.onerror = () => { delete loaded[k]; rej(new Error('load')); }; document.head.appendChild(s); });
@@ -958,6 +959,203 @@ VIEWS.ajustes = () => {
     <div class="row">${S.dl ? `<button class="btn ghost" data-act="export-cands">${t('Exportar candidatos (CSV)', 'Export candidates (CSV)')}</button>` : ''}<button class="btn ghost" data-act="purge-old">${t('Revisar inactivos +12 meses', 'Review inactive 12+ months')}</button>
     ${S.cands.some(c => c.sample) ? `<button class="btn ghost" data-act="samples-off">${t('Quitar datos de ejemplo', 'Remove sample data')}</button>` : `<button class="btn ghost" data-act="samples-on">${t('Cargar datos de ejemplo', 'Load sample data')}</button>`}</div></section>`;
 };
+
+// ---------------------------------------------------------------- today's call list
+// Who to contact today, in priority order, one row per person. Nothing is sent automatically.
+function callQueue() {
+  const d0 = today(), st = ST(), tomorrow = addDays(d0, 1), seen = new Map();
+  const add = (c, prio, es, en, tpl) => { if (!c || !c.consent?.contact) return; const cur = seen.get(c.id); if (!cur || prio < cur.prio) seen.set(c.id, { c, prio, why: t(es, en), tpl }); };
+  for (const c of S.cands) {
+    if (c.agency === 'reported') continue;
+    const last = (c.lastContactAt || c.registeredAt || d0).slice(0, 10), idle = days(last, d0);
+    if (c.firstDay === tomorrow && ['assigned', 'first_day_confirmed'].includes(c.stage)) add(c, 1, 'Primer día mañana: confirmar', 'First day tomorrow: confirm', 'first_day');
+    if (c.firstDay === d0 && ['assigned', 'first_day_confirmed'].includes(c.stage)) add(c, 1, 'Primer día hoy: ¿se presentó?', 'First day today: did they show?', 'first_day');
+    if (c.interviewAt && c.interviewAt.slice(0, 10) === tomorrow) add(c, 2, 'Cita mañana: recordatorio', 'Appointment tomorrow: reminder', 'interview');
+    if (['new', 'pending_contact'].includes(c.stage) && !(c.log || []).length) add(c, 3, 'Nuevo: primer contacto', 'New: first contact', 'first');
+    if (c.stage === 'closed' && c.recontactOn && c.recontactOn <= d0 && idle > 0) add(c, 5, 'Pidió recontacto', 'Asked to be recontacted', 'recontact');
+    if (['prescreened', 'approved', 'available'].includes(c.stage) && idle >= 14) add(c, 6, 'Confirmar disponibilidad (14+ días)', 'Confirm availability (14+ days)', 'availability');
+    if (c.stage !== 'closed' && !atLeast(c.stage, 'started') && idle >= st.stale && (c.log || []).length) add(c, 7, `Sin contacto ${idle} días`, `No contact in ${idle} days`, 'no_answer');
+  }
+  for (const x of S.tasks) if (!x.done && x.candId && x.due <= d0) add(S.cands.find(c => c.id === x.candId), x.due < d0 ? 4 : 4.5, 'Tarea: ' + x.title.split(':')[0], 'Task: ' + x.title.split(':')[0], 'first');
+  return [...seen.values()].sort((a, b) => a.prio - b.prio || (a.c.lastContactAt || '').localeCompare(b.c.lastContactAt || ''));
+}
+VIEWS.llamadas = () => {
+  const d0 = today(), st = ST(), q = callQueue();
+  const done = S.cands.filter(c => (c.log || []).some(l => l.kind !== 'note' && l.at.slice(0, 10) === d0)).length;
+  const pctDone = Math.min(100, Math.round((done / Math.max(1, st.gContacts)) * 100));
+  return `<div class="head"><div><h1>${t('Lista de llamadas de hoy', 'Today’s call list')}</h1><p class="muted">${t('En orden de prioridad: primeros días, citas, nuevos, tareas, recontactos, disponibilidad y sin contacto. Solo personas con consentimiento; quien está con otra agencia no aparece.', 'In priority order: first days, appointments, new people, tasks, recontacts, availability and no contact. Only people with consent; anyone held for another agency is left out.')}</p></div></div>
+  <section class="panel"><div class="row" style="justify-content:space-between"><b>${t(`Contactados hoy: ${done} de ${st.gContacts}`, `Contacted today: ${done} of ${st.gContacts}`)}</b><span class="muted small">${q.length} ${t('pendientes en la lista', 'left on the list')}</span></div>
+    <div style="height:10px;background:var(--panel-2);border-radius:5px;overflow:hidden"><div style="height:100%;width:${pctDone}%;background:var(--go)"></div></div></section>
+  ${q.length ? `<section class="panel flush"><ul class="list" style="padding:4px 20px">${q.map(({ c, why, tpl }) => `<li><div class="grow"><button class="linkbtn" data-open="${esc(c.id)}">${esc(nameOf(c))}</button>${sampleTag(c)} <span class="tag">${esc((c.lang || 'en').toUpperCase())}</span>
+      <div class="small">${esc(why)} · ${stagePill(c.stage)}</div>
+      <div class="small mono">${c.phone ? esc(fmtPhone(c.phone)) : esc(c.email || '')}</div></div>
+      <div class="row">${c.phone ? `<button class="btn ghost sm" data-copytext="${esc(c.phone)}">${t('Copiar número', 'Copy number')}</button>` : ''}
+      ${c.consent.sms || c.consent.wa || c.consent.email ? `<button class="btn ghost sm" data-copymsg="${esc(c.id)}" data-tpl="${tpl}">${t('Copiar mensaje', 'Copy message')}</button>` : ''}
+      <button class="btn go sm" data-quick="reached" data-id="${esc(c.id)}">${t('Contestó', 'Reached')}</button>
+      <button class="btn ghost sm" data-quick="no_answer" data-id="${esc(c.id)}">${t('No contestó', 'No answer')}</button></div></li>`).join('')}</ul></section>`
+    : `<div class="panel empty"><h2>${t('Nada pendiente por hoy', 'Nothing left for today')}</h2><p class="muted">${t('Buen momento para una acción de captación del calendario.', 'A good time for an outreach activity from the calendar.')}</p></div>`}`;
+};
+function messageFor(c, code) {
+  const st = ST(), lg = c.lang === 'es' ? 'es' : 'en', tp = TEMPLATES.find(x => x.code === code) || TEMPLATES[1];
+  return fill(tp[lg][1], { first_name: c.first, my_name: st.myName, my_phone: st.myPhone, company: st.company, apply_link: st.applyLink,
+    shift: (c.shifts || []).map(s => SHIFTS.find(x => x.key === s)?.[lg]).join(' / '), date: c.firstDay || (c.interviewAt || '').slice(0, 10), time: (c.interviewAt || '').slice(11, 16) });
+}
+
+// ---------------------------------------------------------------- recruiting kit (QR, flyer, cards)
+// The QR points at the pre-registration link in Settings (for example a Google or Microsoft form).
+function qrMatrix(text) {
+  const q = window.qrcode(0, 'M'); q.addData(text); q.make();
+  const n = q.getModuleCount(); return { n, dark: (r, c) => q.isDark(r, c) };
+}
+function qrSvg(text, size) {
+  const m = qrMatrix(text), cell = size / (m.n + 8); let p = '';
+  for (let r = 0; r < m.n; r++) for (let c = 0; c < m.n; c++) if (m.dark(r, c)) p += `M${((c + 4) * cell).toFixed(2)} ${((r + 4) * cell).toFixed(2)}h${cell.toFixed(2)}v${cell.toFixed(2)}h-${cell.toFixed(2)}z`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img" aria-label="QR"><rect width="${size}" height="${size}" fill="#fff"/><path d="${p}" fill="#211E1C"/></svg>`;
+}
+function drawQr(doc, text, x, y, size) {
+  const m = qrMatrix(text), cell = size / m.n;
+  doc.setFillColor(255, 255, 255); doc.rect(x - cell * 3, y - cell * 3, size + cell * 6, size + cell * 6, 'F');
+  doc.setFillColor(33, 30, 28);
+  for (let r = 0; r < m.n; r++) for (let c = 0; c < m.n; c++) if (m.dark(r, c)) doc.rect(x + c * cell, y + r * cell, cell * 1.04, cell * 1.04, 'F');   // slight overlap, no hairline gaps
+}
+VIEWS.kit = () => {
+  const st = ST(), link = st.applyLink;
+  return `<div class="head"><div><h1>${t('Kit de reclutamiento', 'Recruiting kit')}</h1><p class="muted">${t('Código QR, folleto bilingüe y tarjetas de presentación con tu nombre. Usa la marca de Top Tier HR solo si la agencia lo autoriza.', 'QR code, bilingual flyer and business cards with your name. Use the Top Tier HR brand only if the agency authorizes it.')}</p></div></div>
+  ${!link ? `<div class="note bad">${t('Primero escribe el enlace de preinscripción en Ajustes y datos (por ejemplo, un Formulario de Google o Microsoft que pida solo nombre, teléfono, turnos, experiencia y consentimiento).', 'First enter the pre-registration link in Settings & data (for example a Google or Microsoft Form asking only for name, phone, shifts, experience and consent).')} <button class="linkbtn" data-tab="ajustes">${t('Ir a Ajustes', 'Go to Settings')}</button></div>` : ''}
+  <section class="panel"><div class="row" style="align-items:flex-start;gap:24px">
+    <div id="qr-box" style="width:200px;height:200px;background:#fff;border-radius:6px;display:grid;place-items:center;flex:none">${link ? `<span class="small muted">${t('Cargando QR…', 'Loading QR…')}</span>` : ''}</div>
+    <div class="stack" style="flex:1 1 260px;min-width:0"><p><b>${t('Enlace del QR', 'QR link')}</b></p><p class="mono small" style="overflow-wrap:anywhere">${esc(link || '—')}</p>
+      <p class="small muted">${t('Prueba el QR con tu teléfono antes de imprimir.', 'Test the QR with your phone before printing.')}</p>
+      <div class="row"><button class="btn" data-act="kit-flyer" ${link ? '' : 'disabled'}>${t('Folleto PDF', 'Flyer PDF')}</button><button class="btn" data-act="kit-cards" ${link ? '' : 'disabled'}>${t('Tarjetas PDF (10 por hoja)', 'Cards PDF (10 per sheet)')}</button><button class="btn ghost" data-act="kit-png" ${link ? '' : 'disabled'}>${t('QR en PNG', 'QR as PNG')}</button></div></div></div></section>
+  <section class="panel"><h2>${t('Qué dice el folleto', 'What the flyer says')}</h2><pre class="msg">${esc(`Warehouse jobs · Trabajos de almacén — Florence, KY
+Picking · Packing · Sorting · Material handling
+
+Scan to pre-register (2 minutes). We call you back when an authorized opening matches your availability.
+Escanea para preinscribirte (2 minutos). Te llamamos cuando una vacante autorizada coincida con tu disponibilidad.
+
+${st.myName || AUTHOR.name} · ${AUTHOR.role} · ${st.myPhone || '[phone]'}
+Registering does not guarantee employment. Pay, shifts and start dates are confirmed by the recruiter for each opening.
+Registrarte no garantiza empleo. El pago, los turnos y las fechas de inicio los confirma el reclutador para cada vacante.`)}</pre>
+  <p class="small muted">${t('Sin pago, horarios ni bonos: agrégalos solo cuando estén verificados por escrito.', 'No pay, schedules or bonuses: add them only once verified in writing.')}</p></section>`;
+};
+async function kitLibs() { await loadLib('qr'); await loadLib('jspdf'); }
+async function kitFlyer() {
+  const st = ST(), link = st.applyLink;
+  try { await kitLibs(); } catch { toast(t('No se pudo cargar el generador. Revisa tu conexión.', 'Could not load the generator. Check your connection.')); return; }
+  const doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'letter' }), W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 48;
+  const BROWN = [67, 59, 54], CREAM = [240, 233, 225], GOLD = [201, 162, 74], INK = [33, 30, 28], MUTED = [110, 104, 98];
+  doc.setFillColor(...BROWN); doc.rect(0, 0, W, 170, 'F'); doc.setFillColor(...GOLD); doc.rect(0, 170, W, 6, 'F');
+  doc.setTextColor(...CREAM); doc.setFont('times', 'normal'); doc.setFontSize(20); doc.text(BRAND.name, M, 52);
+  doc.setFont('times', 'bold'); doc.setFontSize(38); doc.text('Warehouse jobs', M, 104); doc.setFont('times', 'normal'); doc.setFontSize(26); doc.text('Trabajos de almacén', M, 138);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(12); doc.text('Florence, KY', W - M, 52, { align: 'right' });
+  doc.setTextColor(...INK); doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.text('Picking  ·  Packing  ·  Sorting  ·  Material handling', M, 214);
+  drawQr(doc, link, M + 6, 248, 230);
+  const x = M + 270; let y = 270;
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text('Scan to pre-register', x, y); y += 18;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.splitTextToSize('2 minutes. We call you back when an authorized opening matches your availability.', W - x - M).forEach(l => { doc.text(l, x, y); y += 15; }); y += 14;
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text('Escanea para preinscribirte', x, y); y += 18;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.splitTextToSize('2 minutos. Te llamamos cuando una vacante autorizada coincida con tu disponibilidad.', W - x - M).forEach(l => { doc.text(l, x, y); y += 15; }); y += 14;
+  doc.setFontSize(10); doc.setTextColor(...MUTED); doc.text('We speak English · Hablamos español', x, y);
+  y = 540; doc.setDrawColor(...GOLD); doc.setLineWidth(1); doc.line(M, y, W - M, y); y += 34;
+  doc.setTextColor(...INK); doc.setFont('times', 'bold'); doc.setFontSize(20); doc.text(st.myName || AUTHOR.name, M, y); y += 18;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.text(`${AUTHOR.role} · ${AUTHOR.assignment}`, M, y); y += 16;
+  if (st.myPhone) { doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.text(st.myPhone, M, y); y += 18; }
+  doc.setTextColor(...MUTED); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.splitTextToSize(link, W - 2 * M).forEach(l => { doc.text(l, M, y); y += 11; });
+  doc.setFontSize(8.5); const fine = ['Registering does not guarantee employment. Pay, shifts and start dates are confirmed by the recruiter for each opening.', 'Registrarte no garantiza empleo. El pago, los turnos y las fechas de inicio los confirma el reclutador para cada vacante.', `${BRAND.name} is a DBA of OC Staffing and HR Solutions LLC.`];
+  let fy = H - 70; fine.forEach(f => doc.splitTextToSize(f, W - 2 * M).forEach(l => { doc.text(l, M, fy); fy += 11; }));
+  await deliver('TopTierHR_Flyer_Florence_KY.pdf', doc.output('blob'));
+}
+async function kitCards() {
+  const st = ST(), link = st.applyLink;
+  try { await kitLibs(); } catch { toast(t('No se pudo cargar el generador. Revisa tu conexión.', 'Could not load the generator. Check your connection.')); return; }
+  const doc = new window.jspdf.jsPDF({ unit: 'in', format: 'letter' });
+  const CW = 3.5, CH = 2, X0 = 0.75, Y0 = 0.5, BROWN = [67, 59, 54], CREAM = [240, 233, 225], GOLD = [201, 162, 74];
+  for (let i = 0; i < 10; i++) {
+    const x = X0 + (i % 2) * CW, y = Y0 + Math.floor(i / 2) * CH;
+    doc.setFillColor(...BROWN); doc.rect(x, y, CW, CH, 'F'); doc.setFillColor(...GOLD); doc.rect(x, y + CH - 0.06, CW, 0.06, 'F');
+    doc.setTextColor(...CREAM); doc.setFont('times', 'normal'); doc.setFontSize(9); doc.text(BRAND.name, x + 0.18, y + 0.3);
+    doc.setFont('times', 'bold'); doc.setFontSize(14); doc.text(st.myName || AUTHOR.name, x + 0.18, y + 0.72);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.text(AUTHOR.role, x + 0.18, y + 0.92); doc.text(AUTHOR.assignment, x + 0.18, y + 1.07);
+    if (st.myPhone) { doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.text(st.myPhone, x + 0.18, y + 1.38); }
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(6.5); doc.text('Hablamos español · We speak English', x + 0.18, y + 1.72);
+    drawQr(doc, link, x + CW - 1.25, y + 0.38, 1.05);
+    doc.setDrawColor(210, 205, 200); doc.setLineWidth(0.005); doc.rect(x, y, CW, CH);
+  }
+  await deliver('TopTierHR_Business_Cards.pdf', doc.output('blob'));
+}
+async function kitPng() {
+  const link = ST().applyLink;
+  try { await loadLib('qr'); } catch { toast(t('No se pudo cargar el generador. Revisa tu conexión.', 'Could not load the generator. Check your connection.')); return; }
+  const m = qrMatrix(link), px = 16, cv = document.createElement('canvas'); cv.width = cv.height = (m.n + 8) * px;
+  const g = cv.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, cv.width, cv.height); g.fillStyle = '#211E1C';
+  for (let r = 0; r < m.n; r++) for (let c = 0; c < m.n; c++) if (m.dark(r, c)) g.fillRect((c + 4) * px, (r + 4) * px, px, px);
+  const blob = await new Promise(res => cv.toBlob(res, 'image/png'));
+  await deliver('TopTierHR_QR.png', blob);
+}
+async function paintQr() {
+  const box = $('#qr-box'), link = ST().applyLink;
+  if (!box || !link) return;
+  try { await loadLib('qr'); box.innerHTML = qrSvg(link, 200); } catch { box.innerHTML = `<span class="small muted">${t('No se pudo cargar el QR.', 'Could not load the QR.')}</span>`; }
+}
+
+// ---------------------------------------------------------------- 30-day plan and onboarding checklist
+const PLAN = [
+  { w: 1, es: 'Semana 1 — Aprender y establecer la línea base', en: 'Week 1 — Learn and set the baseline', items: [
+    ['w1a', 'Reunión con el contacto del cliente: vacantes autorizadas, requisitos, reglas del sitio', 'Meet the client contact: authorized openings, requirements, site rules'],
+    ['w1b', 'Presentarme con cada representante de las otras agencias y acordar un canal de coordinación', 'Introduce myself to each agency representative and agree on a coordination channel'],
+    ['w1c', 'Registrar las vacantes autorizadas en Openings (quién y cuándo las autorizó)', 'Record authorized openings in Openings (who authorized them and when)'],
+    ['w1d', 'Conocer el proceso oficial de contratación de Top Tier HR (solicitud, documentos, verificaciones)', 'Learn Top Tier HR’s official hiring process (application, documents, checks)'],
+    ['w1e', 'Línea base: vacantes, personas faltantes, tiempo de cobertura y asistencia al primer día actuales', 'Baseline: openings, people missing, current time to fill and first-day attendance'],
+  ] },
+  { w: 2, es: 'Semana 2 — Poner el sistema a trabajar', en: 'Week 2 — Put the system to work', items: [
+    ['w2a', 'Crear el formulario de preinscripción y poner el enlace en Ajustes', 'Create the pre-registration form and put its link in Settings'],
+    ['w2b', 'Imprimir folletos QR y tarjetas (Kit) para lugares autorizados', 'Print QR flyers and cards (Kit) for approved locations'],
+    ['w2c', 'Publicación de Facebook EN + ES aprobada por la agencia', 'Facebook post EN + ES approved by the agency'],
+    ['w2d', 'Contactar el mismo día a cada registro nuevo (Lista de llamadas)', 'Contact every new registration the same day (Call list)'],
+    ['w2e', 'Enviar el reporte diario al supervisor todos los días', 'Send the daily report to the supervisor every day'],
+  ] },
+  { w: 3, es: 'Semana 3 — Fuentes comunitarias', en: 'Week 3 — Community sources', items: [
+    ['w3a', 'Kentucky Career Center – Florence: eventos de contratación', 'Kentucky Career Center – Florence: hiring events'],
+    ['w3b', 'Esperanza Latino Center, Brighton Center y Life Learning Center', 'Esperanza Latino Center, Brighton Center and Life Learning Center'],
+    ['w3c', 'Gateway CTC (Handshake) y Biblioteca de Boone County', 'Gateway CTC (Handshake) and Boone County Public Library'],
+    ['w3d', 'Primera jornada de entrevistas si se autoriza (Modo registro en tableta)', 'First interview day if authorized (Registration mode on a tablet)'],
+  ] },
+  { w: 4, es: 'Semana 4 — Analizar y ajustar', en: 'Week 4 — Analyze and adjust', items: [
+    ['w4a', 'Revisar fuentes: conservar las que traen gente que se presenta', 'Review sources: keep the ones that bring people who show up'],
+    ['w4b', 'Revisar no-shows: confirmación, transporte, turno; ajustar mensajes', 'Review no-shows: confirmation, transport, shift; adjust messages'],
+    ['w4c', 'Ajustar metas en Ajustes con la línea base real', 'Adjust goals in Settings with the real baseline'],
+    ['w4d', 'Reporte mensual en PDF con 3 recomendaciones para la compañía', 'Monthly PDF report with 3 recommendations for the company'],
+  ] },
+];
+const QUESTIONS = [
+  ['q1', 'Vacantes autorizadas hoy: puesto, número, turno, fecha objetivo, quién autoriza', 'Authorized openings today: role, number, shift, target date, who authorizes'],
+  ['q2', 'Requisitos reales de cada puesto (por escrito)', 'Real requirements for each role (in writing)'],
+  ['q3', 'Pago, horario, bonos y beneficios que sí se pueden publicar, y quién los aprueba', 'Pay, schedule, bonuses and benefits that may be published, and who approves them'],
+  ['q4', 'Reglas del sitio para reclutar: QR en entrada o sala de descanso, entrevistas en sitio', 'Site rules for recruiting: QR at the entrance or break room, on-site interviews'],
+  ['q5', 'Qué se puede decir del ambiente de trabajo (temperatura, ritmo, productos)', 'What can be said about the work environment (temperature, pace, products)'],
+  ['q6', 'Enlace de la solicitud oficial y pasos del proceso de contratación', 'Official application link and hiring process steps'],
+  ['q7', 'Uso del nombre y logo de Top Tier HR en folletos y redes; página oficial', 'Use of the Top Tier HR name and logo on flyers and social media; official page'],
+  ['q8', 'Programa de referidos: ¿existe?, ¿quién refiere?, ¿incentivo aprobado?', 'Referral program: does it exist, who can refer, approved incentive?'],
+  ['q9', 'Presupuesto para anuncios pagados y quién lo aprueba', 'Budget for paid ads and who approves it'],
+  ['q10', 'Política de conservación de datos de candidatos y contacto de privacidad', 'Candidate data retention policy and privacy contact'],
+  ['q11', 'Reglas para mensajes de texto y WhatsApp (número de trabajo, horario, STOP)', 'Rules for texts and WhatsApp (work number, hours, STOP)'],
+  ['q12', 'Sistema oficial / ATS de la agencia', 'The agency’s official system / ATS'],
+  ['q13', 'Agencias y representantes en el sitio, y qué cubre cada una', 'Agencies and representatives on site, and what each covers'],
+  ['q14', 'Reunión de coordinación existente y quién del cliente la dirige', 'Existing coordination meeting and who from the client leads it'],
+  ['q15', 'Regla del cliente si un candidato ya está con otra agencia', 'Client rule when a candidate is already with another agency'],
+];
+VIEWS.plan = () => {
+  const done = S.settings.plan || {}, notes = S.settings.planNotes || {};
+  const all = [...PLAN.flatMap(p => p.items.map(i => i[0])), ...QUESTIONS.map(q => q[0])], n = all.filter(k => done[k]).length;
+  const item = ([k, es, en], withNote) => `<li><label class="check grow"><input type="checkbox" data-plan="${k}" ${done[k] ? 'checked' : ''}><span class="${done[k] ? 'done' : ''}">${esc(t(es, en))}</span></label>
+    ${withNote ? `<input class="small" data-plannote="${k}" maxlength="300" value="${esc(notes[k] || '')}" placeholder="${t('Respuesta confirmada / quién la dio', 'Confirmed answer / who gave it')}" style="flex:1 1 100%">` : ''}</li>`;
+  return `<div class="head"><div><h1>${t('Plan de 30 días', '30-day plan')}</h1><p class="muted">${t('Tu arranque como Onsite Representative. Las casillas se guardan.', 'Your start as Onsite Representative. Checkboxes are saved.')}</p></div></div>
+  <section class="panel"><b>${t(`Avance: ${n} de ${all.length}`, `Progress: ${n} of ${all.length}`)}</b><div style="height:10px;background:var(--panel-2);border-radius:5px;overflow:hidden"><div style="height:100%;width:${Math.round((n / all.length) * 100)}%;background:var(--go)"></div></div></section>
+  <section class="panel"><h2>${t('Confirmar con mi supervisor', 'Confirm with my supervisor')}</h2><p class="small muted">${t('Nada se publica ni se promete hasta confirmarlo. Anota la respuesta y quién la dio.', 'Nothing is published or promised until confirmed. Note the answer and who gave it.')}</p>
+    <ul class="list">${QUESTIONS.map(q => item(q, true)).join('')}</ul></section>
+  <div class="grid2">${PLAN.map(p => `<section class="panel"><h2>${esc(L(p))}</h2><ul class="list">${p.items.map(i => item(i, false)).join('')}</ul></section>`).join('')}</div>`;
+};
+async function savePlan(patch) { await safe(() => settingsDoc().set(JSON.parse(JSON.stringify({ ...S.settings, ...patch })))); }
 
 // ---------------------------------------------------------------- dialogs
 function openDlg(title, html, onReady) {
@@ -1328,6 +1526,10 @@ document.addEventListener('click', async e => {
   if (ds.agency) { agencyDlg(S.agencies.find(x => x.id === ds.agency)); return; }
   if (ds.copy) { copy(document.getElementById(ds.copy).textContent); return; }
   if (ds.copytext) { copy(ds.copytext); return; }
+  if (ds.copymsg) { const c = S.cands.find(x => x.id === ds.copymsg); if (c) copy(messageFor(c, ds.tpl)); return; }
+  if (ds.quick) { const c = S.cands.find(x => x.id === ds.id); if (!c) return; b.disabled = true;
+    if (await logContact(c, 'call', ds.quick, ds.quick === 'reached' ? t('Llamada (lista de hoy)', 'Call (today’s list)') : '')) { const tk = S.tasks.filter(x => x.candId === c.id && !x.done && x.due <= today() && ds.quick === 'reached');
+      for (const x of tk) await safe(() => put('tasks', { ...x, done: true, doneAt: new Date().toISOString() })); toast(t('Registrado', 'Logged')); render(); } return; }
   if (ds.ftoggle) { S.f[ds.ftoggle] = !S.f[ds.ftoggle]; b.setAttribute('aria-pressed', S.f[ds.ftoggle]); renderCandList(); return; }
   if (ds.rkind) { S.rkind = ds.rkind; render(); return; }
   if (ds.klang) { S.kioskLang = ds.klang; openKiosk(); return; }
@@ -1346,6 +1548,9 @@ document.addEventListener('click', async e => {
   else if (act === 'load-plan') { b.disabled = true; for (const a of suggestedPlan()) if (!(await safe(() => put('activities', a)))) break; toast(t('Plan de 90 días cargado (todo sin confirmar)', '90-day plan loaded (all unconfirmed)')); }
   else if (act === 'toggle-past') { S.showPast = !S.showPast; render(); }
   else if (act === 'export-cands') exportCands();
+  else if (act === 'kit-flyer') { b.disabled = true; await kitFlyer(); b.disabled = false; }
+  else if (act === 'kit-cards') { b.disabled = true; await kitCards(); b.disabled = false; }
+  else if (act === 'kit-png') { b.disabled = true; await kitPng(); b.disabled = false; }
   else if (act === 'export-pdf') { b.disabled = true; await exportPdf(); b.disabled = false; }
   else if (act === 'export-xlsx') { b.disabled = true; await exportExcel(); b.disabled = false; }
   else if (act === 'set-stage') {
@@ -1371,6 +1576,8 @@ document.addEventListener('click', async e => {
 });
 document.addEventListener('change', async e => {
   const el = e.target;
+  if (el.matches('input[data-plan]')) { await savePlan({ plan: { ...(S.settings.plan || {}), [el.dataset.plan]: el.checked } }); render(); return; }
+  if (el.matches('input[data-plannote]')) { await savePlan({ planNotes: { ...(S.settings.planNotes || {}), [el.dataset.plannote]: el.value.trim() } }); toast(t('Guardado', 'Saved')); return; }
   if (el.matches('input[data-task]')) {
     const tk = S.tasks.find(x => x.id === el.dataset.task);
     if (tk) await safe(() => put('tasks', { ...tk, done: el.checked, doneAt: el.checked ? new Date().toISOString() : '' }));
