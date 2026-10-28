@@ -2181,6 +2181,15 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       list.push({ lvl: "warn", t: "Investing is behind this month", d: "Moved " + fmt(Math.max(0, iv.thisMonth)) + " to " + acctName("inv") + " of your " + fmt(iv.monthGoal) + " goal." });
     if (f.pct !== null && f.pct >= 75)
       list.push({ lvl: f.pct >= 100 ? "bad" : "warn", t: "Fun budget " + (f.pct >= 100 ? "used up" : f.pct + "% used"), d: "Spent " + fmt(f.spent) + " of " + fmt(f.budget) + " this month." });
+    // Category limits you typed in Budget (bills keep their own due-date alerts).
+    var mr = periodRange("month");
+    Object.keys(state.budgets).sort(byName).forEach(function (cat) {
+      var lim = state.budgets[cat];
+      if (!lim || groupOf(cat) !== "exp") return;
+      var spent = actual(cat, mr, "expense"), pct = Math.round(spent / lim * 100);
+      if (pct >= 75) list.push({ lvl: pct >= 100 ? "bad" : "warn", t: cat + (pct >= 100 ? " is over its limit" : " is at " + pct + "% of its limit"),
+        d: "Spent " + fmt(spent) + " of " + fmt(lim) + " this month" + (spent < lim ? " · " + fmt(lim - spent) + " left." : ".") });
+    });
     var t = totals("month");
     if (t.exp > t.inc) list.push({ lvl: "bad", t: "Spending is higher than income this month", d: "Expenses " + fmt(t.exp) + ", income " + fmt(t.inc) + "." });
     state.debts.forEach(function (d) {
