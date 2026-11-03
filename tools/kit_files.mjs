@@ -1,0 +1,28 @@
+import pw from '/opt/node-tools/node_modules/playwright/index.js';
+import fs from 'fs';
+const { chromium } = pw;
+const SP = process.argv[2], LINK = process.argv[3], OUT = process.argv[4];
+const html = fs.readFileSync('/home/user/warehouse-attendance-pro/artifact/reclutamiento-winit.html', 'utf8');
+fs.writeFileSync(SP + '/art/index.html', '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>' + html + '</body></html>');
+const mock = fs.readFileSync(SP + '/art/test2.mjs', 'utf8').match(/const mock = fs[\s\S]*?\);\n/) ? null : null;
+const base = fs.readFileSync(SP + '/art/test.mjs', 'utf8').match(/const mock = `([\s\S]*?)`;/)[1]
+  .replace("{ save: async x => { window.__saved = x; return { status: 'saved' }; } }", "{ save: async x => { const b = x.data instanceof Blob ? new Uint8Array(await x.data.arrayBuffer()) : x.data; window.__saved = { filename: x.filename, bytes: Array.from(b) }; return { status: 'saved' }; } }");
+const libs = { 'qrcode-generator@1.4.4': 'qrcode-generator-1.4.4/qrcode.js', 'jspdf@2.5.1': 'jspdf-2.5.1/dist/jspdf.umd.min.js' };
+const b = await chromium.launch(); const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
+await ctx.route('https://cdn.jsdelivr.net/**', r => { const k = Object.keys(libs).find(k => r.request().url().includes(k)); r.fulfill({ path: SP + '/libs/' + libs[k], contentType: 'text/javascript' }); });
+await ctx.addInitScript(base);
+const p = await ctx.newPage(); const errs = []; p.on('pageerror', e => errs.push(String(e)));
+await p.goto('file://' + SP + '/art/index.html');
+await p.getByRole('heading', { name: 'Recruiting dashboard' }).waitFor();
+await p.getByRole('button', { name: 'Settings & data' }).click();
+await p.locator('input[name=applyLink]').fill(LINK);
+await p.getByRole('button', { name: 'Save settings' }).click(); await p.waitForTimeout(300);
+await p.getByRole('button', { name: 'QR & flyer kit' }).click();
+await p.locator('#kit-line').fill('$17/hr  ·  Start this Thursday & Friday  ·  Empieza este jueves y viernes');
+await p.locator('#kit-line').press('Tab'); await p.waitForTimeout(400);
+await p.getByRole('button', { name: 'QR & flyer kit' }).click(); await p.locator('#qr-box svg').waitFor();
+const grab = async (label, file) => { await p.evaluate(() => { window.__saved = null; }); await p.getByRole('button', { name: label }).click(); await p.waitForFunction(() => window.__saved, null, { timeout: 15000 }); const sv = await p.evaluate(() => window.__saved); fs.writeFileSync(OUT + '/' + file, Buffer.from(sv.bytes)); };
+await grab('Flyer PDF', 'TopTierHR_Folleto_17hr_Jueves_Viernes.pdf');
+await grab('Cards PDF (10 per sheet)', 'TopTierHR_Tarjetas.pdf');
+await grab('QR as PNG', 'TopTierHR_QR_Registro.png');
+console.log('errors:', errs.length ? errs : 'none'); await b.close();

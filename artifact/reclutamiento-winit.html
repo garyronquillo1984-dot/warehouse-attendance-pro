@@ -295,7 +295,7 @@ const TEMPLATES = [
   { code: 'ack', ch: 'sms', es: ['Registro recibido', 'Hola {first_name}, soy {my_name} de {company}. Recibimos tu registro para trabajos de almacén. Te contactaremos cuando haya una vacante que coincida con tu disponibilidad. Registrarte no garantiza empleo. Responde STOP para no recibir más mensajes.'], en: ['Registration received', 'Hi {first_name}, this is {my_name} with {company}. We received your registration for warehouse jobs. We\'ll contact you when an opening matches your availability. Registering does not guarantee a job. Reply STOP to stop messages.'] },
   { code: 'first', ch: 'any', es: ['Primer contacto', 'Hola {first_name}, soy {my_name} de {company}. Gracias por tu interés en trabajo de almacén. ¿Tienes 5 minutos para hablar sobre tu disponibilidad? También puedes llamarme al {my_phone}.'], en: ['First contact', 'Hi {first_name}, this is {my_name} with {company}. Thanks for your interest in warehouse work. Do you have 5 minutes to talk about your availability? You can also call me at {my_phone}.'] },
   { code: 'no_answer', ch: 'sms', es: ['Seguimiento (sin respuesta)', 'Hola {first_name}, {my_name} de {company} otra vez. Intenté comunicarme contigo sobre vacantes de almacén. Si sigues interesado/a, respóndeme con la mejor hora para llamarte. Si no, responde NO y no te volveré a contactar.'], en: ['Follow-up (no answer)', 'Hi {first_name}, {my_name} from {company} again. I tried to reach you about warehouse openings. If you\'re still interested, reply with the best time to call. If not, reply NO and I won\'t contact you again.'] },
-  { code: 'apply', ch: 'any', es: ['Solicitud oficial', 'Siguiente paso, {first_name}: completa la solicitud oficial aquí: {apply_link}. Avísame cuando termines para ayudarte con el siguiente paso. ¿Preguntas? {my_phone}'], en: ['Official application', 'Next step, {first_name}: please complete the official application here: {apply_link}. Let me know when you finish so I can help with the next step. Questions? {my_phone}'] },
+  { code: 'apply', ch: 'any', es: ['Solicitud oficial', 'Siguiente paso, {first_name}: respóndeme con tu correo electrónico y te envío la solicitud oficial por SignNow. Llega desde SignNow; revisa también la carpeta de spam. ¿Preguntas? {my_phone}'], en: ['Official application', 'Next step, {first_name}: reply with your email address and I’ll send you the official application through SignNow. It comes from SignNow; please check your spam folder too. Questions? {my_phone}'] },
   { code: 'interview', ch: 'sms', es: ['Recordatorio de cita', 'Recordatorio, {first_name}: tu cita con {company} es el {date} a las {time}, en {place}. Responde SÍ para confirmar o llama al {my_phone} si necesitas cambiarla.'], en: ['Appointment reminder', 'Reminder, {first_name}: your appointment with {company} is on {date} at {time}, {place}. Reply YES to confirm or call {my_phone} to change it.'] },
   { code: 'availability', ch: 'sms', es: ['Confirmar disponibilidad', 'Hola {first_name}, {my_name} de {company}. ¿Sigues disponible para {shift}? Responde SÍ o NO para mantener tu información al día.'], en: ['Confirm availability', 'Hi {first_name}, {my_name} from {company}. Are you still available for {shift}? Reply YES or NO so I can keep your information up to date.'] },
   { code: 'first_day', ch: 'sms', es: ['Recordatorio del primer día', '¡Hola {first_name}! Tu primer día es el {date} a las {time}, en {place}. Trae lo que indican tus instrucciones de incorporación. Responde SÍ para confirmar. ¿Algún problema para llegar? Llama al {my_phone} antes de tu turno.'], en: ['First-day reminder', 'Hi {first_name}! Your first day is {date} at {time}, {place}. Bring what your onboarding instructions list. Reply YES to confirm. Any problem getting there? Call {my_phone} before your shift.'] },
@@ -304,10 +304,10 @@ const TEMPLATES = [
   { code: 'signnow_nudge', ch: 'sms', es: ['Recordatorio SignNow', 'Hola {first_name}, {my_name} de {company}. ¿Pudiste completar la invitación de SignNow que te envié? Si no la encuentras, revisa spam o respóndeme y te la reenvío. Necesito que esté lista para confirmarte el puesto.'], en: ['SignNow reminder', 'Hi {first_name}, {my_name} from {company}. Were you able to complete the SignNow invitation I sent? If you can’t find it, check spam or reply and I’ll resend it. I need it done to confirm your spot.'] },
   { code: 'recontact', ch: 'sms', es: ['Recontacto', 'Hola {first_name}, {my_name} de {company}. Nos pediste que te volviéramos a contactar. Hay vacantes de almacén en este momento. ¿Te interesa? Responde SÍ o NO.'], en: ['Recontact', 'Hi {first_name}, {my_name} from {company}. You asked us to check back with you. There are warehouse openings right now. Interested? Reply YES or NO.'] },
   { code: 'on_file', ch: 'any', es: ['Información guardada', 'Hola {first_name}, gracias por tu tiempo. La vacante actual ya se cubrió, pero guardamos tu información (con tu permiso) y te contactaremos cuando haya algo que coincida con tu disponibilidad.'], en: ['Kept on file', 'Hi {first_name}, thank you for your time. The current opening was filled, but we kept your information (with your permission) and will reach out when something matches your availability.'] },
-  { code: 'reply', ch: 'social', es: ['Respuesta a comentario', '¡Gracias por tu interés! Para ser considerado/a, regístrate aquí (2 minutos): {apply_link}. Registrarte no garantiza empleo; contactamos a las personas cuando una vacante coincide con su disponibilidad.'], en: ['Reply to a comment', 'Thanks for your interest! To be considered, register here (2 minutes): {apply_link}. Registering does not guarantee a job; we contact people when an opening matches their availability.'] },
-  { code: 'fb_post', ch: 'social', es: ['Publicación de Facebook', 'Trabajos de almacén en Florence, KY — Picking, empaque, clasificación, manejo de materiales. Recibiendo registros para vacantes autorizadas. Pago, turnos y fechas de inicio: el reclutador los comparte una vez confirmados para cada vacante. Regístrate: {apply_link}. Registrarte no garantiza empleo. We speak English.'], en: ['Facebook post', 'Warehouse jobs in Florence, KY — Picking, packing, sorting, material handling. Now taking registrations for authorized openings. Pay, shifts and start dates are shared by the recruiter once confirmed for each opening. Register: {apply_link}. Registering does not guarantee a job. Hablamos español.'] },
+  { code: 'reply', ch: 'social', es: ['Respuesta a comentario', '¡Gracias por tu interés! Envía un texto a Gary al {my_phone} con tu nombre y correo electrónico, y te mandamos la solicitud por correo. Registrarte no garantiza empleo.'], en: ['Reply to a comment', 'Thanks for your interest! Text Gary at {my_phone} with your name and email, and we’ll email you the application. Registering does not guarantee a job.'] },
+  { code: 'fb_post', ch: 'social', es: ['Publicación de Facebook', 'Trabajos de almacén en Florence, KY — Picking, empaque, clasificación, manejo de materiales. Recibiendo registros para vacantes autorizadas. Pago, turnos y fechas de inicio: el reclutador los comparte una vez confirmados para cada vacante. Envía tu nombre y correo por texto a Gary: {my_phone}. Registrarte no garantiza empleo. We speak English.'], en: ['Facebook post', 'Warehouse jobs in Florence, KY — Picking, packing, sorting, material handling. Now taking registrations for authorized openings. Pay, shifts and start dates are shared by the recruiter once confirmed for each opening. Text your name and email to Gary: {my_phone}. Registering does not guarantee a job. Hablamos español.'] },
   { code: 'video', ch: 'script', es: ['Guion TikTok / Reels (30 s)', '[0–3 s] Gancho: "¿Buscas trabajo de almacén en Florence, Kentucky?"\n[3–12 s] "Picking, empaque, clasificación. El empleador da el entrenamiento." (Di solo lo confirmado.)\n[12–22 s] "Regístrate en 2 minutos con el enlace del perfil. Llamo a cada persona con el pago, turno y fecha confirmados."\n[22–30 s] En pantalla: "Enlace en el perfil · We speak English · Registrarte no garantiza empleo."'], en: ['TikTok / Reels script (30 s)', '[0–3 s] Hook: "Looking for warehouse work in Florence, Kentucky?"\n[3–12 s] "Picking, packing, sorting. The employer provides training." (Only say what is confirmed.)\n[12–22 s] "Register in 2 minutes with the link in bio. I call everyone back with the confirmed pay, shift and start date."\n[22–30 s] On screen: "Link in bio · Hablamos español · Registering does not guarantee a job."'] },
-  { code: 'long_ad', ch: 'board', es: ['Anuncio largo (Indeed / Focus Talent)', 'Asociado de almacén – [PUESTO] – Florence, KY\nReclutamos para vacantes autorizadas en un centro de distribución en Florence, KY.\nQué harás: [DESCRIPCIÓN DEL PUESTO]\nTurno: [SOLO SI ESTÁ VERIFICADO] · Pago: [SOLO SI ESTÁ VERIFICADO] · Inicio: [SOLO SI ESTÁ VERIFICADO]\nRequisitos: [SOLO LOS CONFIRMADOS POR EL CLIENTE]\nCómo aplicar: {apply_link}. Un reclutador te contactará y te guiará en la solicitud oficial.\nRegistrarte no garantiza empleo. Hablamos inglés y español.'], en: ['Long ad (Indeed / Focus Talent)', 'Warehouse Associate – [POSITION] – Florence, KY\nWe are recruiting for authorized openings at a fulfillment center in Florence, KY.\nWhat you\'ll do: [ROLE DESCRIPTION]\nShift: [ONLY IF VERIFIED] · Pay: [ONLY IF VERIFIED] · Start: [ONLY IF VERIFIED]\nRequirements: [ONLY THOSE CONFIRMED BY THE CLIENT]\nHow to apply: {apply_link}. A recruiter will contact you and guide you through the official application.\nRegistering does not guarantee employment. We speak English and Spanish.'] },
+  { code: 'long_ad', ch: 'board', es: ['Anuncio largo (Indeed / Focus Talent)', 'Asociado de almacén – [PUESTO] – Florence, KY\nReclutamos para vacantes autorizadas en un centro de distribución en Florence, KY.\nQué harás: [DESCRIPCIÓN DEL PUESTO]\nTurno: [SOLO SI ESTÁ VERIFICADO] · Pago: [SOLO SI ESTÁ VERIFICADO] · Inicio: [SOLO SI ESTÁ VERIFICADO]\nRequisitos: [SOLO LOS CONFIRMADOS POR EL CLIENTE]\nCómo aplicar: envía tu nombre y correo por texto al {my_phone}; te enviaremos la solicitud oficial por correo (SignNow).\nRegistrarte no garantiza empleo. Hablamos inglés y español.'], en: ['Long ad (Indeed / Focus Talent)', 'Warehouse Associate – [POSITION] – Florence, KY\nWe are recruiting for authorized openings at a fulfillment center in Florence, KY.\nWhat you\'ll do: [ROLE DESCRIPTION]\nShift: [ONLY IF VERIFIED] · Pay: [ONLY IF VERIFIED] · Start: [ONLY IF VERIFIED]\nRequirements: [ONLY THOSE CONFIRMED BY THE CLIENT]\nHow to apply: text your name and email to {my_phone}; we’ll email you the official application (SignNow).\nRegistering does not guarantee employment. We speak English and Spanish.'] },
 ];
 const fill = (body, v) => body.replace(/\{(\w+)\}/g, (m, k) => (v[k] ? v[k] : m));
 
@@ -372,6 +372,14 @@ function liveRender() { if (S.ready) render(); }
 
 // ---------------------------------------------------------------- domain rules
 const ST = () => ({ stale: 3, lowPool: 3, gContacts: 20, gPrescreen: 10, gInterviews: 5, gShow: 85, gRet30: 70, company: 'Top Tier HR', myName: 'Gary Ronquillo', myPhone: '(614) 732-3986', applyLink: '', spend: {}, ...S.settings });
+// What the QR opens: a text message to the recruiter (name + email), or a link if one is chosen in the kit.
+const phoneDigits = p => String(p || '').replace(/\D/g, '').replace(/^1(?=\d{10}$)/, '');
+function qrTarget(st = ST()) {
+  if (st.qrMode === 'link' && st.applyLink) return st.applyLink;
+  const d = phoneDigits(st.myPhone);
+  return d.length === 10 ? `SMSTO:+1${d}:JOBS FLORENCE - Name/Nombre: ___ Email/Correo: ___` : '';
+}
+const qrIsSms = v => /^SMSTO:/i.test(v || '');
 function dupOf(c) {
   const other = S.cands.find(x => x.id !== c.id && ((c.phone && x.phone === c.phone) || (c.email && x.email && x.email === c.email)
     || (c.zip && x.zip === c.zip && x.first.toLowerCase() === c.first.toLowerCase() && x.last.toLowerCase() === c.last.toLowerCase())));
@@ -1065,21 +1073,26 @@ function drawQr(doc, text, x, y, size) {
   for (let r = 0; r < m.n; r++) for (let c = 0; c < m.n; c++) if (m.dark(r, c)) doc.rect(x + c * cell, y + r * cell, cell * 1.04, cell * 1.04, 'F');   // slight overlap, no hairline gaps
 }
 VIEWS.kit = () => {
-  const st = ST(), link = st.applyLink;
+  const st = ST(), link = qrTarget(st), sms = qrIsSms(link);
   return `<div class="head"><div><h1>${t('Kit de reclutamiento', 'Recruiting kit')}</h1><p class="muted">${t('Código QR, folleto bilingüe y tarjetas de presentación con tu nombre. Usa la marca de Top Tier HR solo si la agencia lo autoriza.', 'QR code, bilingual flyer and business cards with your name. Use the Top Tier HR brand only if the agency authorizes it.')}</p></div></div>
-  ${!link ? `<div class="note bad">${t('Primero escribe el enlace de preinscripción en Ajustes y datos (por ejemplo, un Formulario de Google o Microsoft que pida solo nombre, teléfono, turnos, experiencia y consentimiento).', 'First enter the pre-registration link in Settings & data (for example a Google or Microsoft Form asking only for name, phone, shifts, experience and consent).')} <button class="linkbtn" data-tab="ajustes">${t('Ir a Ajustes', 'Go to Settings')}</button></div>` : ''}
+  ${!link ? `<div class="note bad">${t('Escribe tu teléfono de trabajo en Ajustes y datos: el QR abre un mensaje de texto hacia ese número.', 'Enter your work phone in Settings & data: the QR opens a text message to that number.')} <button class="linkbtn" data-tab="ajustes">${t('Ir a Ajustes', 'Go to Settings')}</button></div>` : ''}
   <section class="panel"><div class="row" style="align-items:flex-start;gap:24px">
     <div id="qr-box" style="width:200px;height:200px;background:#fff;border-radius:6px;display:grid;place-items:center;flex:none">${link ? `<span class="small muted">${t('Cargando QR…', 'Loading QR…')}</span>` : ''}</div>
     <div class="stack" style="flex:1 1 260px;min-width:0">
       <label class="f">${t('Línea destacada del folleto (pago y fecha de inicio, solo si están confirmados)', 'Flyer highlight line (pay and start date, only if confirmed)')}<input id="kit-line" maxlength="90" value="${esc(st.kitLine || '')}" placeholder="$17/hr · Start this Thursday & Friday · Empieza este jueves y viernes"></label>
-      <p><b>${t('Enlace del QR', 'QR link')}</b></p><p class="mono small" style="overflow-wrap:anywhere">${esc(link || '—')}</p>
+      <fieldset><legend>${t('Qué abre el QR', 'What the QR opens')}</legend><div class="chips">
+        <button class="chip" data-act="qr-mode" data-v="sms" aria-pressed="${st.qrMode !== 'link'}">${t('Mensaje de texto a mí (nombre y correo)', 'Text message to me (name and email)')}</button>
+        <button class="chip" data-act="qr-mode" data-v="link" aria-pressed="${st.qrMode === 'link'}" ${st.applyLink ? '' : 'disabled'}>${t('Enlace de Ajustes', 'Link from Settings')}</button></div></fieldset>
+      <p class="mono small" style="overflow-wrap:anywhere">${esc(link || '—')}</p>
+      ${sms ? `<p class="small muted">${t('Al escanear, el teléfono del candidato abre un texto hacia ti con "Name/Nombre" y "Email/Correo" para completar. Con ese correo le envías la invitación de SignNow.', 'When scanned, the candidate’s phone opens a text to you with "Name/Nombre" and "Email/Correo" to fill in. You use that email to send the SignNow invitation.')}</p>` : ''}
       <p class="small muted">${t('Prueba el QR con tu teléfono antes de imprimir.', 'Test the QR with your phone before printing.')}</p>
       <div class="row"><button class="btn" data-act="kit-flyer" ${link ? '' : 'disabled'}>${t('Folleto PDF', 'Flyer PDF')}</button><button class="btn" data-act="kit-cards" ${link ? '' : 'disabled'}>${t('Tarjetas PDF (10 por hoja)', 'Cards PDF (10 per sheet)')}</button><button class="btn ghost" data-act="kit-png" ${link ? '' : 'disabled'}>${t('QR en PNG', 'QR as PNG')}</button></div></div></div></section>
   <section class="panel"><h2>${t('Qué dice el folleto', 'What the flyer says')}</h2><pre class="msg">${esc(`Warehouse jobs · Trabajos de almacén — Florence, KY
 Picking · Packing · Sorting · Material handling
 
-Scan to pre-register (2 minutes). We call you back when an authorized opening matches your availability.
-Escanea para preinscribirte (2 minutos). Te llamamos cuando una vacante autorizada coincida con tu disponibilidad.
+${sms ? `Scan to text us your name and email. Gary will email you the application (SignNow).
+Escanea para enviarnos tu nombre y correo por texto. Gary te enviará la solicitud por correo (SignNow).` : `Scan to pre-register (2 minutes). We call you back when an authorized opening matches your availability.
+Escanea para preinscribirte (2 minutos). Te llamamos cuando una vacante autorizada coincida con tu disponibilidad.`}
 
 ${st.myName || AUTHOR.name} · ${AUTHOR.role} · ${st.myPhone || '[phone]'}
 Registering does not guarantee employment. Pay, shifts and start dates are confirmed by the recruiter for each opening.
@@ -1088,7 +1101,7 @@ Registrarte no garantiza empleo. El pago, los turnos y las fechas de inicio los 
 };
 async function kitLibs() { await loadLib('qr'); await loadLib('jspdf'); }
 async function kitFlyer() {
-  const st = ST(), link = st.applyLink;
+  const st = ST(), link = qrTarget(st), sms = qrIsSms(link);
   try { await kitLibs(); } catch { toast(t('No se pudo cargar el generador. Revisa tu conexión.', 'Could not load the generator. Check your connection.')); return; }
   const doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'letter' }), W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 48;
   const BROWN = [67, 59, 54], CREAM = [240, 233, 225], GOLD = [201, 162, 74], INK = [33, 30, 28], MUTED = [110, 104, 98];
@@ -1101,22 +1114,26 @@ async function kitFlyer() {
   const off = st.kitLine ? 18 : 0;
   drawQr(doc, link, M + 6, 248 + off, 230);
   const x = M + 270; let y = 270 + off;
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text('Scan to pre-register', x, y); y += 18;
-  doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.splitTextToSize('2 minutes. We call you back when an authorized opening matches your availability.', W - x - M).forEach(l => { doc.text(l, x, y); y += 15; }); y += 14;
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text('Escanea para preinscribirte', x, y); y += 18;
-  doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.splitTextToSize('2 minutos. Te llamamos cuando una vacante autorizada coincida con tu disponibilidad.', W - x - M).forEach(l => { doc.text(l, x, y); y += 15; }); y += 14;
-  doc.setFontSize(10); doc.setTextColor(...MUTED); doc.text('We speak English · Hablamos español', x, y);
+  const cta = sms
+    ? [['Scan to text us', 'Send your name and email. Gary will email you the application (SignNow).'], ['Escanea para enviarnos un texto', 'Envía tu nombre y correo. Gary te enviará la solicitud por correo (SignNow).']]
+    : [['Scan to pre-register', '2 minutes. We call you back when an authorized opening matches your availability.'], ['Escanea para preinscribirte', '2 minutos. Te llamamos cuando una vacante autorizada coincida con tu disponibilidad.']];
+  for (const [head, body] of cta) {
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text(head, x, y); y += 18;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.splitTextToSize(body, W - x - M).forEach(l => { doc.text(l, x, y); y += 15; }); y += 14;
+  }
+  if (sms && st.myPhone) { doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(...INK); doc.text(`Text / Texto: ${st.myPhone}`, x, y); y += 20; }
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(...MUTED); doc.text('We speak English · Hablamos español', x, y);
   y = 540; doc.setDrawColor(...GOLD); doc.setLineWidth(1); doc.line(M, y, W - M, y); y += 34;
   doc.setTextColor(...INK); doc.setFont('times', 'bold'); doc.setFontSize(20); doc.text(st.myName || AUTHOR.name, M, y); y += 18;
   doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.text(`${AUTHOR.role} · ${AUTHOR.assignment}`, M, y); y += 16;
   if (st.myPhone) { doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.text(st.myPhone, M, y); y += 18; }
-  doc.setTextColor(...MUTED); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.splitTextToSize(link, W - 2 * M).forEach(l => { doc.text(l, M, y); y += 11; });
-  doc.setFontSize(8.5); const fine = ['Registering does not guarantee employment. Pay, shifts and start dates are confirmed by the recruiter for each opening.', 'Registrarte no garantiza empleo. El pago, los turnos y las fechas de inicio los confirma el reclutador para cada vacante.', `${BRAND.name} is a DBA of OC Staffing and HR Solutions LLC.`];
+  if (!sms) { doc.setTextColor(...MUTED); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.splitTextToSize(link, W - 2 * M).forEach(l => { doc.text(l, M, y); y += 11; }); }
+  doc.setFont('helvetica', 'normal'); doc.setTextColor(...MUTED); doc.setFontSize(8.5); const fine = ['Registering does not guarantee employment. Pay, shifts and start dates are confirmed by the recruiter for each opening.', 'Registrarte no garantiza empleo. El pago, los turnos y las fechas de inicio los confirma el reclutador para cada vacante.', `${BRAND.name} is a DBA of OC Staffing and HR Solutions LLC.`];
   let fy = H - 70; fine.forEach(f => doc.splitTextToSize(f, W - 2 * M).forEach(l => { doc.text(l, M, fy); fy += 11; }));
   await deliver('TopTierHR_Flyer_Florence_KY.pdf', doc.output('blob'));
 }
 async function kitCards() {
-  const st = ST(), link = st.applyLink;
+  const st = ST(), link = qrTarget(st), sms = qrIsSms(link);
   try { await kitLibs(); } catch { toast(t('No se pudo cargar el generador. Revisa tu conexión.', 'Could not load the generator. Check your connection.')); return; }
   const doc = new window.jspdf.jsPDF({ unit: 'in', format: 'letter' });
   const CW = 3.5, CH = 2, X0 = 0.75, Y0 = 0.5, BROWN = [67, 59, 54], CREAM = [240, 233, 225], GOLD = [201, 162, 74];
@@ -1134,7 +1151,7 @@ async function kitCards() {
   await deliver('TopTierHR_Business_Cards.pdf', doc.output('blob'));
 }
 async function kitPng() {
-  const link = ST().applyLink;
+  const link = qrTarget();
   try { await loadLib('qr'); } catch { toast(t('No se pudo cargar el generador. Revisa tu conexión.', 'Could not load the generator. Check your connection.')); return; }
   const m = qrMatrix(link), px = 16, cv = document.createElement('canvas'); cv.width = cv.height = (m.n + 8) * px;
   const g = cv.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, cv.width, cv.height); g.fillStyle = '#211E1C';
@@ -1143,7 +1160,7 @@ async function kitPng() {
   await deliver('TopTierHR_QR.png', blob);
 }
 async function paintQr() {
-  const box = $('#qr-box'), link = ST().applyLink;
+  const box = $('#qr-box'), link = qrTarget();
   if (!box || !link) return;
   try { await loadLib('qr'); box.innerHTML = qrSvg(link, 200); } catch { box.innerHTML = `<span class="small muted">${t('No se pudo cargar el QR.', 'Could not load the QR.')}</span>`; }
 }
@@ -1625,6 +1642,7 @@ document.addEventListener('click', async e => {
       toast(t('Completada. Se creó la tarea del siguiente paso.', 'Completed. Next-step task created.')); openCandidate(c.id);
     }
   }
+  else if (act === 'qr-mode') { await savePlan({ qrMode: ds.v }); render(); }
   else if (act === 'kit-flyer') { b.disabled = true; await kitFlyer(); b.disabled = false; }
   else if (act === 'kit-cards') { b.disabled = true; await kitCards(); b.disabled = false; }
   else if (act === 'kit-png') { b.disabled = true; await kitPng(); b.disabled = false; }
