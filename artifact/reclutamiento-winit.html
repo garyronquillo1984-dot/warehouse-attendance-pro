@@ -300,6 +300,8 @@ const TEMPLATES = [
   { code: 'availability', ch: 'sms', es: ['Confirmar disponibilidad', 'Hola {first_name}, {my_name} de {company}. ¿Sigues disponible para {shift}? Responde SÍ o NO para mantener tu información al día.'], en: ['Confirm availability', 'Hi {first_name}, {my_name} from {company}. Are you still available for {shift}? Reply YES or NO so I can keep your information up to date.'] },
   { code: 'first_day', ch: 'sms', es: ['Recordatorio del primer día', '¡Hola {first_name}! Tu primer día es el {date} a las {time}, en {place}. Trae lo que indican tus instrucciones de incorporación. Responde SÍ para confirmar. ¿Algún problema para llegar? Llama al {my_phone} antes de tu turno.'], en: ['First-day reminder', 'Hi {first_name}! Your first day is {date} at {time}, {place}. Bring what your onboarding instructions list. Reply YES to confirm. Any problem getting there? Call {my_phone} before your shift.'] },
   { code: 'checkin', ch: 'any', es: ['Seguimiento día 7', 'Hola {first_name}, soy {my_name}. ¿Cómo va tu primera semana? ¿Hay algo en lo que pueda ayudarte (horario, entrenamiento, dudas)? Aquí estoy: {my_phone}.'], en: ['Day-7 check-in', 'Hi {first_name}, it\'s {my_name}. How is your first week going? Anything I can help with (schedule, training, questions)? I\'m here: {my_phone}.'] },
+  { code: 'signnow', ch: 'any', es: ['Aviso de invitación SignNow', 'Hola {first_name}, soy {my_name} de {company}. Te acabo de enviar por correo una invitación de SignNow para completar tu solicitud (trabajo de almacén en Florence, $17/hora). Revisa tu bandeja de entrada y la carpeta de spam. Complétala hoy para poder confirmarte. ¿Dudas? {my_phone}'], en: ['SignNow invite heads-up', 'Hi {first_name}, this is {my_name} with {company}. I just emailed you a SignNow invitation to complete your application (warehouse work in Florence, $17/hour). Please check your inbox and spam folder and complete it today so I can confirm you. Questions? {my_phone}'] },
+  { code: 'signnow_nudge', ch: 'sms', es: ['Recordatorio SignNow', 'Hola {first_name}, {my_name} de {company}. ¿Pudiste completar la invitación de SignNow que te envié? Si no la encuentras, revisa spam o respóndeme y te la reenvío. Necesito que esté lista para confirmarte el puesto.'], en: ['SignNow reminder', 'Hi {first_name}, {my_name} from {company}. Were you able to complete the SignNow invitation I sent? If you can’t find it, check spam or reply and I’ll resend it. I need it done to confirm your spot.'] },
   { code: 'recontact', ch: 'sms', es: ['Recontacto', 'Hola {first_name}, {my_name} de {company}. Nos pediste que te volviéramos a contactar. Hay vacantes de almacén en este momento. ¿Te interesa? Responde SÍ o NO.'], en: ['Recontact', 'Hi {first_name}, {my_name} from {company}. You asked us to check back with you. There are warehouse openings right now. Interested? Reply YES or NO.'] },
   { code: 'on_file', ch: 'any', es: ['Información guardada', 'Hola {first_name}, gracias por tu tiempo. La vacante actual ya se cubrió, pero guardamos tu información (con tu permiso) y te contactaremos cuando haya algo que coincida con tu disponibilidad.'], en: ['Kept on file', 'Hi {first_name}, thank you for your time. The current opening was filled, but we kept your information (with your permission) and will reach out when something matches your availability.'] },
   { code: 'reply', ch: 'social', es: ['Respuesta a comentario', '¡Gracias por tu interés! Para ser considerado/a, regístrate aquí (2 minutos): {apply_link}. Registrarte no garantiza empleo; contactamos a las personas cuando una vacante coincide con su disponibilidad.'], en: ['Reply to a comment', 'Thanks for your interest! To be considered, register here (2 minutes): {apply_link}. Registering does not guarantee a job; we contact people when an opening matches their availability.'] },
@@ -369,7 +371,7 @@ async function pruneTasks() {
 function liveRender() { if (S.ready) render(); }
 
 // ---------------------------------------------------------------- domain rules
-const ST = () => ({ stale: 3, lowPool: 3, gContacts: 20, gPrescreen: 10, gInterviews: 5, gShow: 85, gRet30: 70, company: 'Top Tier HR', myName: 'Gary Ronquillo', myPhone: '', applyLink: '', spend: {}, ...S.settings });
+const ST = () => ({ stale: 3, lowPool: 3, gContacts: 20, gPrescreen: 10, gInterviews: 5, gShow: 85, gRet30: 70, company: 'Top Tier HR', myName: 'Gary Ronquillo', myPhone: '(614) 732-3986', applyLink: '', spend: {}, ...S.settings });
 function dupOf(c) {
   const other = S.cands.find(x => x.id !== c.id && ((c.phone && x.phone === c.phone) || (c.email && x.email && x.email === c.email)
     || (c.zip && x.zip === c.zip && x.first.toLowerCase() === c.first.toLowerCase() && x.last.toLowerCase() === c.last.toLowerCase())));
@@ -591,7 +593,7 @@ VIEWS.candidatos = () => {
   const sel = (k, label, list, blank) => `<label class="f">${esc(label)}<select data-f="${k}">${options(list, f[k], blank)}</select></label>`;
   const tg = (k, es, en) => `<button class="chip" data-ftoggle="${k}" aria-pressed="${!!f[k]}">${t(es, en)}</button>`;
   return `<div class="head"><div><h1>${t('Candidatos', 'Candidates')}</h1><p class="muted" id="cand-count"></p></div>
-    <div class="row"><button class="btn ghost" data-act="export-cands">CSV</button><button class="btn" data-act="new-cand">${t('Agregar candidato', 'Add candidate')}</button></div></div>
+    <div class="row"><button class="btn ghost" data-act="export-signnow" title="${t('Interesados con correo y sin invitación, para Bulk Invite de SignNow', 'Interested people with email and no invite yet, for SignNow Bulk Invite')}">${t('CSV para SignNow', 'CSV for SignNow')}</button><button class="btn ghost" data-act="export-cands">CSV</button><button class="btn" data-act="new-cand">${t('Agregar candidato', 'Add candidate')}</button></div></div>
   <div class="filters">
     <label class="f grow">${t('Buscar', 'Search')}<input id="fq" type="search" value="${esc(f.q)}" placeholder="${t('Nombre, teléfono o correo', 'Name, phone or email')}"></label>
     ${sel('phase', t('Fase', 'Phase'), PHASES, t('Todos abiertos', 'All open'))}
@@ -1014,6 +1016,7 @@ function callQueue() {
     if (c.firstDay === tomorrow && ['assigned', 'first_day_confirmed'].includes(c.stage)) add(c, 1, 'Primer día mañana: confirmar', 'First day tomorrow: confirm', 'first_day');
     if (c.firstDay === d0 && ['assigned', 'first_day_confirmed'].includes(c.stage)) add(c, 1, 'Primer día hoy: ¿se presentó?', 'First day today: did they show?', 'first_day');
     if (c.interviewAt && dayOf(c.interviewAt) === tomorrow) add(c, 2, 'Cita mañana: recordatorio', 'Appointment tomorrow: reminder', 'interview');
+    if (c.signnow?.sentAt && !c.signnow?.doneAt && c.stage !== 'closed' && (Date.now() - Date.parse(c.signnow.sentAt)) / 36e5 >= 12) add(c, 2.5, 'SignNow enviado y sin completar', 'SignNow sent, not completed', 'signnow_nudge');
     if (['new', 'pending_contact'].includes(c.stage) && !(c.log || []).length) add(c, 3, 'Nuevo: primer contacto', 'New: first contact', 'first');
     if (c.stage === 'closed' && c.recontactOn && c.recontactOn <= d0 && idle > 0) add(c, 5, 'Pidió recontacto', 'Asked to be recontacted', 'recontact');
     if (['prescreened', 'approved', 'available'].includes(c.stage) && idle >= 14) add(c, 6, 'Confirmar disponibilidad (14+ días)', 'Confirm availability (14+ days)', 'availability');
@@ -1309,6 +1312,12 @@ function openCandidate(id) {
     ${c.phone && c.consent.wa ? `<a class="btn ghost" id="m-wa" target="_blank" rel="noopener" href="#">${t('Abrir WhatsApp', 'Open WhatsApp')}</a>` : ''}
     <button class="btn ghost" data-act="mark-sent" data-id="${esc(c.id)}">${t('Registrar como enviado', 'Log as sent')}</button></div>
     ${!c.consent.sms && !c.consent.wa && !c.consent.email ? `<p class="small muted">${t('No aceptó mensajes escritos: usa llamada.', 'No written-message consent: call instead.')}</p>` : ''}</section>` : ''}
+  <section class="panel"><h3>${t('Solicitud en SignNow', 'SignNow application')}</h3>
+    ${c.signnow?.doneAt ? `<p class="note good">${t('Completada el', 'Completed on')} ${esc(dayOf(c.signnow.doneAt))}.</p>` : c.signnow?.sentAt ? `<p class="note">${t('Invitación enviada el', 'Invite sent on')} ${esc(dayOf(c.signnow.sentAt))}. ${t('Pendiente de completar.', 'Not completed yet.')}</p>` : `<p class="small muted">${t('Cuando la persona esté realmente interesada, envíale la invitación desde SignNow (plantilla de la agencia → Invite to sign) a su correo, y márcala aquí.', 'When the person is truly interested, send the invitation from SignNow (the agency’s template → Invite to sign) to their email, then mark it here.')}</p>`}
+    ${c.email ? `<p class="mono">${esc(c.email)} <button class="btn ghost sm" data-copytext="${esc(c.email)}">${t('Copiar correo', 'Copy email')}</button> <button class="btn ghost sm" data-copytext="${esc(nameOf(c))}">${t('Copiar nombre', 'Copy name')}</button></p>` : `<p class="small late">${t('Falta el correo: SignNow envía la invitación por correo. Pídeselo y agrégalo en el perfil.', 'Email missing: SignNow sends the invitation by email. Ask for it and add it to the profile.')}</p>`}
+    <div class="row"><a class="btn ghost" href="https://app.signnow.com/webapp/documents" target="_blank" rel="noopener">${t('Abrir SignNow', 'Open SignNow')}</a>
+      ${!c.signnow?.sentAt ? `<button class="btn" data-act="sn-sent" data-id="${esc(c.id)}" ${c.email ? '' : 'disabled'}>${t('Marcar invitación enviada', 'Mark invite sent')}</button>` : ''}
+      ${c.signnow?.sentAt && !c.signnow?.doneAt ? `<button class="btn go" data-act="sn-done" data-id="${esc(c.id)}">${t('Marcar completada', 'Mark completed')}</button><button class="btn ghost" data-act="sn-resend" data-id="${esc(c.id)}">${t('Reenviada hoy', 'Resent today')}</button>` : ''}</div></section>
   <section class="panel"><h3>${t('Tareas', 'Tasks')}</h3>${taskList(myTasks)}</section>
   <section class="panel"><h3>${t('Perfil', 'Profile')}</h3>${candidateForm(c)}</section>
   <section class="panel"><h3>${t('Historial', 'History')}</h3><ol class="timeline">
@@ -1496,6 +1505,12 @@ function exportCands() {
   saveCsv(`candidatos_${today()}.csv`, [[t('Nombre', 'First name'), t('Apellido', 'Last name'), t('Teléfono', 'Phone'), 'Email', t('Ciudad', 'City'), 'ZIP', t('Idioma', 'Language'), t('Etapa', 'Stage'), t('Fuente', 'Source'), t('Registro', 'Registered'), t('Turnos', 'Shifts'), t('Disponible desde', 'Available from'), t('Último contacto', 'Last contact'), t('Próxima acción', 'Next action'), t('Consentimiento', 'Consent'), t('Ejemplo', 'Sample')],
     ...S.cands.map(c => [c.first, c.last, fmtPhone(c.phone), c.email, c.city, c.zip, c.lang, stageName(c.stage), srcName(c.source), dayOf(c.registeredAt || ''), (c.shifts || []).join(' '), c.availableFrom, dayOf(c.lastContactAt || ''), c.nextAction, c.consent?.contact ? 'yes' : 'no', c.sample ? 'SAMPLE' : ''])]);
 }
+// People ready for a SignNow invite (interested or further, email given, consent, no invite yet), for SignNow's Bulk Invite.
+function exportSignnow() {
+  const list = S.cands.filter(c => c.email && c.consent?.contact && !c.signnow?.sentAt && c.stage !== 'closed' && atLeast(c.stage, 'interested') && !atLeast(c.stage, 'started') && c.agency !== 'reported');
+  if (!list.length) { toast(t('Nadie listo: se necesitan interesados con correo y sin invitación.', 'No one ready: needs interested people with an email and no invite yet.')); return; }
+  saveCsv(`signnow_bulk_${today()}.csv`, [['email', 'first_name', 'last_name', 'phone'], ...list.map(c => [c.email, c.first, c.last, fmtPhone(c.phone)])]);
+}
 function parseCsv(text) {
   const rows = []; let row = [], cell = '', q = false;
   for (let i = 0; i < text.length; i++) {
@@ -1595,6 +1610,21 @@ document.addEventListener('click', async e => {
   else if (act === 'load-plan') { b.disabled = true; for (const a of suggestedPlan()) if (!(await safe(() => put('activities', a)))) break; toast(t('Plan de 90 días cargado (todo sin confirmar)', '90-day plan loaded (all unconfirmed)')); }
   else if (act === 'toggle-past') { S.showPast = !S.showPast; render(); }
   else if (act === 'export-cands') exportCands();
+  else if (act === 'export-signnow') exportSignnow();
+  else if (act === 'sn-sent' || act === 'sn-resend') {
+    const c = byId(ds.id), now = new Date().toISOString();
+    const n = { ...c, signnow: { ...(c.signnow || {}), sentAt: now, resends: (c.signnow?.resends || 0) + (act === 'sn-resend' ? 1 : 0) }, log: [{ at: now, kind: 'email', outcome: 'sent', body: act === 'sn-resend' ? t('Invitación SignNow reenviada', 'SignNow invite resent') : t('Invitación SignNow enviada', 'SignNow invite sent') }, ...(c.log || [])].slice(0, 120), lastContactAt: now };
+    if (!atLeast(c.stage, 'application') || c.stage === 'closed') n.stage = 'application';
+    if (await saveCandidate(n, c)) { toast(t('Registrado. Avísale por texto que revise su correo.', 'Logged. Text them to check their email.')); openCandidate(c.id); }
+  }
+  else if (act === 'sn-done') {
+    const c = byId(ds.id), now = new Date().toISOString();
+    const n = { ...c, signnow: { ...(c.signnow || {}), doneAt: now }, log: [{ at: now, kind: 'note', outcome: '', body: t('Solicitud SignNow completada', 'SignNow application completed') }, ...(c.log || [])].slice(0, 120) };
+    if (await saveCandidate(n, c)) {
+      await safe(() => put('tasks', { id: `${c.id}--signnow-done`, candId: c.id, kind: 'follow_up', title: `${t('Revisar solicitud y siguiente paso', 'Review application and next step')}: ${nameOf(c)}`, due: today(), done: false, auto: 'signnow-done' }));
+      toast(t('Completada. Se creó la tarea del siguiente paso.', 'Completed. Next-step task created.')); openCandidate(c.id);
+    }
+  }
   else if (act === 'kit-flyer') { b.disabled = true; await kitFlyer(); b.disabled = false; }
   else if (act === 'kit-cards') { b.disabled = true; await kitCards(); b.disabled = false; }
   else if (act === 'kit-png') { b.disabled = true; await kitPng(); b.disabled = false; }
