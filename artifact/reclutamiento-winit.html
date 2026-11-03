@@ -1079,7 +1079,8 @@ VIEWS.kit = () => {
   <section class="panel"><div class="row" style="align-items:flex-start;gap:24px">
     <div id="qr-box" style="width:200px;height:200px;background:#fff;border-radius:6px;display:grid;place-items:center;flex:none">${link ? `<span class="small muted">${t('Cargando QR…', 'Loading QR…')}</span>` : ''}</div>
     <div class="stack" style="flex:1 1 260px;min-width:0">
-      <label class="f">${t('Línea destacada del folleto (pago y fecha de inicio, solo si están confirmados)', 'Flyer highlight line (pay and start date, only if confirmed)')}<input id="kit-line" maxlength="90" value="${esc(st.kitLine || '')}" placeholder="$17/hr · Start this Thursday & Friday · Empieza este jueves y viernes"></label>
+      <label class="f">${t('Línea destacada del folleto (pago y fecha de inicio, solo si están confirmados)', 'Flyer highlight line (pay and start date, only if confirmed)')}<input id="kit-line" maxlength="160" value="${esc(st.kitLine || '')}" placeholder="$17.00/hr · Full-Time Warehouse Associate (Florence, Kentucky) | Start Thu Nov 5 & Fri Nov 6 · Empieza jue 5 y vie 6"></label>
+      <span class="small muted">${t('Usa " | " para pasar a una segunda línea.', 'Use " | " to start a second line.')}</span>
       <fieldset><legend>${t('Qué abre el QR', 'What the QR opens')}</legend><div class="chips">
         <button class="chip" data-act="qr-mode" data-v="sms" aria-pressed="${st.qrMode !== 'link'}">${t('Mensaje de texto a mí (nombre y correo)', 'Text message to me (name and email)')}</button>
         <button class="chip" data-act="qr-mode" data-v="link" aria-pressed="${st.qrMode === 'link'}" ${st.applyLink ? '' : 'disabled'}>${t('Enlace de Ajustes', 'Link from Settings')}</button></div></fieldset>
@@ -1109,9 +1110,12 @@ async function kitFlyer() {
   doc.setTextColor(...CREAM); doc.setFont('times', 'normal'); doc.setFontSize(20); doc.text(BRAND.name, M, 52);
   doc.setFont('times', 'bold'); doc.setFontSize(38); doc.text('Warehouse jobs', M, 104); doc.setFont('times', 'normal'); doc.setFontSize(26); doc.text('Trabajos de almacén', M, 138);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(12); doc.text('Florence, KY', W - M, 52, { align: 'right' });
-  if (st.kitLine) { doc.setFillColor(...GOLD); doc.rect(M - 8, 188, W - 2 * M + 16, 30, 'F'); doc.setTextColor(...INK); doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text(doc.splitTextToSize(st.kitLine, W - 2 * M)[0], W / 2, 208, { align: 'center' }); }
-  doc.setTextColor(...INK); doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.text('Picking  ·  Packing  ·  Sorting  ·  Material handling', M, st.kitLine ? 238 : 214);
-  const off = st.kitLine ? 18 : 0;
+  // Highlight band: one or two lines (a " | " in the text starts the second line).
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(15);
+  const band = st.kitLine ? st.kitLine.split('|').map(x => x.trim()).filter(Boolean).flatMap(x => doc.splitTextToSize(x, W - 2 * M)).slice(0, 3) : [];
+  if (band.length) { doc.setFillColor(...GOLD); doc.rect(M - 8, 188, W - 2 * M + 16, 12 + band.length * 19, 'F'); doc.setTextColor(...INK); band.forEach((l, i) => doc.text(l, W / 2, 206 + i * 19, { align: 'center' })); }
+  const off = band.length ? 18 + (band.length - 1) * 19 : 0;
+  doc.setTextColor(...INK); doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.text('Picking  ·  Packing  ·  Sorting  ·  Material handling', M, 214 + off + (band.length ? 6 : 0));
   drawQr(doc, link, M + 6, 248 + off, 230);
   const x = M + 270; let y = 270 + off;
   const cta = sms
