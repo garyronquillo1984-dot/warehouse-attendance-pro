@@ -1067,7 +1067,9 @@ VIEWS.kit = () => {
   ${!link ? `<div class="note bad">${t('Primero escribe el enlace de preinscripción en Ajustes y datos (por ejemplo, un Formulario de Google o Microsoft que pida solo nombre, teléfono, turnos, experiencia y consentimiento).', 'First enter the pre-registration link in Settings & data (for example a Google or Microsoft Form asking only for name, phone, shifts, experience and consent).')} <button class="linkbtn" data-tab="ajustes">${t('Ir a Ajustes', 'Go to Settings')}</button></div>` : ''}
   <section class="panel"><div class="row" style="align-items:flex-start;gap:24px">
     <div id="qr-box" style="width:200px;height:200px;background:#fff;border-radius:6px;display:grid;place-items:center;flex:none">${link ? `<span class="small muted">${t('Cargando QR…', 'Loading QR…')}</span>` : ''}</div>
-    <div class="stack" style="flex:1 1 260px;min-width:0"><p><b>${t('Enlace del QR', 'QR link')}</b></p><p class="mono small" style="overflow-wrap:anywhere">${esc(link || '—')}</p>
+    <div class="stack" style="flex:1 1 260px;min-width:0">
+      <label class="f">${t('Línea destacada del folleto (pago y fecha de inicio, solo si están confirmados)', 'Flyer highlight line (pay and start date, only if confirmed)')}<input id="kit-line" maxlength="90" value="${esc(st.kitLine || '')}" placeholder="$17/hr · Start this Thursday & Friday · Empieza este jueves y viernes"></label>
+      <p><b>${t('Enlace del QR', 'QR link')}</b></p><p class="mono small" style="overflow-wrap:anywhere">${esc(link || '—')}</p>
       <p class="small muted">${t('Prueba el QR con tu teléfono antes de imprimir.', 'Test the QR with your phone before printing.')}</p>
       <div class="row"><button class="btn" data-act="kit-flyer" ${link ? '' : 'disabled'}>${t('Folleto PDF', 'Flyer PDF')}</button><button class="btn" data-act="kit-cards" ${link ? '' : 'disabled'}>${t('Tarjetas PDF (10 por hoja)', 'Cards PDF (10 per sheet)')}</button><button class="btn ghost" data-act="kit-png" ${link ? '' : 'disabled'}>${t('QR en PNG', 'QR as PNG')}</button></div></div></div></section>
   <section class="panel"><h2>${t('Qué dice el folleto', 'What the flyer says')}</h2><pre class="msg">${esc(`Warehouse jobs · Trabajos de almacén — Florence, KY
@@ -1091,9 +1093,11 @@ async function kitFlyer() {
   doc.setTextColor(...CREAM); doc.setFont('times', 'normal'); doc.setFontSize(20); doc.text(BRAND.name, M, 52);
   doc.setFont('times', 'bold'); doc.setFontSize(38); doc.text('Warehouse jobs', M, 104); doc.setFont('times', 'normal'); doc.setFontSize(26); doc.text('Trabajos de almacén', M, 138);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(12); doc.text('Florence, KY', W - M, 52, { align: 'right' });
-  doc.setTextColor(...INK); doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.text('Picking  ·  Packing  ·  Sorting  ·  Material handling', M, 214);
-  drawQr(doc, link, M + 6, 248, 230);
-  const x = M + 270; let y = 270;
+  if (st.kitLine) { doc.setFillColor(...GOLD); doc.rect(M - 8, 188, W - 2 * M + 16, 30, 'F'); doc.setTextColor(...INK); doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text(doc.splitTextToSize(st.kitLine, W - 2 * M)[0], W / 2, 208, { align: 'center' }); }
+  doc.setTextColor(...INK); doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.text('Picking  ·  Packing  ·  Sorting  ·  Material handling', M, st.kitLine ? 238 : 214);
+  const off = st.kitLine ? 18 : 0;
+  drawQr(doc, link, M + 6, 248 + off, 230);
+  const x = M + 270; let y = 270 + off;
   doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text('Scan to pre-register', x, y); y += 18;
   doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.splitTextToSize('2 minutes. We call you back when an authorized opening matches your availability.', W - x - M).forEach(l => { doc.text(l, x, y); y += 15; }); y += 14;
   doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text('Escanea para preinscribirte', x, y); y += 18;
@@ -1619,6 +1623,7 @@ document.addEventListener('click', async e => {
 });
 document.addEventListener('change', async e => {
   const el = e.target;
+  if (el.id === 'kit-line') { await savePlan({ kitLine: el.value.trim() }); toast(t('Guardado', 'Saved')); return; }
   if (el.matches('input[data-plan]')) { await savePlan({ plan: { ...(S.settings.plan || {}), [el.dataset.plan]: el.checked } }); render(); return; }
   if (el.matches('input[data-plannote]')) { await savePlan({ planNotes: { ...(S.settings.planNotes || {}), [el.dataset.plannote]: el.value.trim() } }); toast(t('Guardado', 'Saved')); return; }
   if (el.matches('input[data-task]')) {
