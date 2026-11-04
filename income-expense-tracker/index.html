@@ -446,6 +446,62 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
 .viz-table table { margin-top: 6px; font-size: .85rem; }
 .viz-table .table-wrap, .viz-table > div { max-height: 260px; overflow: auto; }
 .legend-inline { display: flex; gap: 14px; font-size: .8rem; color: var(--muted); }
+/* ---- Overview dashboard: five numbers first, details on tap ---- */
+#view-overview { display: grid; gap: 14px; }
+.dash-head { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; justify-content: space-between; }
+.dash-head .seg { max-width: 100%; overflow-x: auto; }
+.dash-head .seg button { white-space: nowrap; }
+.dash-range { margin: 0; color: var(--muted); font-size: .85rem; }
+.dash-custom { display: flex; gap: 10px; flex-wrap: wrap; }
+.dstatus { display: grid; gap: 4px; padding: 14px 16px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); border-left: 6px solid var(--muted); }
+.dstatus.pos { border-left-color: var(--income); }
+.dstatus.neg { border-left-color: var(--danger); }
+.dstatus.even { border-left-color: var(--warn); }
+.dstatus .dst-title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.dstatus p { margin: 0; color: var(--muted); font-size: .9rem; }
+.dstatus p b { color: var(--ink); }
+.dcards { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 1100px) { .dcards { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (max-width: 380px) { .dcards { grid-template-columns: 1fr; } }
+.dcard { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); min-width: 0; }
+.dcard[open] { grid-column: 1 / -1; }
+.dcard > summary { list-style: none; cursor: pointer; padding: 14px 16px; display: grid; gap: 4px; border-radius: var(--radius); }
+.dcard > summary::-webkit-details-marker { display: none; }
+.dcard > summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.dcard .dk-label { font-size: .78rem; font-weight: 700; color: var(--muted); }
+.dcard .dk-big { font-family: var(--font-display); font-size: clamp(1.35rem, 3.6vw, 1.85rem); font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.15; overflow-wrap: anywhere; }
+.dk-big.pos { color: var(--income); }
+.dk-big.neg { color: var(--danger); }
+.dcard .dk-sub { font-size: .8rem; color: var(--muted); }
+.dcard .dk-more { font-size: .75rem; font-weight: 700; color: var(--accent); }
+.dcard .dk-more::after { content: "Show details ▾"; }
+.dcard[open] .dk-more::after { content: "Hide details ▴"; }
+.dbody { padding: 4px 16px 16px; display: grid; gap: 16px; border-top: 1px solid var(--line); }
+.dbody h3 { margin: 10px 0 4px; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.drow, .dsub > summary { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: .92rem; }
+.drow:last-child { border-bottom: 0; }
+.drow .num, .dsub > summary .num { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+.drow .dl { min-width: 0; overflow-wrap: anywhere; }
+.drow small, .dsub small { display: block; color: var(--muted); font-size: .78rem; font-weight: 400; }
+.drow.total { font-weight: 700; border-top: 2px solid var(--line); }
+.dsub > summary { list-style: none; cursor: pointer; }
+.dsub > summary::-webkit-details-marker { display: none; }
+.dsub > summary .dl::before { content: "▸ "; color: var(--muted); }
+.dsub[open] > summary .dl::before { content: "▾ "; }
+.dsub .dtx { padding: 4px 0 8px 18px; }
+.dsub .dtx .drow { font-size: .85rem; padding: 6px 0; }
+.dshare { display: block; height: 6px; border-radius: 99px; background: var(--surface-2); overflow: hidden; margin-top: 5px; }
+.dshare span { display: block; height: 100%; background: var(--expense); }
+.dnote { margin: 0; font-size: .85rem; color: var(--muted); }
+.dproj { font-size: .7rem; font-weight: 700; padding: 1px 7px; border-radius: 99px; background: var(--warn-soft); color: var(--warn); margin-left: 6px; white-space: nowrap; }
+.dexp-form { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); align-items: end; }
+.dacc > summary { list-style: none; cursor: pointer; display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+.dacc > summary::-webkit-details-marker { display: none; }
+.dacc > summary h2 { margin: 0; font-size: 1rem; }
+.dacc > summary h2::before { content: "▸ "; color: var(--muted); }
+.dacc[open] > summary h2::before { content: "▾ "; }
+.dacc[open] > summary { margin-bottom: 12px; }
+
 .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; flex: none; }
 .donut-wrap { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; justify-content: center; }
 .donut-wrap .viz { width: 180px; flex: none; }
@@ -568,71 +624,36 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
 
   <!-- ================= OVERVIEW ================= -->
   <section class="view" id="view-overview">
-    <div class="month-bar"><button class="mbtn" type="button" data-month="-1" aria-label="Previous month">‹</button><h2 class="month-label">This month</h2><button class="mbtn" type="button" data-month="1" aria-label="Next month">›</button><button class="btn small" type="button" data-month="0">Back to this month</button></div>
-    <div class="kpis" id="kpis"></div>
-    <article class="panel" id="ovAlertsPanel" hidden>
-      <div class="panel-head"><h2>Needs attention</h2><button class="btn small" type="button" data-goto="cards" id="ovAlertsMore">See all alerts</button></div>
-      <ul class="alerts" id="ovAlerts"></ul>
-    </article>
-    <article class="panel">
-      <div class="panel-head"><h2>Money in the bank</h2><span class="hint" id="lineCap"></span></div>
-      <div class="viz" id="vizLine"></div>
-      <details class="viz-table"><summary>Show as table</summary><div id="vizLineTable"></div></details>
-    </article>
-    <div class="grid-2">
-      <article class="panel">
-        <div class="panel-head"><h2>Budget vs actual</h2>
-          <div class="legend-inline"><span><i class="sw" style="background:var(--viz-budget)"></i>Budget</span><span><i class="sw" style="background:var(--viz-actual)"></i>Actual</span></div></div>
-        <div class="viz" id="vizBars"></div>
-        <details class="viz-table"><summary>Show as table</summary><div id="vizBarsTable"></div></details>
-      </article>
-      <article class="panel">
-        <div class="panel-head"><h2>Where the money went</h2><span class="hint">Spent or saved</span></div>
-        <div class="donut-wrap"><div class="viz" id="vizDonut"></div><ul class="dlegend" id="vizDonutLegend"></ul></div>
-        <details class="viz-table"><summary>Show as table</summary><div id="vizDonutTable"></div></details>
-      </article>
-    </div>
-    <article class="panel">
-      <div class="panel-head"><h2>Budget this month</h2><button class="btn small" type="button" data-bgoto="summary">Open budget</button></div>
-      <div id="ovBudget"></div>
-    </article>
-    <article class="panel ov-strip" aria-label="Accounts snapshot">
-      <div><div class="eyebrow">Free in Checking after bills</div><div class="v" id="ovChk">$0.00</div></div>
-      <div><div class="eyebrow">Safe to spend on fun</div><div class="v" id="ovFun">$0.00</div></div>
-      <div><div class="eyebrow">Total money in banks</div><div class="v" id="ovBanks">$0.00</div></div>
-      <button class="btn small" type="button" data-goto="cards">My accounts</button>
-    </article>
-    <article class="panel" aria-labelledby="totTitle">
-      <div class="panel-head">
-        <h2 id="totTitle">Totals up to today</h2>
-        <span class="hint">Red means expenses are higher than income</span>
+    <div class="dash-head">
+      <div class="seg" role="group" aria-label="Period">
+        <button type="button" data-dper="week" aria-pressed="false">This week</button>
+        <button type="button" data-dper="month" aria-pressed="true">This month</button>
+        <button type="button" data-dper="ytd" aria-pressed="false">Year to date</button>
+        <button type="button" data-dper="custom" aria-pressed="false">Custom</button>
       </div>
-      <div class="table-wrap">
-        <table class="totals">
-          <thead><tr><th></th><th class="num">Week</th><th class="num">Month</th><th class="num">All time</th></tr></thead>
-          <tbody>
-            <tr><td>Income</td><td class="num c-inc" id="t-inc-week">$0.00</td><td class="num c-inc" id="t-inc-month">$0.00</td><td class="num c-inc" id="t-inc-all">$0.00</td></tr>
-            <tr><td>Expenses</td><td class="num c-exp" id="t-exp-week">$0.00</td><td class="num c-exp" id="t-exp-month">$0.00</td><td class="num c-exp" id="t-exp-all">$0.00</td></tr>
-            <tr><td>Net</td><td class="num" id="t-net-week">$0.00</td><td class="num" id="t-net-month">$0.00</td><td class="num" id="t-net-all">$0.00</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </article>
-    <div class="grid-2">
-      <article class="panel">
-        <div class="panel-head"><h2>Top 5 spending</h2><span class="hint">Tap one to see its transactions</span></div>
-        <div id="top5"></div>
-        <div class="empty" id="top5Empty">No expenses this month.</div>
-      </article>
-      <article class="panel" aria-labelledby="recTitle">
-        <div class="panel-head">
-          <h2 id="recTitle">Weekly recurring</h2>
-          <span class="hint">Added automatically</span>
-        </div>
-        <ul class="list" id="recList"></ul>
-        <div class="empty" id="recEmpty">Nothing repeats yet. Turn on "Repeat every week" when you add your pay or a fixed bill.</div>
-      </article>
+      <p class="dash-range" id="dRange"></p>
     </div>
+    <div class="dash-custom" id="dCustom" hidden>
+      <label class="field"><span>From</span><input type="date" id="dFrom"></label>
+      <label class="field"><span>To</span><input type="date" id="dTo"></label>
+    </div>
+    <div class="dstatus" id="dStatus" role="status"></div>
+    <div class="dcards" id="dCards"></div>
+    <article class="panel">
+      <div class="panel-head"><h2>Income vs expenses</h2><span class="hint" id="dChartCap"></span></div>
+      <div class="legend-inline"><span><i class="sw" style="background:var(--income)"></i>Income</span><span><i class="sw" style="background:var(--expense)"></i>Expenses</span><span>Net shown under each bar</span></div>
+      <div class="viz" id="dChart"></div>
+      <details class="viz-table"><summary>Show as table</summary><div id="dChartTable"></div></details>
+    </article>
+    <details class="panel dacc" id="dAlertsWrap">
+      <summary><h2>Alerts</h2><span class="chip" id="dAlertsCount">0</span></summary>
+      <ul class="alerts" id="dAlerts"></ul>
+    </details>
+    <details class="panel dacc">
+      <summary><h2>Transactions</h2><span class="hint" id="dTxCount"></span></summary>
+      <div id="dTx"></div>
+      <div class="btn-row" style="margin-top:12px"><button class="btn small" type="button" id="dTxAll">Search and filter all transactions</button></div>
+    </details>
   </section>
 
   <!-- ================= BUDGET ================= -->
@@ -1100,6 +1121,16 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
         </form>
       </article>
     </div>
+    <div class="grid-2">
+      <article class="panel" aria-labelledby="recTitle">
+        <div class="panel-head">
+          <h2 id="recTitle">Weekly recurring</h2>
+          <span class="hint">Added automatically</span>
+        </div>
+        <ul class="list" id="recList"></ul>
+        <div class="empty" id="recEmpty">Nothing repeats yet. Turn on "Repeat every week" when you add your pay or a fixed bill.</div>
+      </article>
+    </div>
   </section>
 </main>
 
@@ -1205,6 +1236,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       holdings: [],   // {id, name, valuationCents, valuationDate, history: [{date, valueCents}]}
       invMoves: [],   // {id, holdingId, type: buy|sell, amountCents, date, createdAt, voidedAt}
       debts: [],      // {id, name, balanceCents, limitCents (credit cards, 0 = none)}
+      expected: [],   // {id, source, amountCents, date, accountId, receivedEntryId}: income not received yet
       plan: { savingsMonthlyCents: 0, investMonthlyCents: 0, funMonthlyCents: 0, essentialsWeeklyCents: 0, cushionCents: 0 }
     };
   }
@@ -1291,6 +1323,11 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       s.invMoves.push({ id: String(m.id || uid()), holdingId: m.holdingId, type: m.type, amountCents: posCents(m.amountCents), date: m.date,
         createdAt: typeof m.createdAt === "string" ? m.createdAt : null, voidedAt: typeof m.voidedAt === "string" ? m.voidedAt : null,
         cashAccount: isAcct(m.cashAccount) ? m.cashAccount : "inv" });
+    });
+    arr(data.expected).forEach(function (x) {
+      if (!x || !str(x.source, 60) || !posCents(x.amountCents) || !isISODate(x.date)) return;
+      s.expected.push({ id: String(x.id || uid()), source: str(x.source, 60), amountCents: posCents(x.amountCents), date: x.date,
+        accountId: isAcct(x.accountId) ? x.accountId : "inv", receivedEntryId: typeof x.receivedEntryId === "string" ? x.receivedEntryId : null });
     });
     arr(data.debts).forEach(function (d) {
       if (d && str(d.name, 60) && posCents(d.balanceCents)) s.debts.push({ id: String(d.id || uid()), name: str(d.name, 60), balanceCents: posCents(d.balanceCents), limitCents: posCents(d.limitCents) });
@@ -1458,28 +1495,233 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     return { inc: inc, exp: exp, net: inc - exp };
   }
 
-  function renderOverview() {
-    // Totals table
-    ["week", "month", "all"].forEach(function (p) {
-      var t = totals(p), over = t.exp > t.inc;
-      $("t-inc-" + p).textContent = fmt(t.inc);
-      $("t-exp-" + p).textContent = fmt(t.exp);
-      var n = $("t-net-" + p);
-      n.textContent = fmt(t.net);
-      n.className = "num" + (t.net < 0 ? " c-neg" : "");
-      [$("t-exp-" + p), n].forEach(function (c) { c.classList.toggle("cell-over", over); });
-    });
-    renderBudgetAndOverviewExtras();
-    $("ovBudget").innerHTML = summaryTable(budgetModel(viewMonth));
+  // ---------- Overview: five numbers first, details on tap ----------
+  // Received and paid come only from recorded entries. Expected income and upcoming bills are
+  // listed apart and only added into figures labelled "Projected". Transfers are never income or expenses.
+  var DASH_KEY = "incomeExpenseTracker.dashPeriod";
+  var dash = { p: "month", from: "", to: "" };
+  try {
+    var savedDash = JSON.parse(storeGet(DASH_KEY) || "null");
+    if (savedDash && ["week", "month", "ytd", "custom"].indexOf(savedDash.p) >= 0) {
+      dash.p = savedDash.p; dash.from = isISODate(savedDash.from) ? savedDash.from : ""; dash.to = isISODate(savedDash.to) ? savedDash.to : "";
+    }
+  } catch (e) { /* ignore */ }
+  var dashOpen = {};
 
-    // Last FedEx pay
+  function dashRange() {
+    var today = todayISO();
+    if (dash.p === "week") return periodRange("week");
+    if (dash.p === "ytd") return [today.slice(0, 4) + "-01-01", today];
+    if (dash.p === "custom") {
+      var f = dash.from || today.slice(0, 7) + "-01", t = dash.to || today;
+      return f <= t ? [f, t] : [t, f];
+    }
+    return periodRange("month");
+  }
+  function daysBetween(a, b) { return Math.round((parseISO(b) - parseISO(a)) / 864e5); }
+  // An expected payment counts as received once you record it, or once an income from the same
+  // source is recorded within 3 days of its date.
+  function expectedReceived(x) {
+    return state.entries.some(function (e) {
+      return e.id === x.receivedEntryId || (e.type === "income" && e.category === x.source && Math.abs(daysBetween(e.date, x.date)) <= 3);
+    });
+  }
+  function pendingExpected(r) {
+    return state.expected.filter(function (x) { return inRange(x.date, r) && !expectedReceived(x); })
+      .sort(function (a, b) { return a.date.localeCompare(b.date); });
+  }
+  function unpaidBills(r) {
+    return billSchedule(r[1] || todayISO()).filter(function (o) { return o.status !== "paid" && inRange(o.due, r); });
+  }
+  function groupBy(list, key) {
+    var by = {};
+    list.forEach(function (e) { var k = key(e); (by[k] = by[k] || []).push(e); });
+    return Object.keys(by).map(function (k) { return { name: k, items: by[k], total: sum(by[k], function (e) { return e.amountCents; }) }; })
+      .sort(function (a, b) { return b.total - a.total || byName(a.name, b.name); });
+  }
+  // Net money put aside in a range: transfers into savings accounts and investment buys, with each movement listed.
+  function savingsMoves(r) {
+    var keep = keptAccounts(), out = [];
+    state.transfers.forEach(function (t) {
+      if (t.voidedAt || !inRange(t.date, r)) return;
+      if (keep[t.to] && !keep[t.from]) out.push({ date: t.date, label: acctName(t.from) + " → " + acctName(t.to), cents: t.amountCents });
+      if (keep[t.from] && !keep[t.to]) out.push({ date: t.date, label: acctName(t.from) + " → " + acctName(t.to) + " (taken out)", cents: -t.amountCents });
+    });
+    state.invMoves.forEach(function (m) {
+      if (m.voidedAt || !inRange(m.date, r)) return;
+      var h = holding(m.holdingId), name = h ? h.name : "Investment";
+      out.push({ date: m.date, label: (m.type === "buy" ? "Bought " : "Sold ") + name, cents: m.type === "buy" ? m.amountCents : -m.amountCents });
+    });
+    return out.sort(function (a, b) { return b.date.localeCompare(a.date); });
+  }
+  function dashData() {
+    var r = dashRange(), inc = [], exp = [];
+    state.entries.forEach(function (e) { if (inRange(e.date, r)) (e.type === "income" ? inc : exp).push(e); });
+    var d = { r: r, inc: inc, exp: exp, expected: pendingExpected(r), bills: unpaidBills(r), saves: savingsMoves(r) };
+    d.incT = sum(inc, function (e) { return e.amountCents; });
+    d.expT = sum(exp, function (e) { return e.amountCents; });
+    d.net = d.incT - d.expT;
+    d.saved = sum(d.saves, function (x) { return x.cents; });
+    d.expectedT = sum(d.expected, function (x) { return x.amountCents; });
+    d.billsT = sum(d.bills, function (o) { return o.bill.amountCents; });
+    d.banks = sum(ACCT_IDS, bal);
+    return d;
+  }
+  function pctOf(part, whole) { var p = part / whole * 100; return p > 0 && p < 1 ? "less than 1" : String(Math.round(p)); }
+  function rangeText(r) {
+    var y = todayISO().slice(0, 4), same = r[0].slice(0, 4) === r[1].slice(0, 4);
+    return pretty(r[0], !same || r[0].slice(0, 4) !== y) + " – " + pretty(r[1], r[1].slice(0, 4) !== y);
+  }
+  function txRow(e, showCat) {
+    var parts = [pretty(e.date, false)];
+    if (showCat) parts.push(e.category);
+    parts.push(e.accountId ? acctName(e.accountId) : "No account");
+    return '<div class="drow"><span class="dl">' + esc(parts.join(" · ")) + (e.note ? '<small>' + esc(e.note) + '</small>' : "") + '</span>' +
+      '<span class="num">' + (e.type === "income" ? "+" : "−") + fmt(e.amountCents) + '</span></div>';
+  }
+  function groupList(groups, total, withShare) {
+    return groups.map(function (g) {
+      return '<details class="dsub"><summary><span class="dl">' + esc(g.name) + '<small>' + g.items.length + (g.items.length === 1 ? " transaction" : " transactions") +
+        (withShare ? " · " + pctOf(g.total, total) + "%" : "") + '</small>' + (withShare ? '<span class="dshare"><span style="width:' + Math.max(2, g.total / total * 100) + '%"></span></span>' : "") +
+        '</span><span class="num">' + fmt(g.total) + '</span></summary><div class="dtx">' +
+        g.items.slice().sort(function (a, b) { return b.date.localeCompare(a.date); }).map(function (e) { return txRow(e, false); }).join("") + '</div></details>';
+    }).join("");
+  }
+  function drow(label, cents, note, cls) {
+    return '<div class="drow' + (cls ? " " + cls : "") + '"><span class="dl">' + label + (note ? '<small>' + note + '</small>' : "") + '</span><span class="num' + (cents < 0 ? " c-neg" : "") + '">' + fmt(cents) + '</span></div>';
+  }
+  var PROJ = '<span class="dproj">Projected</span>';
+  function dcard(id, label, big, cls, sub, body) {
+    return '<details class="dcard" data-dcard="' + id + '"' + (dashOpen[id] ? " open" : "") + '><summary><span class="dk-label">' + label + '</span>' +
+      '<span class="dk-big' + (cls ? " " + cls : "") + '">' + big + '</span><span class="dk-sub">' + sub + '</span><span class="dk-more"></span></summary>' +
+      '<div class="dbody">' + body + '</div></details>';
+  }
+
+  function dashIncomeBody(d) {
+    var h = '<div><h3>Received, by source</h3>' + (d.inc.length ? groupList(groupBy(d.inc, function (e) { return e.category; }), d.incT, false) + drow("Total received", d.incT, "", "total")
+      : '<p class="dnote">No income recorded in this period.</p>') + '</div>';
+    var b = dashBuckets(d.r, true);
+    if (d.inc.length && b.list.length > 1) {
+      h += '<div><h3>Received, by ' + b.unit + '</h3>' + b.list.map(function (x) {
+        return drow(esc(x.label), sum(d.inc.filter(function (e) { return inRange(e.date, x.r); }), function (e) { return e.amountCents; }));
+      }).join("") + '</div>';
+    }
+    var src = incomeSourcesAll();
+    h += '<div><h3>Expected, not received yet</h3>' + (d.expected.length ? d.expected.map(function (x) {
+      var late = x.date < todayISO();
+      return '<div class="drow"><span class="dl">' + esc(x.source) + PROJ + '<small>' + (late ? "Was due " : "Due ") + esc(pretty(x.date, false)) + " · into " + esc(acctName(x.accountId)) +
+        (late ? " · not recorded yet" : "") + '</small><span class="btn-row" style="margin-top:6px"><button class="btn small" type="button" data-exprecv="' + esc(x.id) + '">Mark received</button>' +
+        '<button class="btn small danger" type="button" data-expdel="' + esc(x.id) + '">Remove</button></span></span><span class="num">' + fmt(x.amountCents) + '</span></div>';
+    }).join("") + '<p class="dnote">Expected money is not counted as received until it arrives.</p>' : '<p class="dnote">Nothing expected in this period.</p>') +
+      '<details class="dsub"><summary><span class="dl">Add expected income</span><span class="num"></span></summary>' +
+      '<div class="dexp-form" style="margin-top:8px"><label class="field"><span>Source</span><select id="xpSrc">' + src.map(function (x) { return '<option' + (x === DEFAULT_SOURCE ? " selected" : "") + '>' + esc(x) + '</option>'; }).join("") + '</select></label>' +
+      '<label class="field"><span>Amount</span><input id="xpAmt" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></label>' +
+      '<label class="field"><span>Date</span><input id="xpDate" type="date"></label>' +
+      '<label class="field"><span>Into</span><select id="xpAcct" class="acct-select">' + ACCT_IDS.map(function (id) { return '<option value="' + id + '"' + (id === state.settings.payAccount ? " selected" : "") + '>' + esc(acctName(id)) + '</option>'; }).join("") + '</select></label>' +
+      '<button class="btn small" type="button" data-expadd>Add expected income</button></div></details></div>';
+    return h;
+  }
+  function dashExpenseBody(d) {
+    var h = '<div><h3>Paid, by category</h3>' + (d.exp.length ? groupList(groupBy(d.exp, function (e) { return e.category; }), d.expT, true) + drow("Total paid", d.expT, "", "total")
+      : '<p class="dnote">No expenses recorded in this period.</p>') + '</div>';
+    h += '<div><h3>Upcoming bills, not paid yet</h3>' + (d.bills.length ? d.bills.map(function (o) {
+      return drow(esc(o.bill.name) + (o.status === "overdue" ? ' <span class="chip bad">Overdue</span>' : ""), o.bill.amountCents, esc((o.status === "overdue" ? "Was due " : "Due ") + pretty(o.due, false) + " · from " + acctName(o.bill.accountId)));
+    }).join("") + drow("Still to pay" + PROJ, d.billsT, "", "total") : '<p class="dnote">No unpaid bills due in this period.</p>') + '</div>';
+    return h;
+  }
+  function dashNetBody(d) {
+    var h = '<div>' + drow("Income received", d.incT) + drow("Expenses paid", -d.expT) + drow("Net cash flow", d.net, "", "total") +
+      '<p class="dnote">Moves between your own accounts are not counted as income or expenses.</p></div>';
+    if (d.expected.length || d.bills.length) {
+      h += '<div><h3>If expected money arrives and bills are paid</h3>' + drow("Net so far", d.net) +
+        (d.expectedT ? drow("+ Expected income", d.expectedT) : "") + (d.billsT ? drow("− Upcoming bills", -d.billsT) : "") +
+        drow("Projected net for the period" + PROJ, d.net + d.expectedT - d.billsT, "", "total") + '</div>';
+    }
+    return h;
+  }
+  function dashBalanceBody(d) {
+    var h = '<div><h3>In your banks now</h3>' + ACCT_IDS.map(function (id) {
+      var b = bal(id), a = acct(id);
+      return drow(esc(acctName(id)) + (b < 0 ? ' <span class="chip bad">Overdrawn</span>' : ""), b, a && a.asOf ? "Bank balance entered " + esc(pretty(a.asOf, false)) + ", plus what you recorded after" : "");
+    }).join("") + drow("Available now", d.banks, "", "total") + '</div>';
+    var inv = investedValue(), owed = sum(state.debts, function (x) { return x.balanceCents; });
+    if (inv || state.debts.length) {
+      h += '<div><h3>Not cash</h3>' + (inv ? drow("Investments (value)", inv, "Can go up or down; not spendable cash") : "") +
+        state.debts.map(function (x) { return drow("Owed: " + esc(x.name), -x.balanceCents, x.limitCents ? "Limit " + fmt(x.limitCents) : ""); }).join("") +
+        drow("What you own minus what you owe", d.banks + inv - owed, "", "total") + '</div>';
+    }
+    if (d.expected.length || d.bills.length) {
+      h += '<div><h3>By ' + esc(pretty(d.r[1], false)) + '</h3>' + drow("Available now", d.banks) + (d.expectedT ? drow("+ Expected income", d.expectedT) : "") +
+        (d.billsT ? drow("− Upcoming bills", -d.billsT) : "") + drow("Projected cash" + PROJ, d.banks + d.expectedT - d.billsT, "", "total") + '</div>';
+    }
+    return h;
+  }
+  function dashSavingsBody(d) {
+    var h = '<div><h3>Put aside in this period</h3>' + (d.saves.length ? d.saves.map(function (x) { return drow(esc(x.label), x.cents, esc(pretty(x.date, false))); }).join("") + drow("Total saved", d.saved, "", "total")
+      : '<p class="dnote">Nothing moved to savings or investments in this period.</p>') + '</div>';
+    var left = d.net - d.saved;
+    h += '<div><h3>How much you can realistically save</h3><p class="dnote">' + (d.net > 0
+      ? "Income was " + fmt(d.net) + " more than expenses. " + (left > 0 ? "After what you already put aside, up to <b>" + fmt(left) + "</b> more could be saved without using money you had before." : "You already saved all of it.")
+      : d.incT || d.expT ? "Expenses were equal to or higher than income, so saving now would use money you had before the period started." : "Record income and expenses to see this.") + '</p></div>';
+    return h;
+  }
+
+  function renderDashStatus(d) {
+    var el = $("dStatus"), cls = "", title, lines = [];
+    if (!d.incT && !d.expT) { title = "No activity yet"; lines.push("No income or expenses recorded in this period."); }
+    else {
+      var gap = d.net, base = Math.max(d.incT, d.expT);
+      if (Math.abs(gap) <= base * 0.03) { cls = "even"; title = "Break-even"; lines.push("Income and expenses are about the same (difference " + fmt(Math.abs(gap)) + ")."); }
+      else if (gap > 0) { cls = "pos"; title = "Positive"; lines.push("Income is higher than expenses. You kept <b>" + fmt(gap) + "</b>, " + pctOf(gap, d.incT) + "% of your income."); }
+      else {
+        cls = "neg"; title = "Negative";
+        lines.push(d.incT ? "Your expenses are <b>" + pctOf(-gap, d.incT) + "% higher</b> than your income (" + fmt(-gap) + " more than you received)."
+          : "You spent <b>" + fmt(d.expT) + "</b> and no income was recorded in this period.");
+      }
+    }
+    var top = groupBy(d.exp, function (e) { return e.category; })[0];
+    if (top) lines.push("Most of your money went to <b>" + esc(top.name) + "</b>: " + fmt(top.total) + " (" + pctOf(top.total, d.expT) + "% of expenses).");
+    if (d.expected.length) lines.push("Expected, not received yet: <b>" + fmt(d.expectedT) + "</b> (" + d.expected.map(function (x) { return esc(x.source) + " " + esc(pretty(x.date, false)); }).join(", ") + ").");
+    el.className = "dstatus" + (cls ? " " + cls : "");
+    el.innerHTML = '<div class="dst-title">' + title + '</div>' + lines.map(function (l) { return "<p>" + l + "</p>"; }).join("");
+  }
+
+  function renderOverview() {
+    document.querySelectorAll("[data-dper]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.dper === dash.p)); });
+    var d = dashData();
+    $("dCustom").hidden = dash.p !== "custom";
+    if (dash.p === "custom") { $("dFrom").value = d.r[0]; $("dTo").value = d.r[1]; }
+    $("dRange").textContent = rangeText(d.r) + (d.r[1] > todayISO() ? " · figures up to today" : "");
+    renderDashStatus(d);
+    var neg = ACCT_IDS.filter(function (id) { return bal(id) < 0; }).length;
+    $("dCards").innerHTML =
+      dcard("inc", "Total income", fmt(d.incT), "", "Received" + (d.expectedT ? " · " + fmt(d.expectedT) + " expected" : ""), dashIncomeBody(d)) +
+      dcard("exp", "Total expenses", fmt(d.expT), "", "Paid" + (d.billsT ? " · " + fmt(d.billsT) + " in bills to come" : ""), dashExpenseBody(d)) +
+      dcard("net", "Net cash flow", (d.net > 0 ? "+" : "") + fmt(d.net), d.net > 0 ? "pos" : d.net < 0 ? "neg" : "", "Income − expenses", dashNetBody(d)) +
+      dcard("bal", "Available balance", fmt(d.banks), d.banks < 0 ? "neg" : "", neg ? neg + (neg === 1 ? " account" : " accounts") + " overdrawn" : "In your banks now", dashBalanceBody(d)) +
+      dcard("sav", "Savings", fmt(d.saved), d.saved < 0 ? "neg" : "", "To savings and investments", dashSavingsBody(d));
+
+    var alerts = buildAlerts(summary()).filter(function (a) { return a.lvl === "bad" || a.lvl === "warn"; });
+    $("dAlertsWrap").hidden = !alerts.length;
+    $("dAlertsCount").textContent = alerts.length;
+    $("dAlertsCount").className = "chip " + (alerts.some(function (a) { return a.lvl === "bad"; }) ? "bad" : "warn");
+    $("dAlerts").innerHTML = alerts.map(function (a) { return '<li class="' + a.lvl + '"><b>' + esc(a.t) + '</b>' + esc(a.d) + '</li>'; }).join("");
+
+    var tx = d.inc.concat(d.exp).sort(function (a, b) { return b.date.localeCompare(a.date) || String(b.createdAt || "").localeCompare(String(a.createdAt || "")); });
+    $("dTxCount").textContent = tx.length + (tx.length === 1 ? " in this period" : " in this period");
+    $("dTx").innerHTML = tx.length ? tx.slice(0, 10).map(function (e) { return txRow(e, true); }).join("") + (tx.length > 10 ? '<p class="dnote">Showing the 10 most recent.</p>' : "")
+      : '<p class="dnote">No transactions in this period.</p>';
+    renderMonthBars();
+    renderCharts();
+
+    // Last FedEx pay (Add view)
     var last = state.entries.filter(function (e) { return e.type === "income" && e.category === DEFAULT_SOURCE; })
       .sort(function (a, b) { return b.date.localeCompare(a.date); })[0];
     $("payLast").textContent = last ? "Last paycheck: " + fmt(last.amountCents) + " on " + pretty(last.date) : "No paycheck logged yet.";
     $("payAcctNote").textContent = "Goes into " + acctName(state.settings.payAccount) + ". Change it in Settings.";
     $("payAccount").value = state.settings.payAccount;
 
-    // Recurring
+    // Recurring (Settings)
     var active = state.recurring.filter(function (x) { return x.active; });
     $("recEmpty").hidden = active.length > 0;
     $("recList").innerHTML = active.map(function (x) {
@@ -1489,6 +1731,105 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
         '<button class="btn small danger" type="button" data-stop="' + esc(x.id) + '">Stop</button></li>';
     }).join("");
   }
+
+  // Chart buckets for the selected period: weeks for "This week", months for "This month" and "Year to date".
+  function dashBuckets(r, inside) {
+    var today = todayISO(), list = [], unit, cap, i, s0;
+    var ws = periodRange("week")[0];
+    function weeksOver(a, b) {
+      var start = addDays(a, -((parseISO(a).getDay() - state.settings.weekStart + 7) % 7));
+      for (s0 = start; s0 <= b; s0 = addDays(s0, 7)) list.push({ r: [s0 < a ? a : s0, minISO(addDays(s0, 6), b)], label: "Wk " + pretty(s0, false) });
+    }
+    function monthsOver(a, b) {
+      for (var ym = a.slice(0, 7); ym <= b.slice(0, 7); ym = shiftMonth(ym, 1)) {
+        var m = monthRange(ym); list.push({ r: [m[0] < a ? a : m[0], minISO(m[1], b)], label: monthName(ym, true) + (a.slice(0, 4) !== b.slice(0, 4) ? " " + ym.slice(2, 4) : "") });
+      }
+    }
+    if (inside || dash.p === "custom") {
+      // Breakdown inside the selected range
+      if (daysBetween(r[0], r[1]) <= 62) { weeksOver(r[0], r[1]); unit = "week"; } else { monthsOver(r[0], r[1]); unit = "month"; }
+      cap = "By " + unit + ", " + rangeText(r);
+    } else if (dash.p === "week") {
+      for (i = 7; i >= 0; i--) { s0 = addDays(ws, -7 * i); list.push({ r: [s0, addDays(s0, 6)], label: pretty(s0, false) }); }
+      unit = "week"; cap = "Last 8 weeks";
+    } else if (dash.p === "ytd") {
+      monthsOver(today.slice(0, 4) + "-01-01", today); unit = "month"; cap = "Each month this year";
+    } else {
+      monthsOver(monthRange(shiftMonth(today.slice(0, 7), -5))[0], monthRange(today.slice(0, 7))[1]); unit = "month"; cap = "Last 6 months";
+    }
+    return { list: list, unit: unit, cap: cap };
+  }
+  function renderDashChart() {
+    var el = $("dChart"), b = dashBuckets(dashRange(), false);
+    var rows = b.list.map(function (x) {
+      var inc = 0, exp = 0;
+      state.entries.forEach(function (e) { if (inRange(e.date, x.r)) { if (e.type === "income") inc += e.amountCents; else exp += e.amountCents; } });
+      return { label: x.label, inc: inc, exp: exp, net: inc - exp };
+    });
+    // Months or weeks before the first recorded entry are left out.
+    while (rows.length > 1 && !rows[0].inc && !rows[0].exp) rows.shift();
+    $("dChartCap").textContent = b.cap;
+    $("dChartTable").innerHTML = tableHTML(["Period", "Income", "Expenses", "Net"], rows.map(function (x) { return [esc(x.label), fmt(x.inc), fmt(x.exp), fmt(x.net)]; }));
+    if (!rows.some(function (x) { return x.inc || x.exp; })) { el.innerHTML = '<div class="empty">No income or expenses in these dates.</div>'; return; }
+    var W = vizWidth(el), H = 230, L = 44, T = 10, B = 44, ph = H - T - B, n = rows.length, gw = (W - L - 4) / n;
+    var max = Math.max.apply(null, rows.map(function (x) { return Math.max(x.inc, x.exp); })), ticks = niceTicks(0, max), top = ticks[ticks.length - 1];
+    function y(v) { return T + ph - v / top * ph; }
+    var bw = Math.max(4, Math.min(26, gw * 0.32)), svg = "";
+    ticks.forEach(function (t) { svg += '<line x1="' + L + '" x2="' + (W - 2) + '" y1="' + y(t) + '" y2="' + y(t) + '" stroke="var(--line)"/><text x="' + (L - 6) + '" y="' + (y(t) + 4) + '" text-anchor="end" font-size="10" fill="var(--muted)">' + shortMoney(t) + '</text>'; });
+    rows.forEach(function (x, i) {
+      var cx = L + gw * i + gw / 2, small = gw < 46;
+      svg += '<g><title>' + esc(x.label) + ": income " + fmt(x.inc) + ", expenses " + fmt(x.exp) + ", net " + fmt(x.net) + '</title>' +
+        '<rect x="' + (cx - bw - 1) + '" y="' + y(x.inc) + '" width="' + bw + '" height="' + Math.max(0, T + ph - y(x.inc)) + '" rx="3" fill="var(--income)"/>' +
+        '<rect x="' + (cx + 1) + '" y="' + y(x.exp) + '" width="' + bw + '" height="' + Math.max(0, T + ph - y(x.exp)) + '" rx="3" fill="var(--expense)"/>' +
+        '<text x="' + cx + '" y="' + (H - B + 15) + '" text-anchor="middle" font-size="' + (small ? 9 : 10.5) + '" fill="var(--muted)">' + esc(small ? x.label.replace(/^Wk /, "") : x.label) + '</text>' +
+        '<text x="' + cx + '" y="' + (H - B + 31) + '" text-anchor="middle" font-size="' + (small ? 9 : 10.5) + '" font-weight="700" fill="' + (x.net < 0 ? "var(--danger)" : "var(--income)") + '">' + (x.net > 0 ? "+" : "") + shortMoney(x.net) + '</text></g>';
+    });
+    el.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="' + H + '" role="img" aria-label="Income and expenses, ' + esc(b.cap) + '">' + svg + '</svg>';
+  }
+
+  document.addEventListener("toggle", function (ev) {
+    var c = ev.target.closest && ev.target.closest(".dcard");
+    if (c && ev.target === c) dashOpen[c.dataset.dcard] = c.open;
+  }, true);
+  document.addEventListener("click", function (ev) {
+    var t = ev.target, el;
+    if ((el = t.closest("[data-dper]"))) {
+      dash.p = el.dataset.dper; storeSet(DASH_KEY, JSON.stringify(dash)); renderOverview(); return;
+    }
+    if (t.closest("#dTxAll")) {
+      var r = dashRange(), sort = hf.sort;
+      hf = hfDefault(); hf.sort = sort; hf.period = "custom"; hf.from = r[0]; hf.to = r[1];
+      hfSave(); showView("history"); renderHistory(); return;
+    }
+    if (t.closest("[data-expadd]")) {
+      var c = cents($("xpAmt")), date = $("xpDate").value;
+      if (!c) return toast("Enter the amount you expect, like 380.48.");
+      if (!isISODate(date)) return toast("Pick the date you expect it.");
+      state.expected.push({ id: uid(), source: $("xpSrc").value, amountCents: c, date: date, accountId: $("xpAcct").value, receivedEntryId: null });
+      save(); renderAll(); toast("Expected income added. It is not counted until it arrives.");
+      return;
+    }
+    if ((el = t.closest("[data-exprecv]"))) {
+      var x = state.expected.filter(function (v) { return v.id === el.dataset.exprecv; })[0];
+      if (!x) return;
+      var e = { id: uid(), type: "income", category: x.source, amountCents: x.amountCents, date: minISO(x.date, todayISO()), note: "", recurringId: null,
+        accountId: x.accountId, billId: null, billKey: null, createdAt: new Date().toISOString() };
+      state.entries.push(e); x.receivedEntryId = e.id;
+      save(); renderAll(); toast(x.source + " recorded as received: " + fmt(x.amountCents));
+      return;
+    }
+    if ((el = t.closest("[data-expdel]"))) {
+      armOrRun(el, "Confirm", function () {
+        state.expected = state.expected.filter(function (v) { return v.id !== el.dataset.expdel; });
+        save(); renderAll(); toast("Expected income removed");
+      });
+    }
+  });
+  ["dFrom", "dTo"].forEach(function (id) {
+    $(id).addEventListener("change", function () {
+      dash.from = $("dFrom").value; dash.to = $("dTo").value; storeSet(DASH_KEY, JSON.stringify(dash)); renderOverview();
+    });
+  });
 
   // ---------- History: search, period chips, filter panel, sorting ----------
   // The filter lives in `hf`. The panel edits a draft copy and applies it in one go.
@@ -2252,11 +2593,6 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
   function renderAccounts() {
     var S = summary(), c = S.chk, f = S.fun, iv = S.inv, s = savingsInfo(), today = todayISO();
 
-    // Overview strip
-    $("ovChk").textContent = fmt(c.available); $("ovChk").className = "v" + (c.available < 0 ? " neg" : "");
-    $("ovFun").textContent = fmt(f.safe);
-    $("ovBanks").textContent = fmt(S.banks);
-
     // Summary tiles
     $("acctStats").innerHTML =
       stat("Total in banks", fmt(S.banks), "4 accounts, cash only", "hl") +
@@ -2897,12 +3233,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     });
     return c;
   }
-  function monthKpis(ym) {
-    var r = monthRange(ym), inc = 0, spend = 0;
-    state.entries.forEach(function (e) { if (inRange(e.date, r)) { if (e.type === "income") inc += e.amountCents; else spend += e.amountCents; } });
-    var saved = savedIn(r);
-    return { inc: inc, spend: spend, saved: saved, left: inc - spend - saved };
-  }
+
 
   // ---------- Rendering helpers ----------
   function statusOf(kind, budget, real) {
@@ -2982,8 +3313,6 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     if (b) { showBudgetSub(b.dataset.bsub); return; }
     var bg = ev.target.closest("[data-bgoto]");
     if (bg) { showView("budget"); showBudgetSub(bg.dataset.bgoto); return; }
-    var t5 = ev.target.closest("[data-top5]");
-    if (t5) { openHistoryFor(t5.dataset.top5, viewMonth); return; }
     var fab = ev.target.closest("#fab");
     if (fab) { showView("add"); return; }
     var use = ev.target.closest("[data-subuse]");
@@ -2993,53 +3322,7 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       return;
     }
   });
-  function openHistoryFor(cat, ym) {
-    var r = monthRange(ym), sort = hf.sort;
-    hf = hfDefault(); hf.sort = sort;
-    hf.period = "custom"; hf.from = r[0]; hf.to = r[1]; hf.type = "expense"; hf.cats = [cat];
-    hfSave(); showView("history"); renderHistory();
-  }
 
-  // ---------- Overview: KPIs, alerts, budget summary, Top 5 ----------
-  function delta(cur, prev, upIsGood) {
-    var d = cur - prev;
-    if (!prev && !cur) return '<div class="d">No data yet</div>';
-    if (!d) return '<div class="d">Same as ' + monthName(shiftMonth(viewMonth, -1), true) + '</div>';
-    var good = upIsGood ? d > 0 : d < 0;
-    return '<div class="d ' + (good ? "good" : "bad") + '">' + (d > 0 ? "▲ " : "▼ ") + fmt(Math.abs(d)) + " vs " + monthName(shiftMonth(viewMonth, -1), true) + '</div>';
-  }
-  function renderKpis() {
-    var k = monthKpis(viewMonth), p = monthKpis(shiftMonth(viewMonth, -1)), M = budgetModel(viewMonth);
-    function kpi(g, label, v, sub) {
-      return '<div class="kpi" style="--k:var(--g-' + g + ')"><div class="eyebrow">' + label + '</div><div class="v' + (v < 0 ? " neg" : "") + '">' + fmt(v) + '</div>' + sub + '</div>';
-    }
-    $("kpis").innerHTML =
-      kpi("inc", "Income", k.inc, delta(k.inc, p.inc, true)) +
-      kpi("exp", "Expenses", k.spend, delta(k.spend, p.spend, false)) +
-      kpi("sav", "Left to spend", k.left, '<div class="d">' + (k.saved ? "After " + fmt(k.saved) + " saved" : "Income − expenses − saved") + '</div>') +
-      kpi("bill", "Left to budget", M.leftToBudget, '<div class="d">' + (M.planned ? "Planned " + fmt(M.planned) + " of " + fmt(M.incomePlan) : '<button class="linkbtn" type="button" data-bgoto="setup">Set budgets</button>') + '</div>');
-  }
-  function renderTop5() {
-    var r = monthRange(viewMonth), by = {};
-    state.entries.forEach(function (e) { if (e.type === "expense" && inRange(e.date, r)) by[e.category] = (by[e.category] || 0) + e.amountCents; });
-    var cats = Object.keys(by).sort(function (a, b) { return by[b] - by[a]; }), total = sum(cats, function (c) { return by[c]; });
-    var top = cats.slice(0, 5), rest = total - sum(top, function (c) { return by[c]; }), max = top.length ? by[top[0]] : 1;
-    $("top5Empty").hidden = cats.length > 0;
-    $("top5").innerHTML = top.map(function (c, i) {
-      var g = groupOf(c);
-      return '<button class="t5" type="button" data-top5="' + esc(c) + '" title="See these transactions"><span class="t5-rank">' + (i + 1) + '</span>' +
-        '<span class="t5-main"><span class="t5-name"><span class="gdot" style="background:var(--g-' + g + ')"></span>' + esc(c) + '</span>' +
-        '<span class="t5-track"><span style="width:' + Math.max(3, by[c] / max * 100) + '%;background:var(--g-' + g + ')"></span></span></span>' +
-        '<span class="t5-val"><b>' + fmt(by[c]) + '</b><small>' + Math.round(by[c] / total * 100) + '%</small></span></button>';
-    }).join("") + (rest > 0 ? '<div class="t5-rest">Other categories: ' + fmt(rest) + ' (' + Math.round(rest / total * 100) + '%) · Total ' + fmt(total) + '</div>' : (total ? '<div class="t5-rest">Total ' + fmt(total) + '</div>' : ""));
-  }
-  function renderOvAlerts() {
-    var list = buildAlerts(summary()).filter(function (a) { return a.lvl === "bad" || a.lvl === "warn"; });
-    $("ovAlertsPanel").hidden = !list.length;
-    $("ovAlerts").innerHTML = list.slice(0, 3).map(function (a) { return '<li class="' + a.lvl + '"><b>' + esc(a.t) + '</b>' + esc(a.d) + '</li>'; }).join("");
-    $("ovAlertsMore").hidden = list.length <= 3;
-    $("ovAlertsMore").textContent = "See all " + list.length + " alerts";
-  }
 
   // ---------- Budget view ----------
   function showBudgetSub(name) {
@@ -3162,7 +3445,6 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
     }
   });
 
-  function renderBudgetAndOverviewExtras() { renderMonthBars(); renderKpis(); renderTop5(); renderOvAlerts(); renderCharts(); }
 
 
   // ================= CHARTS (plain SVG, no library, works offline) =================
@@ -3196,134 +3478,9 @@ textarea { min-height: 110px; font-family: ui-monospace, Menlo, Consolas, monosp
       rows.map(function (r) { return '<tr>' + r.map(function (c, i) { return '<td' + (i ? ' class="num"' : "") + '>' + c + '</td>'; }).join("") + '</tr>'; }).join("") + '</tbody></table>';
   }
 
-  // 1. Money in the bank, day by day (one series: no legend box, the title names it)
-  function renderLineChart() {
-    var el = $("vizLine"), r = monthRange(viewMonth), today = todayISO(), end = minISO(r[1], today);
-    var cap = $("lineCap"), tbl = $("vizLineTable");
-    if (!ACCT_IDS.some(hasBalance)) { el.innerHTML = '<div class="empty">Enter your balances in Accounts → Setup to see this chart.</div>'; cap.textContent = ""; tbl.innerHTML = ""; return; }
-    if (r[0] > today) { el.innerHTML = '<div class="empty">This month has not started yet.</div>'; cap.textContent = ""; tbl.innerHTML = ""; return; }
-    var pts = [];
-    for (var d = r[0]; d <= end; d = addDays(d, 1)) pts.push({ d: d, v: sum(ACCT_IDS, function (id) { return balanceAt(id, d); }) });
-    var W = vizWidth(el), H = 200, L = 52, R = 18, T = 22, B = 26, n = pts.length;
-    var vals = pts.map(function (p) { return p.v; }), lo = Math.min.apply(null, vals.concat([0])), hi = Math.max.apply(null, vals.concat([0]));
-    var ticks = niceTicks(lo, hi), y0 = ticks[0], y1 = ticks[ticks.length - 1];
-    var sx = function (i) { return L + (n > 1 ? i * (W - L - R) / (n - 1) : (W - L - R) / 2); };
-    var sy = function (v) { return T + (y1 - v) / (y1 - y0 || 1) * (H - T - B); };
-    var h = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Total money in your banks each day of ' + monthName(viewMonth) + '">';
-    ticks.forEach(function (t) {
-      h += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + sy(t) + '" y2="' + sy(t) + '" stroke="var(--line)" stroke-width="1"' + (t === 0 && y0 < 0 ? ' stroke-dasharray="4 3"' : "") + '/>';
-      h += '<text x="' + (L - 8) + '" y="' + (sy(t) + 4) + '" text-anchor="end">' + shortMoney(t) + '</text>';
-    });
-    pts.forEach(function (p, i) {
-      var day = +p.d.slice(8);
-      if (day === 1 || day % 7 === 1 || i === n - 1) h += '<text x="' + sx(i) + '" y="' + (H - 6) + '" text-anchor="middle">' + monthName(viewMonth, true) + " " + day + '</text>';
-    });
-    var line = pts.map(function (p, i) { return (i ? "L" : "M") + sx(i).toFixed(1) + "," + sy(p.v).toFixed(1); }).join("");
-    var base = sy(Math.max(y0, 0));
-    h += '<path d="' + line + "L" + sx(n - 1).toFixed(1) + "," + base + "L" + sx(0).toFixed(1) + "," + base + 'Z" fill="var(--viz-line)" opacity=".12"/>';
-    h += '<path d="' + line + '" fill="none" stroke="var(--viz-line)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
-    var last = pts[n - 1];
-    h += '<circle cx="' + sx(n - 1) + '" cy="' + sy(last.v) + '" r="4.5" fill="var(--viz-line)" stroke="var(--surface)" stroke-width="2"/>';
-    h += '<text class="lbl" x="' + sx(n - 1) + '" y="' + (sy(last.v) - 10) + '" text-anchor="end">' + fmt(last.v) + '</text>';
-    h += '<line class="xh" x1="0" x2="0" y1="' + T + '" y2="' + (H - B) + '" stroke="var(--muted)" stroke-width="1" visibility="hidden"/>';
-    h += '<circle class="xd" r="4.5" fill="var(--viz-line)" stroke="var(--surface)" stroke-width="2" visibility="hidden"/>';
-    h += '<rect class="hit" x="' + L + '" y="0" width="' + (W - L - R) + '" height="' + H + '" fill="transparent"/></svg>';
-    el.innerHTML = h;
-    var svg = el.querySelector("svg"), xh = svg.querySelector(".xh"), xd = svg.querySelector(".xd");
-    svg.querySelector(".hit").addEventListener("pointermove", function (ev) {
-      var box = svg.getBoundingClientRect(), px = (ev.clientX - box.left) * W / box.width;
-      var i = Math.max(0, Math.min(n - 1, Math.round((px - L) / ((W - L - R) / Math.max(1, n - 1)))));
-      var X = sx(i), Y = sy(pts[i].v);
-      xh.setAttribute("x1", X); xh.setAttribute("x2", X); xh.setAttribute("visibility", "visible");
-      xd.setAttribute("cx", X); xd.setAttribute("cy", Y); xd.setAttribute("visibility", "visible");
-      tipShow(el, X * box.width / W, Y * box.width / W, "<b>" + fmt(pts[i].v) + "</b>" + pretty(pts[i].d));
-    });
-    svg.querySelector(".hit").addEventListener("pointerleave", function () { xh.setAttribute("visibility", "hidden"); xd.setAttribute("visibility", "hidden"); tipHide(el); });
-    var diff = last.v - pts[0].v;
-    cap.textContent = pretty(pts[0].d, false) + " " + fmt(pts[0].v) + " → " + (last.d === today ? "today " : pretty(last.d, false) + " ") + fmt(last.v) + " (" + (diff >= 0 ? "▲ " : "▼ ") + fmt(Math.abs(diff)) + ")";
-    tbl.innerHTML = tableHTML(["Day", "In banks"], pts.map(function (p) { return [pretty(p.d, false), fmt(p.v)]; }));
-  }
-
-  // 2. Budget vs actual per group (two series, always the same two colors)
-  function renderBarsChart(M) {
-    var el = $("vizBars"), rows = summaryRows(M), any = rows.some(function (x) { return x.budget || x.real; });
-    if (!any) { el.innerHTML = '<div class="empty">No income, budgets or spending this month.</div>'; $("vizBarsTable").innerHTML = ""; return; }
-    var W = vizWidth(el), H = 230, L = 46, R = 8, T = 26, B = 44, n = rows.length;
-    var max = Math.max.apply(null, rows.map(function (x) { return Math.max(x.budget, x.real, 0); }).concat([1]));
-    var ticks = niceTicks(0, max), y1 = ticks[ticks.length - 1];
-    var sy = function (v) { return T + (y1 - v) / y1 * (H - T - B); }, gw = (W - L - R) / n, bw = Math.max(10, Math.min(30, gw * .3));
-    function bar(x, v, fill) {
-      var y = sy(Math.max(0, v)), hgt = H - B - y;
-      if (hgt < .5) return "";
-      var rr = Math.min(4, hgt, bw / 2);
-      return '<path d="M' + x + "," + (H - B) + "V" + (y + rr) + "Q" + x + "," + y + " " + (x + rr) + "," + y + "H" + (x + bw - rr) + "Q" + (x + bw) + "," + y + " " + (x + bw) + "," + (y + rr) + "V" + (H - B) + 'Z" fill="' + fill + '"/>';
-    }
-    var h = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Budget compared with actual for each group in ' + monthName(viewMonth) + '">';
-    ticks.forEach(function (t) {
-      h += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + sy(t) + '" y2="' + sy(t) + '" stroke="var(--line)" stroke-width="1"/>';
-      h += '<text x="' + (L - 8) + '" y="' + (sy(t) + 4) + '" text-anchor="end">' + shortMoney(t) + '</text>';
-    });
-    rows.forEach(function (x, i) {
-      var cx = L + gw * i + gw / 2, xb = cx - bw - 1, xa = cx + 1;
-      var over = x.kind !== "in" && x.budget && x.real > x.budget;
-      h += bar(xb, x.budget, "var(--viz-budget)") + bar(xa, x.real, "var(--viz-actual)");
-      if (x.real > 0) h += '<text class="lbl" x="' + (xa + bw / 2) + '" y="' + (sy(x.real) - 6) + '" text-anchor="middle">' + shortMoney(x.real) + '</text>';
-      var short = { Income: "Income", Bills: "Bills", Expenses: "Exp.", Subscriptions: "Subs", Savings: "Saved" };
-      h += '<text x="' + cx + '" y="' + (H - B + 16) + '" text-anchor="middle">' + (gw < 90 ? short[x.name] : x.name) + '</text>';
-      if (over) h += '<text class="over" x="' + cx + '" y="' + (H - B + 32) + '" text-anchor="middle">⚠ Over</text>';
-      h += '<rect class="hit" data-i="' + i + '" x="' + (L + gw * i) + '" y="' + T + '" width="' + gw + '" height="' + (H - T) + '" fill="transparent"/>';
-    });
-    h += '</svg>';
-    el.innerHTML = h;
-    var svg = el.querySelector("svg");
-    svg.querySelectorAll(".hit").forEach(function (hit) {
-      hit.addEventListener("pointerenter", function () {
-        var x = rows[+hit.dataset.i], box = svg.getBoundingClientRect(), k = box.width / W;
-        var cx = (L + gw * +hit.dataset.i + gw / 2) * k, top = sy(Math.max(x.budget, x.real, 0)) * k;
-        tipShow(el, cx, top, "<b>" + x.name + "</b>Budget " + fmt(x.budget) + " · Actual " + fmt(x.real) + "<br>" + diffText(x.kind, x.budget, x.real));
-      });
-      hit.addEventListener("pointerleave", function () { tipHide(el); });
-    });
-    $("vizBarsTable").innerHTML = tableHTML(["Group", "Budget", "Actual", "Difference"], rows.map(function (x) { return [x.name, fmt(x.budget), fmt(x.real), diffText(x.kind, x.budget, x.real)]; }));
-  }
-
-  // 3. Where the money went: 4 groups, order validated for every pair of neighbours
-  function renderDonut(M) {
-    var el = $("vizDonut"), t = M.totals;
-    var parts = [
-      { id: "bill", name: "Bills", v: t.bill.real }, { id: "exp", name: "Expenses", v: t.exp.real },
-      { id: "sav", name: "Savings", v: Math.max(0, t.sav.real) }, { id: "sub", name: "Subscriptions", v: t.sub.real }
-    ];
-    var total = sum(parts, function (p) { return p.v; });
-    if (!total) { el.innerHTML = '<div class="empty" style="width:100%">Nothing spent or saved yet.</div>'; $("vizDonutLegend").innerHTML = ""; $("vizDonutTable").innerHTML = ""; return; }
-    var S = 180, c = S / 2, rad = 66, sw = 26, C = 2 * Math.PI * rad, shown = parts.filter(function (p) { return p.v > 0; });
-    var gap = shown.length > 1 ? 2 : 0, offset = 0;
-    var h = '<svg viewBox="0 0 ' + S + ' ' + S + '" role="img" aria-label="Share of money spent or saved by group in ' + monthName(viewMonth) + '"><g transform="rotate(-90 ' + c + ' ' + c + ')">';
-    shown.forEach(function (p, i) {
-      var len = p.v / total * C;
-      h += '<circle class="seg-arc" data-i="' + i + '" cx="' + c + '" cy="' + c + '" r="' + rad + '" fill="none" stroke="var(--g-' + p.id + ')" stroke-width="' + sw + '" stroke-dasharray="' + Math.max(0.5, len - gap) + ' ' + C + '" stroke-dashoffset="' + (-offset) + '"/>';
-      offset += len;
-    });
-    h += '</g><text class="lbl big" x="' + c + '" y="' + (c + 2) + '" text-anchor="middle">' + shortMoney(total) + '</text><text x="' + c + '" y="' + (c + 20) + '" text-anchor="middle">this month</text></svg>';
-    el.innerHTML = h;
-    var svg = el.querySelector("svg");
-    svg.querySelectorAll(".seg-arc").forEach(function (a) {
-      a.addEventListener("pointerenter", function () {
-        var p = shown[+a.dataset.i], box = svg.getBoundingClientRect();
-        tipShow(el, box.width / 2, 18, "<b>" + p.name + "</b>" + fmt(p.v) + " · " + Math.round(p.v / total * 100) + "%");
-      });
-      a.addEventListener("pointerleave", function () { tipHide(el); });
-    });
-    $("vizDonutLegend").innerHTML = parts.map(function (p) {
-      return '<li><span class="sw" style="background:var(--g-' + p.id + ')"></span><span>' + p.name + '</span><span><b>' + fmt(p.v) + '</b> <span class="pct">' + Math.round(p.v / total * 100) + '%</span></span></li>';
-    }).join("");
-    $("vizDonutTable").innerHTML = tableHTML(["Group", "Amount", "Share"], parts.map(function (p) { return [p.name, fmt(p.v), Math.round(p.v / total * 100) + "%"]; }));
-  }
-
   function renderCharts() {
     if ($("view-overview").hidden) return;   // drawn when the Overview is visible, at its real width
-    var M = budgetModel(viewMonth);
-    renderLineChart(); renderBarsChart(M); renderDonut(M);
+    renderDashChart();
   }
   var chartTimer;
   window.addEventListener("resize", function () { clearTimeout(chartTimer); chartTimer = setTimeout(renderCharts, 150); });
