@@ -161,7 +161,12 @@ pre.msg { white-space: pre-wrap; font: inherit; margin: 0; padding: 12px 14px; b
 .pill.pending { background: var(--warn-soft); border-color: transparent; }
 .pill.ok { background: var(--go-soft); color: var(--go); border-color: transparent; }
 .pill.bad { background: var(--stop-soft); color: var(--stop); border-color: transparent; }
-.cboard td { vertical-align: top; } .cboard .pill { white-space: normal; display: inline-block; }
+.cboard td { vertical-align: top; }
+.fbar { display: inline-flex; gap: 3px; } .fbar i { width: 12px; height: 8px; border-radius: 2px; background: var(--line); } .fbar i.on { background: var(--go); }
+.flowstrip ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 6px; }
+.flowstrip li { background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; gap: 2px; }
+.flowstrip li b { font-size: 1.25rem; line-height: 1; } .flowstrip li span { font-size: .74rem; color: var(--muted); line-height: 1.2; }
+.flowstrip li.has { border-color: var(--go); background: var(--go-soft); } .flowstrip li.has span { color: var(--ink); } .cboard .pill { white-space: normal; display: inline-block; }
 .timeline { list-style: none; margin: 0; padding: 0 0 0 12px; border-left: 3px solid var(--line); display: grid; gap: 8px; }
 ol.proto { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
 
@@ -276,7 +281,7 @@ const SOURCES = [
   { key: 'fb_groups', es: 'Grupos de Facebook', en: 'Facebook groups', kind: 'social', verified: false, url: '', note: { es: 'Pedir permiso al administrador de cada grupo.', en: 'Ask each group admin for permission.' } },
   { key: 'tiktok_ig', es: 'TikTok / Instagram', en: 'TikTok / Instagram', kind: 'social', verified: false, url: '', note: { es: 'Solo con aprobación de la agencia; no grabar dentro del cliente sin permiso.', en: 'Only with agency approval; never film inside the client without permission.' } },
   { key: 'indeed', es: 'Indeed', en: 'Indeed', kind: 'board', verified: false, url: 'https://www.indeed.com/hire', note: { es: 'Gratis o patrocinado. Precios de terceros no coinciden: confirmar con Indeed y la agencia antes de gastar.', en: 'Free or sponsored. Third-party pricing reports disagree: confirm with Indeed and the agency first.' } },
-  { key: 'craigslist', es: 'Craigslist (Cincinnati)', en: 'Craigslist (Cincinnati)', kind: 'board', verified: false, url: 'https://cincinnati.craigslist.org', note: { es: 'Anuncio de empleo pagado por área. Confirmar el gasto con la agencia antes de publicar.', en: 'Paid job ad per area. Confirm the spend with the agency before posting.' } },
+  { key: 'craigslist', es: 'Craigslist', en: 'Craigslist', kind: 'board', verified: false, url: 'https://cincinnati.craigslist.org', note: { es: 'Anuncio de empleo pagado por área. Confirmar el gasto con la agencia antes de publicar.', en: 'Paid job ad per area. Confirm the spend with the agency before posting.' } },
   { key: 'ziprecruiter', es: 'ZipRecruiter', en: 'ZipRecruiter', kind: 'board', verified: false, url: 'https://www.ziprecruiter.com', note: { es: 'Cuenta de la agencia. Contactar solo a candidatos que aplicaron o están en la plataforma.', en: 'Agency account. Contact only candidates who applied or are on the platform.' } },
   { key: 'referral', es: 'Referido de empleado', en: 'Employee referral', kind: 'referral', verified: false, url: '', note: { es: 'Solo si la agencia tiene programa aprobado.', en: 'Only if the agency has an approved program.' } },
   { key: 'esperanza', es: 'Esperanza Latino Center', en: 'Esperanza Latino Center', kind: 'community', verified: true, url: '', note: { es: '234 Pike St, Covington, KY. Preparación laboral bilingüe, ayuda con solicitudes. Pedir contacto oficial.', en: '234 Pike St, Covington, KY. Bilingual job readiness, application help. Get the official contact.' } },
@@ -567,6 +572,32 @@ VIEWS.panel = () => {
   </div>`;
 };
 
+// Client hiring flow (Winit KY), 10 steps. A step set by hand wins; otherwise it is read from the record.
+// minStage keeps the pipeline stage in line when a step is set by hand.
+const FLOW = [
+  { n: 1, es: 'Contacto (nombre y correo)', en: 'Lead (name and email)' },
+  { n: 2, es: 'SignNow enviado', en: 'SignNow sent', minStage: 'application' },
+  { n: 3, es: 'Documentos firmados', en: 'Documents signed', minStage: 'application' },
+  { n: 4, es: 'Prescreen de Winit enviado', en: 'Winit prescreen sent', minStage: 'application' },
+  { n: 5, es: 'Pasó el prescreen (n.º Winit)', en: 'Passed prescreen (Winit #)', minStage: 'prescreened' },
+  { n: 6, es: 'Entrevista confirmada por Ana', en: 'Interview confirmed by Ana', minStage: 'prescreened' },
+  { n: 7, es: 'Entrevista aprobada', en: 'Interview passed', minStage: 'approved' },
+  { n: 8, es: 'Orientación agendada', en: 'Orientation scheduled', minStage: 'assigned' },
+  { n: 9, es: 'Primer día: se presentó', en: 'First day: showed up', minStage: 'started' },
+  { n: 10, es: 'Seguimiento de retención', en: 'Retention follow-up', minStage: 'retention' },
+];
+function flowStep(c) {
+  if (c.flow?.step) return c.flow.step;
+  const hit = (c.hist || []).map(h => h.to).concat(c.stage);
+  const has = k => hit.some(s => s !== 'closed' && SIDX[s] >= SIDX[k]);
+  if (has('retention')) return 10; if (has('started')) return 9; if (has('assigned')) return 8; if (has('approved')) return 7;
+  if (hit.includes('prescreened')) return c.interviewAt ? 6 : 5; // 'application' sorts after 'prescreened' but means docs sent
+  if ((c.log || []).some(l => /prescreen/i.test(l.body || ''))) return 4;
+  if (c.signnow?.doneAt) return 3; if (c.signnow?.sentAt) return 2; return 1;
+}
+const flowLabel = n => `${n}/10 · ${L(FLOW[n - 1])}`;
+const flowBar = n => `<span class="fbar" aria-hidden="true">${FLOW.map(f => `<i class="${f.n <= n ? 'on' : ''}"></i>`).join('')}</span>`;
+
 // Candidate board: one row per person with a plain-language status, easy to read and to send as an image.
 // Closed candidates stay on the board for 30 days so recent outcomes can be reported.
 function boardRows() {
@@ -579,9 +610,9 @@ function boardRows() {
       : { cls: phaseOf(c.stage) === 'lead' ? '' : 'ok', txt: stageName(c.stage) };
     const group = closed ? 'closed' : pend(c) || !atLeast(c.stage, 'prescreened') ? 'process' : 'advanced';
     const src = (c.source && c.source !== 'other' ? srcName(c.source) : '') || c.sourceDetail || (c.source === 'other' ? t('Otra', 'Other') : '—');
-    return { c, st, group, src, rank: group === 'advanced' ? 0 : group === 'process' ? 1 : 2 };
+    return { c, st, group, src, step: flowStep(c), rank: group === 'advanced' ? 0 : group === 'process' ? 1 : 2 };
   });
-  return rows.sort((a, b) => a.rank - b.rank || (SIDX[b.c.stage] ?? 0) - (SIDX[a.c.stage] ?? 0) || nameOf(a.c).localeCompare(nameOf(b.c)));
+  return rows.sort((a, b) => a.rank - b.rank || b.step - a.step || nameOf(a.c).localeCompare(nameOf(b.c)));
 }
 function pipelineBoard() {
   const rows = boardRows(), n = g => rows.filter(r => r.group === g).length;
@@ -589,8 +620,11 @@ function pipelineBoard() {
     <div><h2>${t('Candidatos y estado', 'Candidates and status')}</h2><p class="small muted">${t('Activos y cerrados en los últimos 30 días. Toca un nombre para abrirlo.', 'Active, plus closed in the last 30 days. Tap a name to open it.')}</p></div>
     <div class="row"><button class="btn ghost sm" data-act="board-img">${t('Descargar como imagen', 'Download as image')}</button><button class="btn ghost sm" data-act="board-xlsx">${t('Descargar en Excel', 'Download Excel')}</button></div></div>
   <div class="kpis" style="padding:6px 20px 12px">${kpi(t('Candidatos', 'Candidates'), rows.length, null, true)}${kpi(t('Preseleccionados o más', 'Pre-selected or beyond'), n('advanced'))}${kpi(t('En proceso', 'In process'), n('process'))}${kpi(t('Cerrados (30 días)', 'Closed (30 days)'), n('closed'))}</div>
-  <div class="scroll"><table><thead><tr><th>${t('Candidato', 'Candidate')}</th><th>${t('N.º del cliente', 'Client #')}</th><th>${t('Fuente', 'Source')}</th><th>${t('Estado', 'Status')}</th></tr></thead><tbody>
-  ${rows.map(({ c, st, src }) => `<tr><td><button class="linkbtn" data-open="${esc(c.id)}"><b>${esc(nameOf(c))}</b></button>${sampleTag(c)}</td><td class="mono small">${esc(c.clientRef || '—')}</td><td>${esc(src)}</td>
+  <div class="flowstrip" style="padding:0 20px 14px"><p class="small muted" style="margin:0 0 6px">${t('Flujo Winit: activos en cada paso', 'Winit flow: active people at each step')}</p><ol>
+    ${FLOW.map(f => { const k = rows.filter(r => r.group !== 'closed' && r.step === f.n).length; return `<li class="${k ? 'has' : ''}"><b>${k}</b><span>${f.n}. ${esc(L(f))}</span></li>`; }).join('')}</ol></div>
+  <div class="scroll"><table><thead><tr><th>${t('Candidato', 'Candidate')}</th><th>${t('N.º del cliente', 'Client #')}</th><th>${t('Fuente', 'Source')}</th><th>${t('Paso Winit', 'Winit step')}</th><th>${t('Estado', 'Status')}</th></tr></thead><tbody>
+  ${rows.map(({ c, st, src, step, group }) => `<tr><td><button class="linkbtn" data-open="${esc(c.id)}"><b>${esc(nameOf(c))}</b></button>${sampleTag(c)}</td><td class="mono small">${esc(c.clientRef || '—')}</td><td>${esc(src)}</td>
+    <td>${flowBar(step)}<div class="small ${group === 'closed' ? 'muted' : ''}">${esc(flowLabel(step))}${group === 'closed' ? ' · ' + t('se detuvo aquí', 'stopped here') : ''}</div></td>
     <td><span class="pill ${st.cls}">${esc(st.txt)}</span>${c.nextAction && c.stage !== 'closed' ? `<div class="small muted">${esc(c.nextAction)}</div>` : ''}</td></tr>`).join('')}
   </tbody></table></div></section>`;
 }
@@ -600,9 +634,9 @@ async function boardExcel() {
   const rows = boardRows(), n = g => rows.filter(r => r.group === g).length, X = window.XLSX;
   const aoa = [[BRAND.name + ' – ' + t('Reporte de candidatos', 'Candidate Report')], ['Win.It America, Florence KY'], [t('Preparado por: ', 'Prepared by: ') + AUTHOR.name + ', ' + AUTHOR.role], [t('Fecha: ', 'Date: ') + today()], [],
     [t('Candidatos', 'Candidates'), rows.length], [t('Preseleccionados o más', 'Pre-selected or beyond'), n('advanced')], [t('En proceso', 'In process'), n('process')], [t('Cerrados (30 días)', 'Closed (30 days)'), n('closed')], [],
-    [t('Candidato', 'Candidate'), t('N.º del cliente', 'Client #'), t('Fuente', 'Source'), t('Estado', 'Status'), t('Siguiente paso', 'Next step'), t('Registrado', 'Registered')],
-    ...rows.map(({ c, st, src }) => [nameOf(c), c.clientRef || '', src, st.txt, c.stage === 'closed' ? '' : c.nextAction || '', dayOf(c.registeredAt || '')]), [], [`${BRAND.name}, ${BRAND.dba}`]];
-  const ws = X.utils.aoa_to_sheet(aoa); ws['!cols'] = [30, 28, 24, 40, 48, 14].map(w => ({ wch: w }));
+    [t('Candidato', 'Candidate'), t('N.º del cliente', 'Client #'), t('Fuente', 'Source'), t('Paso Winit', 'Winit step'), t('Estado', 'Status'), t('Siguiente paso', 'Next step'), t('Registrado', 'Registered')],
+    ...rows.map(({ c, st, src, step }) => [nameOf(c), c.clientRef || '', src, flowLabel(step), st.txt, c.stage === 'closed' ? '' : c.nextAction || '', dayOf(c.registeredAt || '')]), [], [`${BRAND.name}, ${BRAND.dba}`]];
+  const ws = X.utils.aoa_to_sheet(aoa); ws['!cols'] = [30, 28, 24, 34, 40, 48, 14].map(w => ({ wch: w }));
   const wb = X.utils.book_new(); X.utils.book_append_sheet(wb, ws, t('Candidatos', 'Candidates'));
   const buf = X.write(wb, { bookType: 'xlsx', type: 'array' });
   await deliver(`TopTierHR_Candidates_${today()}.xlsx`, new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
@@ -611,7 +645,7 @@ async function boardExcel() {
 async function boardImage() {
   const rows = boardRows(), n = g => rows.filter(r => r.group === g).length;
   try { await document.fonts.ready; } catch {}
-  const W = 1200, S2 = 2, rowH = 64, headH = 128, top = headH + 40;
+  const W = 1320, S2 = 2, rowH = 64, headH = 128, top = headH + 40;
   const H = top + 130 + 52 + 48 + rows.length * rowH + 70;
   const cv = document.createElement('canvas'); cv.width = W * S2; cv.height = H * S2;
   const g = cv.getContext('2d'); g.scale(S2, S2);
@@ -628,19 +662,21 @@ async function boardImage() {
   k.forEach(([v, l, col], i) => { const x = 40 + i * (kw + 14); g.fillStyle = '#FFFFFF'; g.fillRect(x, top, kw, 104); g.fillStyle = col; g.fillRect(x, top, 6, 104);
     g.fillStyle = '#22201E'; g.font = F(800, 40); g.fillText(String(v), x + 22, top + 52); g.fillStyle = '#5B5550'; g.font = F(600, 16); g.fillText(fit(l, kw - 34), x + 22, top + 84); });
   let y = top + 150; g.fillStyle = '#433B36'; g.font = F(800, 22); g.fillText(t('Candidatos y estado', 'Candidates and status'), 40, y);
-  const cols = [40, 330, 600, 790]; y += 22;
+  const cols = [40, 290, 520, 680, 950]; y += 22;
   g.fillStyle = '#EFE9E1'; g.fillRect(40, y, W - 80, 44); g.fillStyle = '#22201E'; g.font = F(700, 17);
-  [t('Candidato', 'Candidate'), t('N.º del cliente', 'Client #'), t('Fuente', 'Source'), t('Estado', 'Status')].forEach((h, i) => g.fillText(h, cols[i] + 14, y + 28));
+  [t('Candidato', 'Candidate'), t('N.º del cliente', 'Client #'), t('Fuente', 'Source'), t('Paso Winit', 'Winit step'), t('Estado', 'Status')].forEach((h, i) => g.fillText(h, cols[i] + 14, y + 28));
   y += 44;
   const pc = { ok: ['#E3F1E7', '#2C6B44'], pending: ['#FFF3D6', '#7A5A12'], bad: ['#F6E1DE', '#8A382D'], '': ['#E4EDF7', '#2C5583'] };
-  rows.forEach(({ c, st, src }) => {
+  rows.forEach(({ c, st, src, step }) => {
     g.fillStyle = '#FFFFFF'; g.fillRect(40, y, W - 80, rowH); g.fillStyle = '#EEE5DA'; g.fillRect(40, y + rowH - 1, W - 80, 1);
-    g.fillStyle = '#22201E'; g.font = F(700, 18); g.fillText(fit(nameOf(c), 270), cols[0] + 14, y + 38);
-    g.font = F(500, 16); g.fillText(fit(c.clientRef || '—', 250), cols[1] + 14, y + 38); g.fillText(fit(src, 170), cols[2] + 14, y + 38);
+    g.fillStyle = '#22201E'; g.font = F(700, 18); g.fillText(fit(nameOf(c), 230), cols[0] + 14, y + 38);
+    g.font = F(500, 16); g.fillText(fit(c.clientRef || '—', 210), cols[1] + 14, y + 38); g.fillText(fit(src, 140), cols[2] + 14, y + 38);
+    for (let i = 0; i < 10; i++) { g.fillStyle = i < step ? '#2C6B44' : '#D9D2C7'; g.fillRect(cols[3] + 14 + i * 16, y + 16, 12, 8); }
+    g.fillStyle = '#22201E'; g.font = F(500, 14); g.fillText(fit(flowLabel(step), 250), cols[3] + 14, y + 46);
     const [bg, fg] = pc[st.cls] || pc[''];
-    g.font = F(700, 14); const txt = fit(st.txt, W - 40 - cols[3] - 40), tw = g.measureText(txt).width;
-    g.fillStyle = bg; g.beginPath(); g.roundRect ? g.roundRect(cols[3] + 14, y + 18, tw + 22, 28, 14) : g.rect(cols[3] + 14, y + 18, tw + 22, 28); g.fill();
-    g.fillStyle = fg; g.fillText(txt, cols[3] + 25, y + 37);
+    g.font = F(700, 14); const txt = fit(st.txt, W - 40 - cols[4] - 40), tw = g.measureText(txt).width;
+    g.fillStyle = bg; g.beginPath(); g.roundRect ? g.roundRect(cols[4] + 14, y + 18, tw + 22, 28, 14) : g.rect(cols[4] + 14, y + 18, tw + 22, 28); g.fill();
+    g.fillStyle = fg; g.fillText(txt, cols[4] + 25, y + 37);
     y += rowH;
   });
   g.fillStyle = '#6D665F'; g.font = F(500, 14); g.fillText(`${BRAND.name}, ${BRAND.dba}`, 40, y + 36);
@@ -1426,6 +1462,11 @@ function openCandidate(id) {
     <div class="row"><a class="btn ghost" href="https://app.signnow.com/webapp/documents" target="_blank" rel="noopener">${t('Abrir SignNow', 'Open SignNow')}</a>
       ${!c.signnow?.sentAt ? `<button class="btn" data-act="sn-sent" data-id="${esc(c.id)}" ${c.email ? '' : 'disabled'}>${t('Marcar invitación enviada', 'Mark invite sent')}</button>` : ''}
       ${c.signnow?.sentAt && !c.signnow?.doneAt ? `<button class="btn go" data-act="sn-done" data-id="${esc(c.id)}">${t('Marcar completada', 'Mark completed')}</button><button class="btn ghost" data-act="sn-resend" data-id="${esc(c.id)}">${t('Reenviada hoy', 'Resent today')}</button>` : ''}</div></section>
+  <section class="panel"><h3>${t('Paso en el flujo de Winit', 'Winit flow step')}</h3>
+    <p>${flowBar(flowStep(c))} <b>${esc(flowLabel(flowStep(c)))}</b>${c.flow?.step ? '' : ` <span class="small muted">(${t('calculado', 'estimated')})</span>`}</p>
+    <div class="fields"><label class="f">${t('Cambiar a', 'Set to')}<select id="fl-step">${FLOW.map(f => `<option value="${f.n}" ${f.n === flowStep(c) ? 'selected' : ''}>${f.n}. ${esc(L(f))}</option>`).join('')}</select></label>
+    <div><button class="btn" data-act="set-flow" data-id="${esc(c.id)}">${t('Guardar paso', 'Save step')}</button></div></div>
+    <p class="small muted">${t('Reglas: ofrece al candidato solo horarios que Ana ya confirmó, y pide siempre una respuesta SÍ o NO.', 'Rules: offer the candidate only times Ana already confirmed, and always ask for a YES or NO reply.')}</p></section>
   <section class="panel"><h3>${t('Tareas', 'Tasks')}</h3>${taskList(myTasks)}</section>
   <section class="panel"><h3>${t('Perfil', 'Profile')}</h3>${candidateForm(c)}</section>
   <section class="panel"><h3>${t('Historial', 'History')}</h3><ol class="timeline">
@@ -1741,6 +1782,12 @@ document.addEventListener('click', async e => {
   else if (act === 'kit-png') { b.disabled = true; await kitPng(); b.disabled = false; }
   else if (act === 'export-pdf') { b.disabled = true; await exportPdf(); b.disabled = false; }
   else if (act === 'export-xlsx') { b.disabled = true; await exportExcel(); b.disabled = false; }
+  else if (act === 'set-flow') {
+    const c = byId(ds.id), step = Number($('#fl-step').value), f = FLOW[step - 1], now = new Date().toISOString();
+    const n = { ...c, flow: { step, at: now }, log: [{ at: now, kind: 'note', outcome: '', body: 'Winit step ' + step + ': ' + f.en }, ...(c.log || [])].slice(0, 120) };
+    if (f.minStage && c.stage !== 'closed' && !atLeast(c.stage, f.minStage)) n.stage = f.minStage;
+    if (await saveCandidate(n, c)) { toast(t('Paso guardado', 'Step saved')); openCandidate(c.id); }
+  }
   else if (act === 'set-stage') {
     const c = byId(ds.id), stage = $('#st-stage').value;
     const n = { ...c, stage, closedReason: stage === 'closed' ? $('#st-reason').value : '', recontactOn: stage === 'closed' ? $('#st-recontact').value : c.recontactOn };
