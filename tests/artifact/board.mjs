@@ -1,0 +1,44 @@
+import pw from '/opt/node-tools/node_modules/playwright/index.js';
+import fs from 'fs';
+const { chromium } = pw;
+const SP = process.argv[2];
+const html = fs.readFileSync('/home/user/warehouse-attendance-pro/artifact/reclutamiento-winit.html', 'utf8');
+fs.writeFileSync(SP + '/art/index.html', '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>' + html + '</body></html>');
+const mock = fs.readFileSync(SP + '/art/test.mjs', 'utf8').match(/const mock = `([\s\S]*?)`;/)[1];
+const R = []; const ok = (n, c, d = '') => R.push((c ? 'PASS ' : 'FAIL ') + n + (c ? '' : ' — ' + d));
+const b = await chromium.launch(); const ctx = await b.newContext({ viewport: { width: 1280, height: 900 }, timezoneId: 'America/New_York' });
+await ctx.addInitScript(mock);
+const p = await ctx.newPage(); const errs = []; p.on('pageerror', e => errs.push(String(e)));
+await p.goto('file://' + SP + '/art/index.html'); await p.waitForTimeout(500);
+await p.getByRole('heading', { name: 'Recruiting dashboard' }).waitFor();
+async function add(first, last, email, ref, source) {
+  await p.getByRole('button', { name: 'Candidates', exact: true }).click(); await p.waitForTimeout(200); await p.locator('#view [data-act=new-cand]').first().click();
+  const f = p.locator('#cand-form');
+  await f.locator('input[name=first]').fill(first); await f.locator('input[name=last]').fill(last);
+  await f.locator('input[name=email]').fill(email); await f.locator('input[name=cContact]').check();
+  if (ref) await f.locator('input[name=clientRef]').fill(ref);
+  if (source) await f.locator('select[name=source]').selectOption(source);
+  await f.getByRole('button', { name: 'Add candidate' }).click(); await p.waitForTimeout(500);
+}
+await add('Haisheng', 'Zhao', 'hz@example.com', 'Haisheng Zhao_20261106', 'indeed');
+await p.locator('#st-stage').selectOption('prescreened'); await p.getByRole('button', { name: 'Update stage' }).click(); await p.waitForTimeout(500);
+await p.getByRole('button', { name: 'Close', exact: true }).click();
+await add('Dillon', 'Mcswain', 'dm@example.com', '', 'craigslist');
+await p.getByRole('button', { name: 'Mark invite sent' }).click(); await p.waitForTimeout(500);
+await p.getByRole('button', { name: 'Close', exact: true }).click();
+await p.getByRole('button', { name: 'Dashboard', exact: true }).click(); await p.waitForTimeout(300);
+const board = p.locator('#view .cboard');
+const txt = await board.innerText();
+ok('board lists both with status', txt.includes('Haisheng Zhao') && txt.includes('Haisheng Zhao_20261106') && txt.includes('SignNow sent · waiting for signature') && txt.includes('Craigslist (Cincinnati)'), txt.slice(0, 400));
+ok('advanced row first', txt.indexOf('Haisheng') < txt.indexOf('Dillon'));
+await p.evaluate(() => { window.__saved = null; });
+await board.getByRole('button', { name: 'Download as image' }).click(); await p.waitForTimeout(800);
+const saved = await p.evaluate(async () => window.__saved && { name: window.__saved.filename, type: window.__saved.data && window.__saved.data.type, size: window.__saved.data && window.__saved.data.size,
+  url: window.__saved.data instanceof Blob ? await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(window.__saved.data); }) : null });
+ok('image download is a PNG', saved && saved.type === 'image/png' && saved.size > 10000 && /TopTierHR_Candidates_/.test(saved.name), JSON.stringify(saved && { ...saved, url: undefined }));
+if (saved && saved.url) fs.writeFileSync(SP + '/art/board.png', Buffer.from(saved.url.split(',')[1], 'base64'));
+await board.screenshot({ path: SP + '/art/board-ui.png' });
+await p.locator('#view').getByText('Haisheng Zhao').first().click(); await p.waitForTimeout(300);
+ok('clicking a name opens the candidate', await p.locator('#dlg').isVisible());
+await b.close();
+console.log(R.join('\n')); console.log('errors:', errs.length ? errs : 'none');

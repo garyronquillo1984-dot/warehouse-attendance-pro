@@ -160,6 +160,8 @@ pre.msg { white-space: pre-wrap; font: inherit; margin: 0; padding: 12px 14px; b
 .pill { font-size: .78rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: var(--panel-2); border: 1px solid var(--line); white-space: nowrap; }
 .pill.pending { background: var(--warn-soft); border-color: transparent; }
 .pill.ok { background: var(--go-soft); color: var(--go); border-color: transparent; }
+.pill.bad { background: var(--stop-soft); color: var(--stop); border-color: transparent; }
+.cboard td { vertical-align: top; } .cboard .pill { white-space: normal; display: inline-block; }
 .timeline { list-style: none; margin: 0; padding: 0 0 0 12px; border-left: 3px solid var(--line); display: grid; gap: 8px; }
 ol.proto { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
 
@@ -274,6 +276,8 @@ const SOURCES = [
   { key: 'fb_groups', es: 'Grupos de Facebook', en: 'Facebook groups', kind: 'social', verified: false, url: '', note: { es: 'Pedir permiso al administrador de cada grupo.', en: 'Ask each group admin for permission.' } },
   { key: 'tiktok_ig', es: 'TikTok / Instagram', en: 'TikTok / Instagram', kind: 'social', verified: false, url: '', note: { es: 'Solo con aprobación de la agencia; no grabar dentro del cliente sin permiso.', en: 'Only with agency approval; never film inside the client without permission.' } },
   { key: 'indeed', es: 'Indeed', en: 'Indeed', kind: 'board', verified: false, url: 'https://www.indeed.com/hire', note: { es: 'Gratis o patrocinado. Precios de terceros no coinciden: confirmar con Indeed y la agencia antes de gastar.', en: 'Free or sponsored. Third-party pricing reports disagree: confirm with Indeed and the agency first.' } },
+  { key: 'craigslist', es: 'Craigslist (Cincinnati)', en: 'Craigslist (Cincinnati)', kind: 'board', verified: false, url: 'https://cincinnati.craigslist.org', note: { es: 'Anuncio de empleo pagado por área. Confirmar el gasto con la agencia antes de publicar.', en: 'Paid job ad per area. Confirm the spend with the agency before posting.' } },
+  { key: 'ziprecruiter', es: 'ZipRecruiter', en: 'ZipRecruiter', kind: 'board', verified: false, url: 'https://www.ziprecruiter.com', note: { es: 'Cuenta de la agencia. Contactar solo a candidatos que aplicaron o están en la plataforma.', en: 'Agency account. Contact only candidates who applied or are on the platform.' } },
   { key: 'referral', es: 'Referido de empleado', en: 'Employee referral', kind: 'referral', verified: false, url: '', note: { es: 'Solo si la agencia tiene programa aprobado.', en: 'Only if the agency has an approved program.' } },
   { key: 'esperanza', es: 'Esperanza Latino Center', en: 'Esperanza Latino Center', kind: 'community', verified: true, url: '', note: { es: '234 Pike St, Covington, KY. Preparación laboral bilingüe, ayuda con solicitudes. Pedir contacto oficial.', en: '234 Pike St, Covington, KY. Bilingual job readiness, application help. Get the official contact.' } },
   { key: 'gateway', es: 'Gateway CTC (Handshake)', en: 'Gateway CTC (Handshake)', kind: 'school', verified: true, url: 'https://gateway.kctcs.edu/current-students/student-life/career-services/index.aspx', note: { es: 'gw-careerservices@kctcs.edu · (859) 442-1609', en: 'gw-careerservices@kctcs.edu · (859) 442-1609' } },
@@ -532,6 +536,7 @@ VIEWS.panel = () => {
   ${!all.length ? `<div class="panel empty"><h2>${t('Tu base de candidatos está vacía', 'Your candidate database is empty')}</h2>
     <p class="muted">${t('Agrega a la primera persona, abre el Modo registro en una tableta durante un evento, o importa respuestas de un formulario (Ajustes y datos). Para practicar, carga datos de ejemplo identificados.', 'Add the first person, open Registration mode on a tablet at an event, or import form responses (Settings & data). To practice, load labelled sample data.')}</p>
     <div class="row"><button class="btn" data-act="new-cand">${t('Agregar candidato', 'Add candidate')}</button><button class="btn ghost" data-act="samples-on">${t('Cargar datos de ejemplo', 'Load sample data')}</button></div></div>` : ''}
+  ${all.length ? pipelineBoard() : ''}
   <section class="stack"><h2>${t('Hoy', 'Today')}</h2><div class="kpis">
     ${kpi(t('Nuevos registros hoy', 'New registrations today'), all.filter(c => dayOf(c.registeredAt || '') === d0).length, null, true)}
     ${kpi(t('Personas contactadas hoy', 'People contacted today'), contactsToday, t('meta', 'goal') + ' ' + st.gContacts)}
@@ -561,6 +566,74 @@ VIEWS.panel = () => {
     <section class="panel"><h2>${t('Próximas tareas', 'Next tasks')}</h2>${taskList(open.sort((a, b) => a.due.localeCompare(b.due)).slice(0, 8))}</section>
   </div>`;
 };
+
+// Candidate board: one row per person with a plain-language status, easy to read and to send as an image.
+// Closed candidates stay on the board for 30 days so recent outcomes can be reported.
+function boardRows() {
+  const cutoff = addDays(today(), -30);
+  const pend = c => !!(c.signnow?.sentAt && !c.signnow?.doneAt && c.stage !== 'closed');
+  const rows = S.cands.filter(c => c.stage !== 'closed' || dayOf(c.stageAt || c.registeredAt || '') >= cutoff).map(c => {
+    const closed = c.stage === 'closed';
+    const st = closed ? { cls: 'bad', txt: t('Cerrado', 'Closed') + ' · ' + lab(CLOSED, c.closedReason) }
+      : pend(c) ? { cls: 'pending', txt: t('SignNow enviado · esperando firma', 'SignNow sent · waiting for signature') }
+      : { cls: phaseOf(c.stage) === 'lead' ? '' : 'ok', txt: stageName(c.stage) };
+    const group = closed ? 'closed' : pend(c) || !atLeast(c.stage, 'prescreened') ? 'process' : 'advanced';
+    const src = (c.source && c.source !== 'other' ? srcName(c.source) : '') || c.sourceDetail || (c.source === 'other' ? t('Otra', 'Other') : '—');
+    return { c, st, group, src, rank: group === 'advanced' ? 0 : group === 'process' ? 1 : 2 };
+  });
+  return rows.sort((a, b) => a.rank - b.rank || (SIDX[b.c.stage] ?? 0) - (SIDX[a.c.stage] ?? 0) || nameOf(a.c).localeCompare(nameOf(b.c)));
+}
+function pipelineBoard() {
+  const rows = boardRows(), n = g => rows.filter(r => r.group === g).length;
+  return `<section class="panel flush cboard"><div class="row" style="padding:16px 20px 6px;justify-content:space-between;align-items:flex-end">
+    <div><h2>${t('Candidatos y estado', 'Candidates and status')}</h2><p class="small muted">${t('Activos y cerrados en los últimos 30 días. Toca un nombre para abrirlo.', 'Active, plus closed in the last 30 days. Tap a name to open it.')}</p></div>
+    <button class="btn ghost sm" data-act="board-img">${t('Descargar como imagen', 'Download as image')}</button></div>
+  <div class="kpis" style="padding:6px 20px 12px">${kpi(t('Candidatos', 'Candidates'), rows.length, null, true)}${kpi(t('Preseleccionados o más', 'Pre-selected or beyond'), n('advanced'))}${kpi(t('En proceso', 'In process'), n('process'))}${kpi(t('Cerrados (30 días)', 'Closed (30 days)'), n('closed'))}</div>
+  <div class="scroll"><table><thead><tr><th>${t('Candidato', 'Candidate')}</th><th>${t('N.º del cliente', 'Client #')}</th><th>${t('Fuente', 'Source')}</th><th>${t('Estado', 'Status')}</th></tr></thead><tbody>
+  ${rows.map(({ c, st, src }) => `<tr><td><button class="linkbtn" data-open="${esc(c.id)}"><b>${esc(nameOf(c))}</b></button>${sampleTag(c)}</td><td class="mono small">${esc(c.clientRef || '—')}</td><td>${esc(src)}</td>
+    <td><span class="pill ${st.cls}">${esc(st.txt)}</span>${c.nextAction && c.stage !== 'closed' ? `<div class="small muted">${esc(c.nextAction)}</div>` : ''}</td></tr>`).join('')}
+  </tbody></table></div></section>`;
+}
+// Draws the board on a canvas (always light, report style) so it can be attached to an email.
+async function boardImage() {
+  const rows = boardRows(), n = g => rows.filter(r => r.group === g).length;
+  try { await document.fonts.ready; } catch {}
+  const W = 1200, S2 = 2, rowH = 64, headH = 128, top = headH + 40;
+  const H = top + 130 + 52 + 48 + rows.length * rowH + 70;
+  const cv = document.createElement('canvas'); cv.width = W * S2; cv.height = H * S2;
+  const g = cv.getContext('2d'); g.scale(S2, S2);
+  const F = (w, s) => `${w} ${s}px Barlow, Arial, sans-serif`;
+  const fit = (txt, max) => { let s = String(txt); while (s.length > 1 && g.measureText(s).width > max) s = s.slice(0, -2) + '…'; return s; };
+  g.fillStyle = '#F4F1EC'; g.fillRect(0, 0, W, H);
+  g.fillStyle = '#433B36'; g.fillRect(0, 0, W, headH);
+  g.fillStyle = '#F0E9E1'; g.font = F(800, 32); g.fillText(fit(t('Reporte de candidatos', 'Candidate Report') + ' – Win.It America, Florence KY', 820), 40, 58);
+  g.font = F(500, 18); g.globalAlpha = .85; g.fillText(`${BRAND.name} · ${today()}`, 40, 92); g.globalAlpha = 1;
+  g.textAlign = 'right'; g.font = F(700, 18); g.fillText(AUTHOR.name, W - 40, 50); g.font = F(500, 16);
+  g.fillText(AUTHOR.role, W - 40, 74); g.fillText(AUTHOR.assignment, W - 40, 98); g.textAlign = 'left';
+  const k = [[rows.length, t('Candidatos', 'Candidates'), '#C9A24A'], [n('advanced'), t('Preseleccionados o más', 'Pre-selected or beyond'), '#3d8a5a'], [n('process'), t('En proceso', 'In process'), '#3b6ea5'], [n('closed'), t('Cerrados (30 días)', 'Closed (30 days)'), '#a3473b']];
+  const kw = (W - 80 - 3 * 14) / 4;
+  k.forEach(([v, l, col], i) => { const x = 40 + i * (kw + 14); g.fillStyle = '#FFFFFF'; g.fillRect(x, top, kw, 104); g.fillStyle = col; g.fillRect(x, top, 6, 104);
+    g.fillStyle = '#22201E'; g.font = F(800, 40); g.fillText(String(v), x + 22, top + 52); g.fillStyle = '#5B5550'; g.font = F(600, 16); g.fillText(fit(l, kw - 34), x + 22, top + 84); });
+  let y = top + 150; g.fillStyle = '#433B36'; g.font = F(800, 22); g.fillText(t('Candidatos y estado', 'Candidates and status'), 40, y);
+  const cols = [40, 330, 600, 790]; y += 22;
+  g.fillStyle = '#EFE9E1'; g.fillRect(40, y, W - 80, 44); g.fillStyle = '#22201E'; g.font = F(700, 17);
+  [t('Candidato', 'Candidate'), t('N.º del cliente', 'Client #'), t('Fuente', 'Source'), t('Estado', 'Status')].forEach((h, i) => g.fillText(h, cols[i] + 14, y + 28));
+  y += 44;
+  const pc = { ok: ['#E3F1E7', '#2C6B44'], pending: ['#FFF3D6', '#7A5A12'], bad: ['#F6E1DE', '#8A382D'], '': ['#E4EDF7', '#2C5583'] };
+  rows.forEach(({ c, st, src }) => {
+    g.fillStyle = '#FFFFFF'; g.fillRect(40, y, W - 80, rowH); g.fillStyle = '#EEE5DA'; g.fillRect(40, y + rowH - 1, W - 80, 1);
+    g.fillStyle = '#22201E'; g.font = F(700, 18); g.fillText(fit(nameOf(c), 270), cols[0] + 14, y + 38);
+    g.font = F(500, 16); g.fillText(fit(c.clientRef || '—', 250), cols[1] + 14, y + 38); g.fillText(fit(src, 170), cols[2] + 14, y + 38);
+    const [bg, fg] = pc[st.cls] || pc[''];
+    g.font = F(700, 14); const txt = fit(st.txt, W - 40 - cols[3] - 40), tw = g.measureText(txt).width;
+    g.fillStyle = bg; g.beginPath(); g.roundRect ? g.roundRect(cols[3] + 14, y + 18, tw + 22, 28, 14) : g.rect(cols[3] + 14, y + 18, tw + 22, 28); g.fill();
+    g.fillStyle = fg; g.fillText(txt, cols[3] + 25, y + 37);
+    y += rowH;
+  });
+  g.fillStyle = '#6D665F'; g.font = F(500, 14); g.fillText(`${BRAND.name}, ${BRAND.dba}`, 40, y + 36);
+  const blob = await new Promise(res => cv.toBlob(res, 'image/png'));
+  await deliver(`TopTierHR_Candidates_${today()}.png`, blob);
+}
 
 // Openings that must be filled within 7 days: how far each one is from a full crew on its start date.
 // Confirmations needed = people needed ÷ the first-day show-rate goal, so no-shows are covered.
@@ -1252,6 +1325,7 @@ function candidateForm(c) {
     <label class="f">${t('Idioma preferido', 'Preferred language')}<select name="lang">${options(LANGS, c.lang || S.lang)}</select></label>
     <label class="f">${t('Fuente', 'Source')}<select name="source">${options(SOURCES, c.source, '—')}</select></label>
     <label class="f">${t('Detalle de la fuente', 'Source detail')}<input name="sourceDetail" maxlength="120" value="${esc(c.sourceDetail)}" placeholder="${t('grupo, evento, gafete de quien refirió', 'group, event, referrer badge')}"></label>
+    <label class="f">${t('N.º de candidato del cliente', 'Client candidate #')}<input name="clientRef" maxlength="80" value="${esc(c.clientRef)}" placeholder="${t('p. ej. Nombre_20261106 (Winit)', 'e.g. Name_20261106 (Winit)')}"></label>
   </div>
   ${chipsField('exp', EXPERIENCE, c.exp, t('Experiencia relevante', 'Relevant experience'))}
   ${chipsField('equip', EQUIPMENT, c.equip, t('Equipos que sabe usar', 'Equipment they can use'))}
@@ -1286,7 +1360,7 @@ function readCandForm(form, base) {
   if (err) return { err };
   const contact = fd.get('cContact') === 'on';
   return { c: { ...base, first: g('first'), last: g('last'), phone, email: g('email').toLowerCase(), city: g('city'), zip: g('zip'), lang: g('lang'),
-    source: g('source'), sourceDetail: g('sourceDetail'), exp: chipsVal(form, 'exp'), equip: chipsVal(form, 'equip'), shifts: chipsVal(form, 'shifts'), positions: chipsVal(form, 'positions'),
+    source: g('source'), sourceDetail: g('sourceDetail'), clientRef: g('clientRef'), exp: chipsVal(form, 'exp'), equip: chipsVal(form, 'equip'), shifts: chipsVal(form, 'shifts'), positions: chipsVal(form, 'positions'),
     availableFrom: g('availableFrom'), openingId: g('openingId'), interviewAt: g('interviewAt'), firstDay: g('firstDay'), nextAction: g('nextAction'), nextDue: g('nextDue'), agency: g('agency'), notes: g('notes'),
     consent: { contact, sms: contact && fd.get('cSms') === 'on', wa: contact && fd.get('cWa') === 'on', email: contact && fd.get('cEmail') === 'on', method: contact ? g('cMethod') : '', at: contact ? (base.consent?.at || new Date().toISOString()) : '' } } };
 }
@@ -1648,6 +1722,7 @@ document.addEventListener('click', async e => {
   }
   else if (act === 'qr-mode') { await savePlan({ qrMode: ds.v }); render(); }
   else if (act === 'kit-flyer') { b.disabled = true; await kitFlyer(); b.disabled = false; }
+  else if (act === 'board-img') { b.disabled = true; await boardImage(); b.disabled = false; }
   else if (act === 'kit-cards') { b.disabled = true; await kitCards(); b.disabled = false; }
   else if (act === 'kit-png') { b.disabled = true; await kitPng(); b.disabled = false; }
   else if (act === 'export-pdf') { b.disabled = true; await exportPdf(); b.disabled = false; }
