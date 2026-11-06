@@ -587,12 +587,25 @@ function pipelineBoard() {
   const rows = boardRows(), n = g => rows.filter(r => r.group === g).length;
   return `<section class="panel flush cboard"><div class="row" style="padding:16px 20px 6px;justify-content:space-between;align-items:flex-end">
     <div><h2>${t('Candidatos y estado', 'Candidates and status')}</h2><p class="small muted">${t('Activos y cerrados en los últimos 30 días. Toca un nombre para abrirlo.', 'Active, plus closed in the last 30 days. Tap a name to open it.')}</p></div>
-    <button class="btn ghost sm" data-act="board-img">${t('Descargar como imagen', 'Download as image')}</button></div>
+    <div class="row"><button class="btn ghost sm" data-act="board-img">${t('Descargar como imagen', 'Download as image')}</button><button class="btn ghost sm" data-act="board-xlsx">${t('Descargar en Excel', 'Download Excel')}</button></div></div>
   <div class="kpis" style="padding:6px 20px 12px">${kpi(t('Candidatos', 'Candidates'), rows.length, null, true)}${kpi(t('Preseleccionados o más', 'Pre-selected or beyond'), n('advanced'))}${kpi(t('En proceso', 'In process'), n('process'))}${kpi(t('Cerrados (30 días)', 'Closed (30 days)'), n('closed'))}</div>
   <div class="scroll"><table><thead><tr><th>${t('Candidato', 'Candidate')}</th><th>${t('N.º del cliente', 'Client #')}</th><th>${t('Fuente', 'Source')}</th><th>${t('Estado', 'Status')}</th></tr></thead><tbody>
   ${rows.map(({ c, st, src }) => `<tr><td><button class="linkbtn" data-open="${esc(c.id)}"><b>${esc(nameOf(c))}</b></button>${sampleTag(c)}</td><td class="mono small">${esc(c.clientRef || '—')}</td><td>${esc(src)}</td>
     <td><span class="pill ${st.cls}">${esc(st.txt)}</span>${c.nextAction && c.stage !== 'closed' ? `<div class="small muted">${esc(c.nextAction)}</div>` : ''}</td></tr>`).join('')}
   </tbody></table></div></section>`;
+}
+// Same board as an Excel sheet. No phone numbers or emails: it is meant to be shared with managers.
+async function boardExcel() {
+  try { await loadLib('xlsx'); } catch { toast(t('No se pudo cargar el generador de Excel. Revisa tu conexión.', 'Could not load the Excel generator. Check your connection.')); return; }
+  const rows = boardRows(), n = g => rows.filter(r => r.group === g).length, X = window.XLSX;
+  const aoa = [[BRAND.name + ' – ' + t('Reporte de candidatos', 'Candidate Report')], ['Win.It America, Florence KY'], [t('Preparado por: ', 'Prepared by: ') + AUTHOR.name + ', ' + AUTHOR.role], [t('Fecha: ', 'Date: ') + today()], [],
+    [t('Candidatos', 'Candidates'), rows.length], [t('Preseleccionados o más', 'Pre-selected or beyond'), n('advanced')], [t('En proceso', 'In process'), n('process')], [t('Cerrados (30 días)', 'Closed (30 days)'), n('closed')], [],
+    [t('Candidato', 'Candidate'), t('N.º del cliente', 'Client #'), t('Fuente', 'Source'), t('Estado', 'Status'), t('Siguiente paso', 'Next step'), t('Registrado', 'Registered')],
+    ...rows.map(({ c, st, src }) => [nameOf(c), c.clientRef || '', src, st.txt, c.stage === 'closed' ? '' : c.nextAction || '', dayOf(c.registeredAt || '')]), [], [`${BRAND.name}, ${BRAND.dba}`]];
+  const ws = X.utils.aoa_to_sheet(aoa); ws['!cols'] = [30, 28, 24, 40, 48, 14].map(w => ({ wch: w }));
+  const wb = X.utils.book_new(); X.utils.book_append_sheet(wb, ws, t('Candidatos', 'Candidates'));
+  const buf = X.write(wb, { bookType: 'xlsx', type: 'array' });
+  await deliver(`TopTierHR_Candidates_${today()}.xlsx`, new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
 }
 // Draws the board on a canvas (always light, report style) so it can be attached to an email.
 async function boardImage() {
@@ -1723,6 +1736,7 @@ document.addEventListener('click', async e => {
   else if (act === 'qr-mode') { await savePlan({ qrMode: ds.v }); render(); }
   else if (act === 'kit-flyer') { b.disabled = true; await kitFlyer(); b.disabled = false; }
   else if (act === 'board-img') { b.disabled = true; await boardImage(); b.disabled = false; }
+  else if (act === 'board-xlsx') { b.disabled = true; await boardExcel(); b.disabled = false; }
   else if (act === 'kit-cards') { b.disabled = true; await kitCards(); b.disabled = false; }
   else if (act === 'kit-png') { b.disabled = true; await kitPng(); b.disabled = false; }
   else if (act === 'export-pdf') { b.disabled = true; await exportPdf(); b.disabled = false; }

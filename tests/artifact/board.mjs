@@ -8,6 +8,8 @@ const mock = fs.readFileSync(SP + '/art/test.mjs', 'utf8').match(/const mock = `
 const R = []; const ok = (n, c, d = '') => R.push((c ? 'PASS ' : 'FAIL ') + n + (c ? '' : ' — ' + d));
 const b = await chromium.launch(); const ctx = await b.newContext({ viewport: { width: 1280, height: 900 }, timezoneId: 'America/New_York' });
 await ctx.addInitScript(mock);
+const libs = { 'xlsx@0.18.5': 'xlsx-0.18.5/dist/xlsx.full.min.js' };
+await ctx.route('https://cdn.jsdelivr.net/**', r => { const k = Object.keys(libs).find(k => r.request().url().includes(k)); r.fulfill({ path: SP + '/libs/' + libs[k], contentType: 'text/javascript' }); });
 const p = await ctx.newPage(); const errs = []; p.on('pageerror', e => errs.push(String(e)));
 await p.goto('file://' + SP + '/art/index.html'); await p.waitForTimeout(500);
 await p.getByRole('heading', { name: 'Recruiting dashboard' }).waitFor();
@@ -37,6 +39,10 @@ const saved = await p.evaluate(async () => window.__saved && { name: window.__sa
   url: window.__saved.data instanceof Blob ? await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(window.__saved.data); }) : null });
 ok('image download is a PNG', saved && saved.type === 'image/png' && saved.size > 10000 && /TopTierHR_Candidates_/.test(saved.name), JSON.stringify(saved && { ...saved, url: undefined }));
 if (saved && saved.url) fs.writeFileSync(SP + '/art/board.png', Buffer.from(saved.url.split(',')[1], 'base64'));
+await p.evaluate(() => { window.__saved = null; });
+await board.getByRole('button', { name: 'Download Excel' }).click(); await p.waitForTimeout(800);
+const xl = await p.evaluate(async () => { const d = window.__saved; if (!d) return null; const wb = XLSX.read(await d.data.arrayBuffer(), { type: 'array' }); const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 }); return { name: d.filename, rows }; });
+ok('Excel has the board rows', xl && /\.xlsx$/.test(xl.name) && JSON.stringify(xl.rows).includes('Haisheng Zhao_20261106') && JSON.stringify(xl.rows).includes('SignNow sent') && !JSON.stringify(xl.rows).includes('@example.com'), JSON.stringify(xl).slice(0, 300));
 await board.screenshot({ path: SP + '/art/board-ui.png' });
 await p.locator('#view').getByText('Haisheng Zhao').first().click(); await p.waitForTimeout(300);
 ok('clicking a name opens the candidate', await p.locator('#dlg').isVisible());
