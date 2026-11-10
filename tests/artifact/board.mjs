@@ -58,5 +58,17 @@ const im = await p.evaluate(async () => await new Promise(r => { const fr = new 
 fs.writeFileSync(SP + '/art/board2.png', Buffer.from(im.split(',')[1], 'base64'));
 await board.screenshot({ path: SP + '/art/board-ui2.png' });
 
+// open-positions message from authorized openings
+await p.evaluate(async () => { const pub = (days) => ({ role: { en: 'Packing', es: 'Empaque' }, pay: '$18/hr', head: { en: '4 days x 10 hrs (7:00 AM–5:30 PM), 3 days off', es: '4 días de 10 horas (7:00 AM–5:30 PM), 3 días libres' }, days: { en: days, es: 'x' } });
+  await put('openings', { id: 'op1', title: 'A', position: 'packing', headcount: 2, status: 'authorized', authorizedBy: 'Ana', authorizedOn: '2026-11-10', openedOn: '2026-11-10', pub: pub('Off Tue, Wed & Thu (work Fri–Mon)') });
+  await put('openings', { id: 'op2', title: 'B', position: 'packing', headcount: 1, status: 'authorized', authorizedBy: 'Ana', authorizedOn: '2026-11-10', openedOn: '2026-11-10', pub: pub('Off Tue, Thu & Fri (work Wed, Sat, Sun, Mon)') });
+  await put('openings', { id: 'op3', title: 'C', position: 'packing', headcount: 1, status: 'filled', pub: pub('SHOULD NOT SHOW') }); });
+await p.getByRole('button', { name: 'Openings', exact: true }).click(); await p.waitForTimeout(300);
+await p.getByRole('button', { name: 'Dashboard', exact: true }).click(); await p.waitForTimeout(400);
+const msg = await p.evaluate(() => positionsMessage('en'));
+ok('positions message groups authorized openings', msg.includes('Packing – $18/hr – 4 days x 10 hrs (7:00 AM–5:30 PM), 3 days off:\n• Off Tue, Wed & Thu (work Fri–Mon)\n• Off Tue, Thu & Fri') && msg.includes('Must be able to lift') && !msg.includes('SHOULD NOT'), msg);
+ok('positions panel on dashboard', (await p.locator('#view').innerText()).includes('Open positions: ready-to-send message'));
+await p.locator('#view section', { hasText: 'Open positions: ready-to-send message' }).screenshot({ path: SP + '/art/pos.png' });
+
 await b.close();
 console.log(R.join('\n')); console.log('errors:', errs.length ? errs : 'none');

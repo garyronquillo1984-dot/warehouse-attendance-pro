@@ -542,6 +542,7 @@ VIEWS.panel = () => {
     <p class="muted">${t('Agrega a la primera persona, abre el Modo registro en una tableta durante un evento, o importa respuestas de un formulario (Ajustes y datos). Para practicar, carga datos de ejemplo identificados.', 'Add the first person, open Registration mode on a tablet at an event, or import form responses (Settings & data). To practice, load labelled sample data.')}</p>
     <div class="row"><button class="btn" data-act="new-cand">${t('Agregar candidato', 'Add candidate')}</button><button class="btn ghost" data-act="samples-on">${t('Cargar datos de ejemplo', 'Load sample data')}</button></div></div>` : ''}
   ${all.length ? pipelineBoard() : ''}
+  ${positionsPanel()}
   <section class="stack"><h2>${t('Hoy', 'Today')}</h2><div class="kpis">
     ${kpi(t('Nuevos registros hoy', 'New registrations today'), all.filter(c => dayOf(c.registeredAt || '') === d0).length, null, true)}
     ${kpi(t('Personas contactadas hoy', 'People contacted today'), contactsToday, t('meta', 'goal') + ' ' + st.gContacts)}
@@ -571,6 +572,32 @@ VIEWS.panel = () => {
     <section class="panel"><h2>${t('Próximas tareas', 'Next tasks')}</h2>${taskList(open.sort((a, b) => a.due.localeCompare(b.due)).slice(0, 8))}</section>
   </div>`;
 };
+
+// Ready-to-send list of open positions, built from authorized openings that still need people.
+// Each opening carries candidate-facing text in o.pub (role, group header, days) in both languages.
+function openPositions() {
+  return S.openings.filter(o => o.status === 'authorized' && o.pub?.role?.en && (o.headcount || 1) > S.cands.filter(c => c.openingId === o.id && atLeast(c.stage, 'assigned')).length);
+}
+function positionsMessage(lang) {
+  const k = lang === 'es' ? 'es' : 'en', groups = [];
+  for (const o of openPositions()) {
+    const head = `${o.pub.role[k] || o.pub.role.en} – ${o.pub.pay || ''} – ${o.pub.head?.[k] || o.pub.head?.en || ''}`;
+    let g = groups.find(x => x.head === head); if (!g) groups.push(g = { head, days: [] });
+    const d = o.pub.days?.[k] || o.pub.days?.en; if (d && !g.days.includes(d)) g.days.push(d);
+  }
+  if (!groups.length) return '';
+  const intro = k === 'es' ? '¡Hola! Estos son los puestos disponibles en nuestro almacén en Florence, KY (7050 New Buffington Rd.):' : 'Hi! These are the open positions at our warehouse in Florence, KY (7050 New Buffington Rd.):';
+  const close = k === 'es' ? 'Debes poder levantar más de 30 libras. ¿Qué horario te funciona? Mándame tu nombre y correo y te envío la aplicación.' : 'Must be able to lift 30+ lbs. Which schedule works for you? Reply with your name and email and I’ll send your application.';
+  return [intro, '', ...groups.flatMap(g => [g.head + (g.days.length ? ':' : ''), ...g.days.map(d => '• ' + d), '']), close].join('\n');
+}
+function positionsPanel() {
+  const en = positionsMessage('en'), es = positionsMessage('es');
+  if (!en) return '';
+  const box = (title, txt) => `<div class="stack" style="gap:6px"><div class="row" style="justify-content:space-between"><b>${title}</b><button class="btn ghost sm" data-copytext="${esc(txt)}">${t('Copiar', 'Copy')}</button></div><textarea readonly rows="14" style="width:100%;font:inherit;font-size:.9rem">${esc(txt)}</textarea></div>`;
+  return `<section class="panel"><h2>${t('Puestos disponibles: mensaje listo para enviar', 'Open positions: ready-to-send message')}</h2>
+    <p class="small muted">${t('Se arma solo con las vacantes autorizadas que aún necesitan personas (pestaña Vacantes). Cópialo para texto, WhatsApp o correo.', 'Built automatically from authorized openings that still need people (Openings tab). Copy it for text, WhatsApp or email.')}</p>
+    <div class="grid2">${box('English', en)}${box('Español', es)}</div></section>`;
+}
 
 // Client hiring flow (Winit KY), 10 steps. A step set by hand wins; otherwise it is read from the record.
 // minStage keeps the pipeline stage in line when a step is set by hand.
@@ -793,6 +820,7 @@ VIEWS.vacantes = () => {
   const st = ST();
   return `<div class="head"><div><h1>${t('Vacantes autorizadas', 'Authorized openings')}</h1><p class="muted">${t('Recluta solo para vacantes autorizadas por el cliente y tu empleador. Pago, horario y requisitos: solo información verificada.', 'Recruit only for openings authorized by the client and your employer. Pay, schedule and requirements: verified information only.')}</p></div>
   <button class="btn" data-act="new-opening">${t('Agregar vacante', 'Add opening')}</button></div>
+  ${positionsPanel()}
   ${S.openings.length ? `<section class="panel flush"><div class="scroll"><table class="cards"><thead><tr><th>${t('Vacante', 'Opening')}</th><th>${t('Estado', 'Status')}</th><th class="n">${t('Necesarias', 'Needed')}</th><th class="n">${t('Grupo listo', 'Ready pool')}</th><th class="n">${t('Colocadas', 'Placed')}</th></tr></thead><tbody>
   ${S.openings.map(o => { const pool = S.cands.filter(c => inPool(c, o)).length, placed = S.cands.filter(c => c.openingId === o.id && atLeast(c.stage, 'assigned')).length, low = o.status === 'authorized' && pool < Math.max(st.lowPool, o.headcount - placed);
     return `<tr class="click" data-opening="${esc(o.id)}"><td><b>${esc(o.title)}</b>${sampleTag(o)}<div class="small muted">${esc(lab(POSITIONS, o.position))}${o.shift ? ' · ' + esc(o.shift) : ''}${o.authorizedBy ? ' · ' + t('autorizó', 'authorized by') + ' ' + esc(o.authorizedBy) : ''}</div></td>
@@ -1520,10 +1548,19 @@ function openingDlg(o) {
     <label class="f">${t('Pago verificado (opcional)', 'Verified pay (optional)')}<input name="pay" maxlength="200" value="${esc(o.pay)}"><span class="hint">${t('Vacío hasta confirmarlo por escrito.', 'Empty until confirmed in writing.')}</span></label>
     <label class="f">${t('Horario verificado (opcional)', 'Verified schedule (optional)')}<input name="schedule" maxlength="200" value="${esc(o.schedule)}"></label></div>
     <label class="f">${t('Requisitos reales del puesto (del cliente)', 'Real job requirements (from the client)')}<textarea name="reqs" maxlength="500">${esc(o.reqs)}</textarea></label>
+    <fieldset class="stack"><legend>${t('Texto para el mensaje a candidatos (inglés / español)', 'Text for the candidate message (English / Spanish)')}</legend><div class="fields">
+      <label class="f">${t('Puesto (EN)', 'Role (EN)')}<input name="pubRoleEn" maxlength="60" value="${esc(o.pub?.role?.en)}" placeholder="Packing"></label>
+      <label class="f">${t('Puesto (ES)', 'Role (ES)')}<input name="pubRoleEs" maxlength="60" value="${esc(o.pub?.role?.es)}" placeholder="Empaque"></label>
+      <label class="f">${t('Pago para el mensaje', 'Pay for the message')}<input name="pubPay" maxlength="30" value="${esc(o.pub?.pay)}" placeholder="$18/hr"></label>
+      <label class="f">${t('Encabezado (EN)', 'Header (EN)')}<input name="pubHeadEn" maxlength="120" value="${esc(o.pub?.head?.en)}" placeholder="4 days x 10 hrs (7:00 AM–5:30 PM), 3 days off"></label>
+      <label class="f">${t('Encabezado (ES)', 'Header (ES)')}<input name="pubHeadEs" maxlength="120" value="${esc(o.pub?.head?.es)}"></label>
+      <label class="f">${t('Días (EN)', 'Days (EN)')}<input name="pubDaysEn" maxlength="120" value="${esc(o.pub?.days?.en)}" placeholder="Off Tue, Wed & Thu (work Fri–Mon)"></label>
+      <label class="f">${t('Días (ES)', 'Days (ES)')}<input name="pubDaysEs" maxlength="120" value="${esc(o.pub?.days?.es)}"></label></div>
+      <span class="hint">${t('Las vacantes con el mismo puesto, pago y encabezado se agrupan en el mensaje.', 'Openings with the same role, pay and header are grouped in the message.')}</span></fieldset>
     <p class="late" id="op-err" hidden></p><div class="row"><button class="btn">${t('Guardar', 'Save')}</button>${!isNew ? `<button type="button" class="btn danger" data-act="del-opening" data-id="${esc(o.id)}">${t('Eliminar', 'Delete')}</button>` : ''}</div></form>`, d => {
     d.querySelector('#op-form').onsubmit = async e => {
       e.preventDefault(); const fd = new FormData(e.target), g = k => String(fd.get(k) || '').trim();
-      const n = { ...o, id: o.id || newId(), title: g('title'), position: g('position'), shift: g('shift'), headcount: Math.max(1, Number(g('headcount')) || 1), status: g('status'), authorizedBy: g('authorizedBy'), authorizedOn: g('authorizedOn'), openedOn: g('openedOn') || today(), targetDate: g('targetDate'), filledOn: g('status') === 'filled' ? (g('filledOn') || today()) : g('filledOn'), pay: g('pay'), schedule: g('schedule'), reqs: g('reqs') };
+      const n = { ...o, id: o.id || newId(), title: g('title'), position: g('position'), shift: g('shift'), headcount: Math.max(1, Number(g('headcount')) || 1), status: g('status'), authorizedBy: g('authorizedBy'), authorizedOn: g('authorizedOn'), openedOn: g('openedOn') || today(), targetDate: g('targetDate'), filledOn: g('status') === 'filled' ? (g('filledOn') || today()) : g('filledOn'), pay: g('pay'), schedule: g('schedule'), reqs: g('reqs'), pub: { role: { en: g('pubRoleEn'), es: g('pubRoleEs') }, pay: g('pubPay'), head: { en: g('pubHeadEn'), es: g('pubHeadEs') }, days: { en: g('pubDaysEn'), es: g('pubDaysEs') } } };
       if (!n.title) return;
       if (n.status === 'authorized' && (!n.authorizedBy || !n.authorizedOn)) { const p = d.querySelector('#op-err'); p.textContent = t('Una vacante autorizada necesita quién la autorizó y cuándo.', 'An authorized opening needs who authorized it and when.'); p.hidden = false; return; }
       if (await safe(() => put('openings', n), t('Vacante guardada', 'Opening saved'))) d_close();
