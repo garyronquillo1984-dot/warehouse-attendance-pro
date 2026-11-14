@@ -700,11 +700,25 @@
   }
 
   // ---------- Respaldo ----------
-  $('exportBtn').addEventListener('click', () => {
-    const blob = new Blob([JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), ...state }, null, 2)], { type: 'application/json' });
+  // En la página publicada se usa el permiso de descargas; abierto como archivo local, un enlace normal.
+  let downloadsApi;
+  const dlReady = (window.claude && typeof window.claude.use === 'function')
+    ? window.claude.use('downloads').then(d => { downloadsApi = d; }).catch(() => { downloadsApi = null; })
+    : Promise.resolve();
+  $('exportBtn').addEventListener('click', async () => {
+    const json = JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), ...state }, null, 2);
+    const filename = `respaldo-flex-${todayISO()}.json`;
+    if (window.claude) {
+      await dlReady;
+      if (!downloadsApi) { toast('Las descargas no están disponibles aquí'); return; }
+      try { await downloadsApi.save({ filename, data: json }); toast('Respaldo descargado'); }
+      catch (e) { if (e && e.code !== 'declined') toast(e.code === 'rate_limited' ? 'Espera un momento e inténtalo de nuevo' : 'No se pudo descargar el respaldo'); }
+      return;
+    }
+    const blob = new Blob([json], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `respaldo-flex-${todayISO()}.json`;
+    a.download = filename;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   });
