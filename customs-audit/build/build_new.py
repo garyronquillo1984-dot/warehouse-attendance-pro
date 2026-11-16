@@ -395,7 +395,9 @@ CER = lambda h: f"{q(CE)}!${CEC[h]}${C0}:${CEC[h]}${C1}"
 CET = lambda h: f"{q(CE)}!${CEC[h]}${TOT}"
 for k in range(1, 6):
     col = CEC[f'sorted list {k}']
-    put(ws, f'{col}{TOT}', f'=IFERROR(LEFT(_xlfn.CONCAT({col}{C0}:{col}{C1}),LEN(_xlfn.CONCAT({col}{C0}:{col}{C1}))-2),"None")')
+    for rr_ in range(C0 + 1, C1 + 1):   # cumulative concatenation (Excel 2007+ compatible, no CONCAT)
+        ws[f'{col}{rr_}'].value = f'={col}{rr_-1}&(' + ws[f'{col}{rr_}'].value[1:] + ')'
+    put(ws, f'{col}{TOT}', f'=IF({col}{C1}="","None",LEFT({col}{C1},LEN({col}{C1})-2))')
     col2 = CEC[f'L{k}']
     put(ws, f'{col2}{TOT}', f'=COUNTIF({CEC["Class order"]}{C0}:{CEC["Class order"]}{C1},{k})', bold=True)
 # completeness counters
@@ -446,8 +448,8 @@ for i, ctl in enumerate(CTRL):
             f'=IF(C{r}=0,"",(D{r}*p_W_UC+E{r}*p_W_MC+F{r}*p_W_IC)/C{r})',
             f'=IF(C{r}=0,"No data",IF(K{r}>=p_Sec_Strong,"Strong implementation",IF(K{r}>=p_Sec_Mod,"Moderate implementation","Weak implementation")))',
             f'=COUNTIF($D${icr}:${gl(3+NC)}${icr},">0")', f'=COUNTIF($D${mcr}:${gl(3+NC)}${mcr},">0")',
-            f'=IFERROR(LEFT(_xlfn.CONCAT($D${ict}:${gl(3+NC)}${ict}),LEN(_xlfn.CONCAT($D${ict}:${gl(3+NC)}${ict}))-2),"")',
-            f'=IFERROR(LEFT(_xlfn.CONCAT($D${mct}:${gl(3+NC)}${mct}),LEN(_xlfn.CONCAT($D${mct}:${gl(3+NC)}${mct}))-2),"")',
+            f'=IF(${gl(3+NC)}${ict}="","",LEFT(${gl(3+NC)}${ict},LEN(${gl(3+NC)}${ict})-2))',
+            f'=IF(${gl(3+NC)}${mct}="","",LEFT(${gl(3+NC)}${mct},LEN(${gl(3+NC)}${mct})-2))',
             f'=IF(K{r}="",9,1-K{r})-F{r}/100000+ROW()/10000000', f'=RANK(Q{r},$Q${X0}:$Q${X0+NS-1},1)+COUNTIF($Q${X0}:Q{r},Q{r})-1',
             f'=COUNTIF(m_Control,A{r})', f'=-(F{r}*1000+E{r})+ROW()/1000000', f'=RANK(T{r},$T${X0}:$T${X0+NS-1},1)+COUNTIF($T${X0}:T{r},T{r})-1']
     for j, v in enumerate(vals):
@@ -478,6 +480,8 @@ for k, (lab, lvl) in mt.items():
                 v = f'=IF({col}{MAT["IC"]+i}>0,{col}${h}&" ("&{col}{MAT["IC"]+i}&"), ","")'
             else:
                 v = f'=IF({col}{MAT["MC"]+i}>0,{col}${h}&" ("&{col}{MAT["MC"]+i}&"), ","")'
+            if k in ('ICTXT', 'MCTXT') and j > 0:   # cumulative across countries (no CONCAT)
+                v = f'={gl(3 + j)}{r}&(' + v[1:] + ')'
             cc = ws[f'{col}{r}']; cc.value = v
             cc.font = font(size=8)
             if k == 'SCORE': cc.number_format = '0%'
@@ -932,7 +936,7 @@ for t, (lab, key, val, fmt) in enumerate(TOPS):
         put(ws, f'{gl(c0)}{r}', f"={q(RK)}!{gl(1+t*3)}{t0+1+k}", size=9); ws.merge_cells(f'{gl(c0)}{r}:{gl(c0+1)}{r}')
         put(ws, f'{gl(c0+2)}{r}', f"={q(RK)}!{gl(2+t*3)}{t0+1+k}", size=9, fmt=fmt, bold=True)
 ws.row_dimensions[rr0 + 1].height = 30
-put(ws, f'B{rr0+8}', '="Countries requiring regional intervention (support priority HIGH): "&IFERROR(LEFT(_xlfn.CONCAT(' + f"{q(CE)}!$BG${C0}:$BG${C1}" + '),LEN(_xlfn.CONCAT(' + f"{q(CE)}!$BG${C0}:$BG${C1}" + '))-2),"None")', bold=True, color=RED[1], wrap=True)
+put(ws, f'B{rr0+8}', f'="Countries requiring regional intervention (support priority HIGH): "&IF({q(CE)}!$BG${C1}="","None",LEFT({q(CE)}!$BG${C1},LEN({q(CE)}!$BG${C1})-2))', bold=True, color=RED[1], wrap=True)
 ws.merge_cells(f'B{rr0+8}:P{rr0+8}'); ws.row_dimensions[rr0 + 8].height = 30
 pr0 = rr0 + 10
 put(ws, f'B{pr0}', 'D. POLICY SECTION ANALYSIS', bold=True, color=WHITE, bg=NAVY); ws.merge_cells(f'B{pr0}:P{pr0}')
@@ -991,7 +995,7 @@ wsce = WS[CE]
 put(wsce, f'BG{C0-1}', 'High-priority list helper', bold=True, size=9)
 for i in range(NC):
     r = C0 + i
-    wsce[f'BG{r}'] = f'=IF(AK{r}="High",A{r}&", ","")'
+    wsce[f'BG{r}'] = (f'=BG{r-1}&IF(AK{r}="High",A{r}&", ","")' if i > 0 else f'=IF(AK{r}="High",A{r}&", ","")')
 
 # ======================================================================= text sheets
 content.build_text_sheets(WS, LAY, globals())

@@ -288,6 +288,13 @@ for tq in ['2. SelfAssessmentPerQuestions', '2. SelfAssessmentPerQuestio (2)']:
             repl[f'{col}{r}'] = fxml(f'{col}{r}', attr(f'{col}{r}'), f'IF(SUM($N{r}:$Q{r})=0,0,{src}{r}/SUM($N{r}:$Q{r}))')
     wr(SP[tq], apply(x, repl)); LOG['tablequestions'].append((tq, len(repl)))
 
+# F23 replace CONCAT (not available in Excel 2016) in '3. Data-Assessments control' column E
+x = unshare(rd(SP['3. Data-Assessments control'])); cs = cells(x); repl = {}
+for ref, mm in cs.items():
+    if mm.group(1) == 'E' and mm.group(4) and '_xlfn.CONCAT' in mm.group(4):
+        r_ = mm.group(2); repl[ref] = fxml(ref, mm.group(3), f'C{r_}&" "&D{r_}')
+wr(SP['3. Data-Assessments control'], apply(x, repl)); LOG['concat_fix'].append(len(repl))
+
 # Data validation on country forms and action plans
 DV_ORDER = ['<hyperlinks', '<printOptions', '<pageMargins', '<pageSetup', '<headerFooter', '<rowBreaks', '<colBreaks', '<customProperties',
             '<cellWatches', '<ignoredErrors', '<smartTags', '<drawing', '<legacyDrawing', '<picture', '<oleObjects', '<controls',

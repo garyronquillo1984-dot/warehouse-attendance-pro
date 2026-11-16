@@ -238,7 +238,7 @@ def build_text_sheets(WS, LAY, g):
         ('Countries with weak controls', f'={ce(CEC["sorted list 3"], TOT)}', f'="Count: "&{ce(CEC["L3"], TOT)}'),
         ('Countries requiring immediate attention (Critical)', f'={ce(CEC["sorted list 4"], TOT)}', f'="Count: "&{ce(CEC["L4"], TOT)}'),
         ('Countries with insufficient data', f'={ce(CEC["sorted list 5"], TOT)}', f'="Count: "&{ce(CEC["L5"], TOT)}'),
-        ('Countries needing regional support (priority HIGH)', f"=IFERROR(LEFT(_xlfn.CONCAT({q(CE)}!$BG${LAY['C0']}:$BG${LAY['C1']}),LEN(_xlfn.CONCAT({q(CE)}!$BG${LAY['C0']}:$BG${LAY['C1']}))-2),\"None\")", '="See 05 – Regional Risk Assessment"'),
+        ('Countries needing regional support (priority HIGH)', f"=IF({q(CE)}!$BG${LAY['C1']}=\"\",\"None\",LEFT({q(CE)}!$BG${LAY['C1']},LEN({q(CE)}!$BG${LAY['C1']})-2))", '="See 05 – Regional Risk Assessment"'),
         ('Weakest Policy Section #1', '=' + wsec(1), ''), ('Weakest Policy Section #2', '=' + wsec(2), ''), ('Weakest Policy Section #3', '=' + wsec(3), ''),
         ('Weakest Policy Section #4', '=' + wsec(4), ''), ('Weakest Policy Section #5', '=' + wsec(5), ''),
         ('Most frequent control deficiency #1', '=' + wq(1), ''), ('Most frequent control deficiency #2', '=' + wq(2), ''),
@@ -344,6 +344,7 @@ FINDINGS = [
      'Slide 4 and the by-scope pivots showed 9 countries as N/A and wrong percentages.',
      'N:Q = COUNTIFS(Data-All Assessments 2026 Q#, level); row 67 = SUM; S:V = count / SUM($N r:$Q r) of the same row.', 'Yes',
      'Recalculated; per-question counts equal 13 – Calc Engine question block. Pivots in 2.Final-byScope refresh when opened in Excel.'],
+    ['F23', '3. Data-Assessments control (column E) and all new country-list formulas', 'E3:E1154; lists in 01, 03, 12, 13, 14', 'Formulas used CONCAT(), which does not exist in Excel 2016 (the version used to open the file: #NAME? in column E and empty lists after the pivots were refreshed).', 'Control names showed #NAME? in the pivots built on AssessmentControlTable; country lists showed "None".', 'E = C&" "&D; country lists rebuilt with cumulative & concatenation (works in Excel 2007 and later).', 'Yes', 'Recalculated; no CONCAT/TEXTJOIN left in the workbook.'],
     ['F14', 'Workbook defined names', '_FilterDatabase (sheet "Details")', 'Name refers to #REF!.', 'Broken reference.', 'Removed.', 'Yes', '—'],
     ['F15', 'Legacy PivotTables (20)', 'All pivot caches', 'Caches not refreshed after source corrections.', 'Pivots would display stale values.', 'refreshOnLoad set on all 11 caches (Excel refreshes when the file is opened).', 'Yes', 'Pivots refresh in Excel; not refreshable in the validation engine (see limitations).'],
     ['F16', '1. Data-All Assessments 2026', 'J1957', 'Unexplained arithmetic "=49/64".', 'Hardcoded figure of unknown meaning.', 'Left unchanged, documented.', 'No – flagged', '—'],
@@ -421,6 +422,7 @@ CHANGES = [
     ('5.Compliance 2026', 'Column K compliance % typed by hand (source of presentation slide 13).', '6 of 32 values stale vs. the answers.', 'K linked to the corrected country score (13 – Calc Engine).', 'Slide 13 can be refreshed from live values.'),
     ('14 – PPT Reconciliation (new)', 'No check between the workbook and the 2026 presentation.', 'Presentation built on the uncorrected workbook (slides 4, 5-8, 11-13, 15) and on outdated key-country lists.', 'New sheet: slide-by-slide findings + live comparison tables (slides 4, 5, 9, 11, 13, 15, 26-37).', 'Every slide figure can be updated from the corrected workbook.'),
     ('2. SelfAssessmentPerQuestions + copy (TableQuestions)', 'Per-question counts N:Q and total row typed by hand; % columns divided by row 6.', 'Stale counts (9 countries as N/A) feeding 2.Final-byScope and slide 4.', 'Counts linked by COUNTIFS to the corrected table; totals by SUM; % per own row.', 'Values consistent with the country sheets.'),
+    ('3. Data-Assessments control + new analysis sheets', 'CONCAT() function (Excel 2019/365 only).', '#NAME? and empty country lists when opened in Excel 2016.', 'Replaced by & concatenation (cumulative helper cells for lists).', 'Works in Excel 2016 and later.'),
     ('Workbook calculation', 'calcChain present; manual expectation of recalculation.', 'Cached values could be stale after edits.', 'calcChain removed (Excel rebuilds it); full recalculation on load enabled.', 'Values recalculated on open.'),
 ]
 
