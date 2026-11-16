@@ -343,6 +343,12 @@ FINDINGS = [
     ['F15', 'Legacy PivotTables (20)', 'All pivot caches', 'Caches not refreshed after source corrections.', 'Pivots would display stale values.', 'refreshOnLoad set on all 11 caches (Excel refreshes when the file is opened).', 'Yes', 'Pivots refresh in Excel; not refreshable in the validation engine (see limitations).'],
     ['F16', '1. Data-All Assessments 2026', 'J1957', 'Unexplained arithmetic "=49/64".', 'Hardcoded figure of unknown meaning.', 'Left unchanged, documented.', 'No – flagged', '—'],
     ['F17', 'Several legacy reports (3.Final-*, Self Assessment Results)', 'Percent columns', 'Percentages calculated over all countries/controls including N/A.', 'Understates control levels of countries with many N/A answers.', 'New analysis uses applicable answers as denominator and reports N/A separately.', 'Yes (new sheets)', 'Check #7.'],
+    ['F18', 'Country sheets – evidence summary block (rows 63+): Costa Rica, El Salvador, Paraguay (+ all 32 hardened)', 'Costa Rica F67, El Salvador F67, Paraguay F67; "Yes" counters in all 32 sheets',
+     'Counter looked for only one label ("Si" or "Yes") while the country uses the other one.', 'Uploaded evidence reported as 0: Costa Rica (real 30), El Salvador (real 47), Paraguay (real 13).',
+     '=COUNTIF(rng,"Yes")+COUNTIF(rng,"Si")+COUNTIF(rng,"Sí") applied to every "Yes" counter of the SharePoint and TEST blocks.', 'Yes', 'Recalculated; counts equal the evidence column.'],
+    ['F19', 'El Salvador / Uruguay / Trinidad / USA – summary blocks', 'El Salvador F67:F69; Uruguay, Trinidad G74:G76; USA G70:G79', 'Ranges started at the header row ($F$1) or ran to row 63 instead of $2:$62.', 'Inconsistent ranges; risk of counting non-answer cells.', 'Ranges standardized to rows 2–62.', 'Yes', 'Recalculated.'],
+    ['F20', 'USA – TEST block and "Total - N/a"', 'G73; G77:G79 (H77)', 'TEST counters pointed to the SharePoint column G instead of the test column E (H77 showed 461.5%); G73 used =61-COUNTIF(G3:G70,"N/A") (range includes the summary cells).', 'Wrong TEST result (>100%) and fragile total.', 'G77:G79 count column E; G73 = 61-G72.', 'Yes', 'H77 now ≤ 100%.'],
+    ['F21', 'Haiti / Guatemala – "Ponderacion"', 'Haiti G71; Guatemala G68', 'Value 1 typed by hand while the other 30 countries use the formula =IF(Yes%=No%,2,IF(Yes%>No%,3,1)) (formula would give 3).', 'Possibly a deliberate manual rating – intent unknown.', 'Not changed (could be an intentional reviewer judgement); flagged for the RCCH to confirm.', 'No – flagged', '—'],
 ]
 
 DQ = [
@@ -383,6 +389,8 @@ LIMITATIONS = [
     'Trend analysis relies on the undated "Assessments bkp" snapshot and is indicative only.',
     'Compliance percentages typed in "5.Compliance 2026" (column K) and the hardcoded figure in "1. Data-All Assessments 2026"!J1957 could not be traced to a source and were left unchanged.',
     'Evidence quality was assessed from the "Evidence Uploaded" flag only; the documents on SharePoint were not reviewed.',
+    'Haiti (G71) and Guatemala (G68) carry a hand-typed "Ponderacion" of 1 instead of the formula used by the other 30 countries; left unchanged because it may be an intentional reviewer rating.',
+    'Five PivotTable item labels still show "#N/A" from the stale caches of the original file; they disappear when Excel refreshes the PivotTables on opening.',
     'Legacy presentation sheets (scope sheets, Countries, Matrix 1/2, Summary) contain static prior-cycle values; they were archived, not rebuilt.',
 ]
 
@@ -404,5 +412,6 @@ CHANGES = [
     ('32 Action Plan sheets', 'No validation on Status.', 'Inconsistent statuses.', 'List validation (warning style) added: NOT STARTED, IN PROGRESS, COMPLETED, ON HOLD, CANCELLED.', 'Standardized input; existing entries untouched.'),
     ('12 empty sheets', 'Sheet2, Sheet3, Sheet4, Sheet5, Sheet6, Sheet7, Sheet10, Sheet33, SelfAssessment, SelfAssessment 2026, Countries 2026, Final-ByScope.', 'Empty, unreferenced clutter.', 'Removed after dependency check.', '117 original sheets retained.'),
     ('Sheet order & tabs', 'Analysis, backups, drafts and country forms interleaved; 129 tabs.', 'Hard to navigate.', 'New sheets first, then country forms & action plans, configuration, documentation; legacy/backup sheets at the end with grey tabs; navigation links on every new sheet.', 'Clear structure.'),
+    ('32 country assessment sheets – summary blocks', 'Evidence counters searched one label only; some ranges from header row or to row 63; USA TEST block pointed to the wrong column.', 'Costa Rica, El Salvador and Paraguay showed 0 uploaded evidence; USA TEST showed 461.5%.', '46 counter formulas standardized (Yes+Si+Sí, rows 2–62, USA TEST → column E, USA total → 61-G72). Original answers untouched.', 'Summary blocks consistent with the answers.'),
     ('Workbook calculation', 'calcChain present; manual expectation of recalculation.', 'Cached values could be stale after edits.', 'calcChain removed (Excel rebuilds it); full recalculation on load enabled.', 'Values recalculated on open.'),
 ]

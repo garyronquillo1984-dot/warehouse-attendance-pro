@@ -244,6 +244,30 @@ for r in range(2, 34):
         repl[f'J{r}'] = fxml(f'J{r}', cc[f'J{r}'].group(3), f'IF(K{r}="","N/A",IF(K{r}>=0.91,"UNDER CONTROL",IF(K{r}>=0.61,"MODERATE CONTROL","INSUFFICIENT CONTROL")))')
 wr(SP['5.Compliance 2026'], apply(unshare(cx), repl))
 
+
+# F18-F20 country-sheet summary blocks (SharePoint / TEST evidence counts, rows 63+)
+YESF = re.compile(r'^COUNTIF\(\$?([A-Z])\$?\d+:\$?[A-Z]\$?\d+,"(?:Si|SI|si|Yes|YES|yes)"\)$')
+OTHF = re.compile(r'^COUNTIF\(\$?([A-Z])\$?\d+:\$?[A-Z]\$?\d+,"(No|NO|N/A)"\)$')
+for c in CFG['reg']:
+    x = rd(SP[c['sheet']]); cs = cells(x); repl = {}
+    for ref, m in cs.items():
+        if int(m.group(2)) < 63 or not m.group(4) or '<f>' not in m.group(4): continue
+        f = html.unescape(re.search(r'<f>(.*?)</f>', m.group(4), re.S).group(1))
+        col_override = 'E' if (c['sheet'] == 'USA' and int(m.group(2)) in (77, 78, 79)) else None
+        my = YESF.match(f); mo = OTHF.match(f)
+        if my:
+            col = col_override or my.group(1); rg = f'${col}$2:${col}$62'
+            nf = f'COUNTIF({rg},"Yes")+COUNTIF({rg},"Si")+COUNTIF({rg},"Sí")'
+        elif mo:
+            col = col_override or mo.group(1); nf = f'COUNTIF(${col}$2:${col}$62,"{mo.group(2)}")'
+        elif c['sheet'] == 'USA' and ref == 'G73':
+            nf = '61-G72'
+        else:
+            continue
+        if nf != f:
+            repl[ref] = fxml(ref, m.group(3), nf); LOG['summary_fix'].append(f"{c['sheet']}!{ref}: {f} -> {nf}")
+    if repl: wr(SP[c['sheet']], apply(x, repl))
+
 # Data validation on country forms and action plans
 DV_ORDER = ['<hyperlinks', '<printOptions', '<pageMargins', '<pageSetup', '<headerFooter', '<rowBreaks', '<colBreaks', '<customProperties',
             '<cellWatches', '<ignoredErrors', '<smartTags', '<drawing', '<legacyDrawing', '<picture', '<oleObjects', '<controls',
