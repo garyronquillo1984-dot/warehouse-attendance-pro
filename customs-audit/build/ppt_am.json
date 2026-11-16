@@ -1,0 +1,434 @@
+[
+{
+"row": 3,
+"label": "Annex 1 Documentation of Local Procedures",
+"vals": [
+16,
+11,
+5,
+0
+],
+"pct": 0.6719,
+"res": "MODERATE CONTROL"
+},
+{
+"row": 4,
+"label": "2.5 Personnel Training",
+"vals": [
+19,
+7,
+6,
+0
+],
+"pct": 0.7031,
+"res": "MODERATE CONTROL"
+},
+{
+"row": 5,
+"label": "4.14 Regular Customs Declaration Quality Reviews",
+"vals": [
+21,
+5,
+3,
+3
+],
+"pct": 0.8103,
+"res": "MODERATE CONTROL"
+},
+{
+"row": 6,
+"label": "2.3 Country Self-Assessment & Action Plan",
+"vals": [
+24,
+5,
+3,
+0
+],
+"pct": 0.8281,
+"res": "MODERATE CONTROL"
+},
+{
+"row": 7,
+"label": "4.11 Unauthorized Release (URL)",
+"vals": [
+22,
+7,
+1,
+2
+],
+"pct": 0.85,
+"res": "MODERATE CONTROL"
+},
+{
+"row": 8,
+"label": "4.13 Reconciliation of Physical Shipments vs. Data",
+"vals": [
+23,
+5,
+2,
+2
+],
+"pct": 0.85,
+"res": "MODERATE CONTROL"
+},
+{
+"row": 9,
+"label": "3.5 Third Party Brokers Controls",
+"vals": [
+15,
+1,
+2,
+14
+],
+"pct": 0.8611,
+"res": "MODERATE CONTROL"
+},
+{
+"row": 10,
+"label": "4.12 Export Clearance",
+"vals": [
+24,
+2,
+2,
+4
+],
+"pct": 0.8929,
+"res": "MODERATE CONTROL"
+},
+{
+"row": 11,
+"label": "5.2 Power of Attorney (PoA)",
+"vals": [
+11,
+3,
+0,
+18
+],
+"pct": 0.8929,
+"res": "MODERATE CONTROL"
+},
+{
+"row": 12,
+"label": "2.9 Trusted Trader Programs",
+"vals": [
+9,
+0,
+1,
+22
+],
+"pct": 0.9,
+"res": "MODERATE CONTROL"
+},
+{
+"row": 13,
+"label": "4.2 Manifest",
+"vals": [
+27,
+3,
+1,
+1
+],
+"pct": 0.9194,
+"res": "UNDER CONTROL"
+},
+{
+"row": 14,
+"label": "4.3 Import Clearance",
+"vals": [
+28,
+3,
+1,
+0
+],
+"pct": 0.9219,
+"res": "UNDER CONTROL"
+},
+{
+"row": 15,
+"label": "3.2 Customs Bonded Facility",
+"vals": [
+24,
+2,
+1,
+5
+],
+"pct": 0.9259,
+"res": "UNDER CONTROL"
+},
+{
+"row": 16,
+"label": "4.6 Transit / Bonded Movements",
+"vals": [
+19,
+1,
+1,
+11
+],
+"pct": 0.9286,
+"res": "UNDER CONTROL"
+},
+{
+"row": 17,
+"label": "5.1 Importer/Exporter of Record (IOR/EOR)",
+"vals": [
+7,
+1,
+0,
+24
+],
+"pct": 0.9375,
+"res": "UNDER CONTROL"
+},
+{
+"row": 18,
+"label": "4.4 Broker Handover",
+"vals": [
+25,
+1,
+1,
+5
+],
+"pct": 0.9444,
+"res": "UNDER CONTROL"
+},
+{
+"row": 19,
+"label": "4.8 Post Clearance Modifications (PCM)",
+"vals": [
+26,
+1,
+1,
+4
+],
+"pct": 0.9464,
+"res": "UNDER CONTROL"
+},
+{
+"row": 20,
+"label": "1.7 Independence",
+"vals": [
+29,
+1,
+1,
+1
+],
+"pct": 0.9516,
+"res": "UNDER CONTROL"
+},
+{
+"row": 21,
+"label": "3.3 DHL Express Customs Systems & Applications",
+"vals": [
+28,
+3,
+0,
+1
+],
+"pct": 0.9516,
+"res": "UNDER CONTROL"
+},
+{
+"row": 22,
+"label": "2.6 Fines & Penalties",
+"vals": [
+29,
+3,
+0,
+0
+],
+"pct": 0.9531,
+"res": "UNDER CONTROL"
+},
+{
+"row": 23,
+"label": "6. Reporting & Investigation of Material Violations",
+"vals": [
+22,
+2,
+0,
+8
+],
+"pct": 0.9583,
+"res": "UNDER CONTROL"
+},
+{
+"row": 24,
+"label": "4.9 Diplomatic Shipments",
+"vals": [
+27,
+2,
+0,
+3
+],
+"pct": 0.9655,
+"res": "UNDER CONTROL"
+},
+{
+"row": 25,
+"label": "3.1 Licenses & Permits to Operate",
+"vals": [
+29,
+0,
+1,
+2
+],
+"pct": 0.9667,
+"res": "UNDER CONTROL"
+},
+{
+"row": 26,
+"label": "1.6 Definitions",
+"vals": [
+29,
+2,
+0,
+1
+],
+"pct": 0.9677,
+"res": "UNDER CONTROL"
+},
+{
+"row": 27,
+"label": "4.10 Duties & Taxes Process Accounting",
+"vals": [
+29,
+2,
+0,
+1
+],
+"pct": 0.9677,
+"res": "UNDER CONTROL"
+},
+{
+"row": 28,
+"label": "4.5 Prohibited & Restricted Goods",
+"vals": [
+30,
+0,
+1,
+1
+],
+"pct": 0.9677,
+"res": "UNDER CONTROL"
+},
+{
+"row": 29,
+"label": "7. Escalations",
+"vals": [
+30,
+0,
+1,
+1
+],
+"pct": 0.9677,
+"res": "UNDER CONTROL"
+},
+{
+"row": 30,
+"label": "2.1 Customs Compliance Culture",
+"vals": [
+31,
+0,
+1,
+0
+],
+"pct": 0.9688,
+"res": "UNDER CONTROL"
+},
+{
+"row": 31,
+"label": "3.6 Recordkeeping",
+"vals": [
+30,
+2,
+0,
+0
+],
+"pct": 0.9688,
+"res": "UNDER CONTROL"
+},
+{
+"row": 32,
+"label": "2.10 Customs Contract Clauses",
+"vals": [
+19,
+1,
+0,
+12
+],
+"pct": 0.975,
+"res": "UNDER CONTROL"
+},
+{
+"row": 33,
+"label": "3.4 Customs Agent License & Qualification",
+"vals": [
+22,
+1,
+0,
+9
+],
+"pct": 0.9783,
+"res": "UNDER CONTROL"
+},
+{
+"row": 34,
+"label": "2.2 Customs Regulatory Changes",
+"vals": [
+32,
+0,
+0,
+0
+],
+"pct": 1,
+"res": "UNDER CONTROL"
+},
+{
+"row": 35,
+"label": "2.7 Voluntary Disclosures",
+"vals": [
+23,
+0,
+0,
+9
+],
+"pct": 1,
+"res": "UNDER CONTROL"
+},
+{
+"row": 36,
+"label": "2.8 Interaction with Authorities (Communications)",
+"vals": [
+32,
+0,
+0,
+0
+],
+"pct": 1,
+"res": "UNDER CONTROL"
+},
+{
+"row": 37,
+"label": "4.1 Pre-Arrival Processing",
+"vals": [
+17,
+0,
+0,
+15
+],
+"pct": 1,
+"res": "UNDER CONTROL"
+},
+{
+"row": 38,
+"label": "4.7 Temporary Imports & Temporary Exports",
+"vals": [
+20,
+0,
+0,
+12
+],
+"pct": 1,
+"res": "UNDER CONTROL"
+}
+]

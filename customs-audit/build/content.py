@@ -338,7 +338,7 @@ FINDINGS = [
     ['F10', '3.Final-SAPerControl', 'D2:G37; H2:K37', 'Counts hardcoded; percentages divided by a hardcoded 32 (N/A included in the denominator).', 'Stale and not reproducible; N/A diluted percentages.', 'D..G = COUNTIF(row of the control in 3.Final-DetailsControlCountries, level); /32 replaced by /COUNTA(country header). Percent-of-applicable provided in 03.', 'Yes', 'Recalculated.'],
     ['F11', '4.Final-AM Risk Assessment', 'B, D, F, H (counts); C/E/G weights; M thresholds', 'Counts hardcoded; Moderate weighted 0.5 (Config uses 0.75); thresholds 0.91 / 0.61 differ from matrix (0.90 / 0.75).', 'Regional risk conclusion depends on an undocumented, inconsistent methodology.', 'Counts linked by COUNTIF to 3.Final-DetailsControlCountries. Weights/thresholds left as authored (management choice) and flagged; harmonised model in 05 / 08.', 'Partly', 'Counts recalculated; methodology difference documented.'],
     ['F12', '5.Compliance 2026', 'J2:J33', 'Thresholds ≥91% / 61–90% / ≤60% leave gaps (e.g. 90.5% or 60.5% → "N/A").', 'Countries could be shown as N/A instead of a level.', '=IF(K2="","N/A",IF(K2>=0.91,"UNDER CONTROL",IF(K2>=0.61,"MODERATE CONTROL","INSUFFICIENT CONTROL")))', 'Yes', 'Recalculated.'],
-    ['F13', '5.Compliance 2026', 'K2:K33', 'Compliance % typed as constants; source not documented.', 'Cannot be validated against the assessments.', 'Not changed (no source to rebuild from). Flagged; 02 provides the reproducible score.', 'No – flagged', '—'],
+    ['F13', '5.Compliance 2026 (source of presentation slide 13)', 'K2:K33', 'Compliance % typed as constants. Cross-check with the 2026 presentation showed they follow the workbook score method (weights 1 / 0.75 / 0 over applicable answers) for 26 of 32 countries, but 6 values are stale (Bermuda 81% vs 87.2%, Barbados 85% vs 89.9%, Cayman Islands 97% vs 94.0%, Venezuela, Peru, Panama).', 'Slide 13 and column J classification based on outdated values.', "K = INDEX('13 – Calc Engine' score, MATCH(country)) – linked to the corrected score.", 'Yes', 'Recalculated; see 14 – PPT Reconciliation table E.'],
     ['F14', 'Workbook defined names', '_FilterDatabase (sheet "Details")', 'Name refers to #REF!.', 'Broken reference.', 'Removed.', 'Yes', '—'],
     ['F15', 'Legacy PivotTables (20)', 'All pivot caches', 'Caches not refreshed after source corrections.', 'Pivots would display stale values.', 'refreshOnLoad set on all 11 caches (Excel refreshes when the file is opened).', 'Yes', 'Pivots refresh in Excel; not refreshable in the validation engine (see limitations).'],
     ['F16', '1. Data-All Assessments 2026', 'J1957', 'Unexplained arithmetic "=49/64".', 'Hardcoded figure of unknown meaning.', 'Left unchanged, documented.', 'No – flagged', '—'],
@@ -387,7 +387,7 @@ LIMITATIONS = [
     'Scoring weights and classification thresholds are an analytical model proposed for management validation; they are not official DHL compliance scoring rules.',
     'Text due dates were interpreted with a documented rule; ambiguous dates (both parts ≤ 12) are read as DD.MM.YYYY and flagged – owners should confirm them in the country Action Plans.',
     'Trend analysis relies on the undated "Assessments bkp" snapshot and is indicative only.',
-    'Compliance percentages typed in "5.Compliance 2026" (column K) and the hardcoded figure in "1. Data-All Assessments 2026"!J1957 could not be traced to a source and were left unchanged.',
+    'The hardcoded figure in "1. Data-All Assessments 2026"!J1957 could not be traced to a source and was left unchanged.',
     'Evidence quality was assessed from the "Evidence Uploaded" flag only; the documents on SharePoint were not reviewed.',
     'Haiti (G71) and Guatemala (G68) carry a hand-typed "Ponderacion" of 1 instead of the formula used by the other 30 countries; left unchanged because it may be an intentional reviewer rating.',
     'Five PivotTable item labels still show "#N/A" from the stale caches of the original file; they disappear when Excel refreshes the PivotTables on opening.',
@@ -413,5 +413,215 @@ CHANGES = [
     ('12 empty sheets', 'Sheet2, Sheet3, Sheet4, Sheet5, Sheet6, Sheet7, Sheet10, Sheet33, SelfAssessment, SelfAssessment 2026, Countries 2026, Final-ByScope.', 'Empty, unreferenced clutter.', 'Removed after dependency check.', '117 original sheets retained.'),
     ('Sheet order & tabs', 'Analysis, backups, drafts and country forms interleaved; 129 tabs.', 'Hard to navigate.', 'New sheets first, then country forms & action plans, configuration, documentation; legacy/backup sheets at the end with grey tabs; navigation links on every new sheet.', 'Clear structure.'),
     ('32 country assessment sheets – summary blocks', 'Evidence counters searched one label only; some ranges from header row or to row 63; USA TEST block pointed to the wrong column.', 'Costa Rica, El Salvador and Paraguay showed 0 uploaded evidence; USA TEST showed 461.5%.', '46 counter formulas standardized (Yes+Si+Sí, rows 2–62, USA TEST → column E, USA total → 61-G72). Original answers untouched.', 'Summary blocks consistent with the answers.'),
+    ('5.Compliance 2026', 'Column K compliance % typed by hand (source of presentation slide 13).', '6 of 32 values stale vs. the answers.', 'K linked to the corrected country score (13 – Calc Engine).', 'Slide 13 can be refreshed from live values.'),
+    ('14 – PPT Reconciliation (new)', 'No check between the workbook and the 2026 presentation.', 'Presentation built on the uncorrected workbook (slides 4, 5-8, 11-13, 15) and on outdated key-country lists.', 'New sheet: slide-by-slide findings + live comparison tables (slides 4, 5, 9, 11, 13, 15, 26-37).', 'Every slide figure can be updated from the corrected workbook.'),
     ('Workbook calculation', 'calcChain present; manual expectation of recalculation.', 'Cached values could be stale after edits.', 'calcChain removed (Excel rebuilds it); full recalculation on load enabled.', 'Values recalculated on open.'),
 ]
+
+
+# =============================================================================== 14 PPT reconciliation
+PPT = 'Country Customs Self-Assessment Program - 2026 UPDATED (PDF, 40 slides)'
+SL5 = {  # slide 5 – control level per country (IC, MC, UC, N/A %) as shown on the slide
+    'Bahamas': (14, 3, 69, 14), 'Barbados': (14, 3, 69, 14), 'Bermuda': (14, 6, 53, 28), 'Cayman Islands': (8, 0, 69, 22), 'Canada': (6, 6, 75, 14),
+    'Curacao': (6, 3, 75, 17), 'Haiti': (6, 11, 64, 19), 'Jamaica': (6, 3, 75, 17), 'Trinidad and Tobago': (6, 3, 67, 25), 'British Virgin Islands': (6, 3, 50, 42),
+    'Guatemala': (3, 14, 64, 19), 'Mexico': (3, 3, 92, 3), 'Nicaragua': (3, 17, 64, 17), 'Panama': (3, 17, 75, 6), 'Paraguay': (3, 11, 64, 22), 'Uruguay': (3, 3, 67, 28),
+    'Argentina': (0, 6, 81, 14), 'Bolivia': (0, 6, 81, 14), 'Brazil': (0, 6, 89, 6), 'Chile': (0, 11, 81, 8), 'Colombia': (0, 11, 83, 6), 'Costa Rica': (0, 3, 72, 25),
+    'Ecuador': (0, 6, 75, 19), 'French Guiana': (0, 6, 69, 25), 'Guadeloupe': (0, 6, 75, 19), 'Honduras': (0, 3, 75, 22), 'Martinique': (0, 6, 78, 17), 'Peru': (0, 8, 83, 8),
+    'Dominican Republic': (0, 11, 81, 8), 'El Salvador': (0, 8, 75, 17), 'USA': (0, 8, 92, 0), 'Venezuela': (0, 8, 75, 17)}
+SL13 = {'Bermuda': .81, 'Barbados': .85, 'Bahamas': .88, 'Canada': .94, 'Haiti': .94, 'Paraguay': .94, 'Nicaragua': .94, 'Guatemala': .95, 'Panama': .95,
+        'Curacao': .96, 'Mexico': .96, 'Jamaica': .96, 'British Virgin Islands': .96, 'Trinidad and Tobago': .96, 'Uruguay': .96, 'Chile': .97, 'Ecuador': .97,
+        'Cayman Islands': .97, 'El Salvador': .98, 'Dominican Republic': .98, 'USA': .98, 'Venezuela': .98, 'Colombia': .98, 'Argentina': .99, 'Peru': .99,
+        'Guadeloupe': .99, 'Costa Rica': .99, 'Bolivia': .99, 'Brazil': .99, 'Martinique': .99, 'French Guiana': .99, 'Honduras': .99}
+SL4 = [('Annex 1', 'Annex 1', (13, 31, 28, 28)), ('7. Escalations', '7. Escalations', (3, 0, 66, 28)),
+       ('2. Customs Awareness & Risk Management', '2. Customs Awareness & Risk Management', (3, 2, 60, 36)),
+       ('1. About the DHL Express Global Customs Compliance Policy', '1. About the DHL Express Global Customs Compliance Policy', (2, 3, 67, 28)),
+       ('4. Customs Process Controls', '4. Customs Process Controls', (1, 4, 59, 36)), ('3. Regulatory Supervision', '3. Regulatory Supervision', (1, 2, 58, 39)),
+       ('4. Customs Process Controls (Import Clearence)', '4. Customs Process Controls', (1, 2, 63, 34)),
+       ('6. Reporting & Investigation of Material Violations', '6. Reporting & Investigation of Material Violations', (0, 6, 50, 41)),
+       ('5. Customs Representation', '5. Customs Representation', (0, 3, 20, 77))]
+SL15 = [('CAR', 'Caribean', (6, 5, 69)), ('CSA', 'CSA', (1, 9, 74)), ('Canada', 'CA', (6, 6, 75)), ('Brazil', 'Brazil', (0, 6, 89)), ('Mexico', 'Mexico', (3, 3, 92)), ('USA', 'USA', (0, 8, 92))]
+SL9 = [('Insufficient', 'Bahamas', 6), ('Insufficient', 'Barbados', 5), ('Insufficient', 'Bermuda', 3), ('Insufficient', 'Cayman Islands', 3),
+       ('Moderate', 'Nicaragua', 6), ('Moderate', 'Panama', 4), ('Moderate', 'Guatemala', 4)]
+# key-country boxes: (slide, topic, controls, red list on slide, yellow list on slide, status note)
+KEYS = [
+    (26, 'Annex 1 – Documentation of Local Procedures', ['Annex 1 Documentation of Local Procedures'], 'Caribbean countries, Guatemala, Nicaragua', 'Peru, Paraguay, Panama, Mexico, Canada',
+     'Partly wrong: Guatemala, Peru, Paraguay, Mexico and Canada are UNDER CONTROL in 2026; Nicaragua is Moderate (not Insufficient). Missing: Chile, Colombia, Dominican Republic (Moderate).'),
+    (27, '2.5 Personnel Training', ['2.5 Personnel Training'], 'Cayman Islands, Haiti, Paraguay, Trinidad, Virgin Islands (British)', 'Barbados, Bermuda, Curacao, Ecuador, Honduras',
+     'Partly wrong: Paraguay, Ecuador and Honduras are UNDER CONTROL; Barbados, Bermuda and Curacao are Insufficient (not Moderate). Missing: Jamaica, Bahamas (Insufficient); Venezuela, Argentina, Bolivia, Chile, Costa Rica, Brazil (Moderate).'),
+    (28, '1.6 / 1.7 Definitions & Independence', ['1.6 Definitions', '1.7 Independence'], 'Bahamas, Jamaica, Cayman Islands, Martinique, Virgin Islands', 'Curacao, Guadeloupe, Haiti, Trinidad & Tobago, Uruguay',
+     'Mostly wrong: in 2026 only Cayman Islands (Insufficient, 1.7) and Guatemala (Moderate, 1.6 and 1.7) have gaps. Lists appear to come from an earlier cycle.'),
+    (29, '3.5 Third Party Brokers Controls', ['3.5 Third Party Brokers Controls'], 'Haiti', 'Brazil, Ecuador, Mexico, Trinidad & Tobago',
+     'Partly wrong: Trinidad and Tobago is Insufficient (not Moderate); Brazil and Ecuador are UNDER CONTROL / N/A. Haiti and Mexico confirmed.'),
+    (30, '3.2 Customs Bonded Facility', ['3.2 Customs Bonded Facility'], 'Guatemala', 'Bermuda, Ecuador, Haiti',
+     'Wrong: Bermuda is the only Insufficient; Guatemala and Colombia are Moderate; Ecuador and Haiti are UNDER CONTROL.'),
+    (31, '4.8 Post Clearance Modifications (PCM)', ['4.8 Post Clearance Modifications (PCM)'], 'Curacao', 'Bahamas, Brazil, Costa Rica, Haiti, Salvador',
+     'Wrong: only Ecuador has a gap (Moderate) in 2026; no Insufficient answers.'),
+    (32, '4.11 Unauthorized Release (URL)', ['4.11 Unauthorized Release (URL)'], 'Bermuda, Nicaragua', 'Chile, Colombia, Costa Rica, Paraguay',
+     'Partly wrong: Guatemala is the only Insufficient; Bermuda and Costa Rica have no gap; Nicaragua is Moderate. Missing: El Salvador, Peru, Canada, Brazil (Moderate).'),
+    (33, '2.1 Customs Compliance Culture', ['2.1 Customs Compliance Culture'], '-', 'Bolivia, Costa Rica, Panama',
+     'Wrong: Barbados is Insufficient; Bolivia, Costa Rica and Panama are UNDER CONTROL.'),
+    (37, '4.14 Regular Customs Declaration Quality Reviews', ['4.14 Regular Customs Declaration Quality Reviews'], 'Virgin Islands (British)', 'Guatemala, Mexico, Trinidad & Tobago',
+     'Incomplete: Mexico, Jamaica and Bahamas are also Insufficient; Trinidad has no gap. Missing Moderate: USA, Chile, El Salvador, Paraguay, Haiti.'),
+]
+ISSUES = [
+    (4, 'Overview per Section/Scope', 'Values reproduce the defective legacy table "1. Data-All Assessments 2026" in which 9 countries were all N/A (Spanish-label defect F01): e.g. 28% N/A in Annex 1, 1. About and 7. Escalations = 9/32 countries. The bar "4. Customs Process Controls (Import Clearence)" duplicates part of scope 4.', 'Replace with corrected figures (table B below / 03 – Policy Section Analysis).'),
+    (5, 'Control per Country', 'Identical to the ORIGINAL "1. Data-Control Country Matrix" (all 32 countries match). 179 control cells there were hardcoded N/A; after correction 17 countries change (table A).', 'Replace with corrected figures.'),
+    ('6-8', 'Detailed Results per Country: Control', 'Same source as slide 5 (original matrix). 45 control results shown as N/A are now answered (mostly UNDER CONTROL) – see 11 – Change Log, appendix.', 'Refresh the three tables from the corrected matrix.'),
+    (9, 'Key Countries', 'Mixes bases: Insufficient counts are question-level (Bahamas 6, Barbados 5, Cayman 3 confirmed) but Bermuda has 6 (slide: 3). Moderate counts are control-level for Nicaragua (6) but Panama = 6 and Guatemala = 5 (slide: 4 / 4). Paraguay (9 Moderate questions) is missing.', 'Use one basis (questions recommended) – table D.'),
+    (10, 'Overview Results per Control', 'Built on a legacy pivot with an old control grouping ("Policy Implementation", "F&P and Voluntary Disclosures", "Risk Management - Self-Assessment"). Contradicts slide 11: e.g. Personnel Training shown 91% UNDER CONTROL / 0% Insufficient while 9 countries are Insufficient.', 'Rebuild from 03 – Policy Section Analysis (36 sections).'),
+    (11, 'Risk Assessment by Control (Data)', 'Identical to the hardcoded counts of "4.Final-AM Risk Assessment" (stale). After correction 25 of 36 rows change (counts); 4.12, 5.2 and 2.9 move from MODERATE to UNDER CONTROL and 4.3 moves to MODERATE (same 0.91/0.61 thresholds). Moderate weighted 0.5 (Config uses 0.75).', 'Replace with corrected table C.'),
+    (12, 'Risk Assessment by Control (chart)', 'Chart of slide 11 – same stale values.', 'Refresh with slide 11.'),
+    (13, 'Self-Assessment Compliance', 'Values are the hand-typed column K of "5.Compliance 2026". The method matches the workbook score (weighted 1 / 0.75 / 0 over applicable answers) for 26 of 32 countries; 6 are stale: Bermuda 81% (actual 87.2%), Barbados 85% (89.9%), Cayman Islands 97% (94.0%), Venezuela 98% (97.3%), Peru 99% (98.0%), Panama 95% (94.2%). Bermuda and Barbados are therefore not as far behind Bahamas as shown, and Cayman Islands is lower.', 'Column K now linked to the corrected score; update chart (table E).'),
+    (15, 'Self-Assessment per Cluster', 'Identical to the original matrix. Corrected: CAR Under Control 75% (slide 69%), Canada 83% (slide 75%); N/A share is not shown on the slide.', 'Replace with corrected table F.'),
+    (17, 'About the DHL Express Global Customs Compliance Policy', 'Mislabelled: the table shows each country\'s OVERALL distribution (same numbers as slide 5), not scope 1. In scope 1 (1.6 / 1.7) only Cayman Islands (Insufficient) and Guatemala (Moderate) have gaps.', 'Correct title or content.'),
+    (18, 'Customs Awareness & Risk Management', 'Mostly from the original matrix but incomplete and with errors: Bahamas shown 22% Insufficient (data 11%); BVI shown Moderate (data Insufficient); Ecuador listed without gaps; 10 countries with gaps omitted (Bolivia, Chile, Peru, Martinique, Jamaica, Guadeloupe, French Guiana, Canada, Brazil, Curacao).', 'Rebuild from 05 heat map / 03.'),
+    (19, 'Regulatory Supervision', 'Lists countries without gaps (Cayman, Curacao, French Guyana, Guadeloupe, Costa Rica) and omits countries with gaps: Trinidad and Tobago (Insufficient, 3.5), Venezuela, Panama, Mexico, Honduras, Dominican Republic (Moderate). Chart legend shows "Series1-4".', 'Rebuild.'),
+    (20, 'Customs Process Controls', 'Omits countries with Insufficient answers in scope 4 (Mexico, Jamaica, Barbados) and 9 countries with Moderate answers; lists Honduras, Uruguay and Trinidad which have no gap there. Bahamas shown 14% Insufficient (data 21%).', 'Rebuild.'),
+    (21, 'Customs Representation', 'Curacao and Honduras have no gap in 5.1 / 5.2; USA (5.1) and Dominican Republic (5.2) are the Moderate ones, with Nicaragua.', 'Correct.'),
+    (22, 'Reporting & Investigation of Material Violations', 'Contains a pivot "Grand Total" row; omits Uruguay and Paraguay (Moderate on Q60). N/A list differs from data (El Salvador, Jamaica, Bahamas, Barbados, BVI declare N/A).', 'Correct.'),
+    (23, 'Escalations', 'Bahamas Insufficient – confirmed.', 'None.'),
+    (24, 'Annex 1', 'Does not match 2026 answers: data shows Insufficient = Barbados, Bermuda, Cayman Islands, Curacao and Moderate = 13 countries (see table D). Only Chile, Jamaica, Dominican Republic and Cayman Islands coincide with the slide.', 'Rebuild from 03 (section Annex 1).'),
+    ('26-37', 'Areas of opportunity – Key Countries boxes', 'Country lists do not match the 2026 answers nor the prior snapshot – see table D for each topic.', 'Update the boxes (live lists in table D).'),
+    (39, 'Regional Action Plan 2026', '"4.11 Post Clearence Modification" is mislabelled (4.11 = Unauthorized Release; PCM = 4.8). The 4.11 regional actions in "Regional Actions Draft" are not shown. "Countries with more opportunities" (Nicaragua, BVI, Haiti, El Salvador, Cayman) does not match the data: lowest scores are Bermuda, Bahamas, Barbados, then Nicaragua and Paraguay; El Salvador is Strong (98%).', 'Correct label, add URL actions, update country list from 02 – Country Ranking.'),
+    (2, 'Program Scope (32 countries, 61 questions, 36 controls, 7 scopes)', 'Confirmed by the workbook (Annex 1 is grouped with scope 1 on the slide).', 'None.'),
+]
+
+
+def build_ppt_sheet(WS, LAY, g):
+    ws = WS[PR]
+    CE_ = g['CE']; R_ = g['R']; CER = g['CER']; CEC = LAY['CEC']
+    title(ws, 'Reconciliation with the 2026 presentation  |  ' + PPT,
+          'Blue figures = values typed from the presentation (static). "Workbook (corrected)" columns are LIVE formulas. Status columns compare both at the report date.')
+    nav(ws)
+    widths(ws, {'A': 10, 'B': 34, 'C': 70, 'D': 44, 'E': 12, 'F': 12, 'G': 12, 'H': 12, 'I': 12, 'J': 12, 'K': 12, 'L': 12, 'M': 22})
+    r = 5
+    put(ws, f'A{r}', 'Summary – slide-by-slide assessment', bold=True, color=NAVY, size=11); r += 1
+    header_row(ws, r, 1, ['Slide', 'Topic', 'Finding (presentation vs. corrected workbook)', 'Action for the presentation']); r += 1
+    for s, t, f_, a in sorted(ISSUES, key=lambda x: int(str(x[0]).split('-')[0])):
+        for j, v in enumerate([str(s), t, f_, a]):
+            c = ws.cell(r, j + 1, v); cell_style(c, wrap=True, size=9, bold=j == 1)
+        ws.row_dimensions[r].height = max(30, 13 * (len(f_) // 85 + 1)); r += 1
+    BLUE_ = '0000FF'
+    # ---------------- table A: slide 5
+    r += 2
+    put(ws, f'A{r}', 'A. Slide 5 – control level per country (% of 36 controls, N/A included as on the slide)', bold=True, color=NAVY, size=11); r += 1
+    header_row(ws, r, 1, ['', 'Country', 'Slide IC / MC / UC / N/A', '', 'Corr. IC', 'Corr. MC', 'Corr. UC', 'Corr. N/A', 'Δ UC (pp)', 'Status'], height=30); r += 1
+    MX = "'1. Data-Control Country Matrix'"
+    reg = {c['name']: c for c in CFG['reg']}
+    r0 = r
+    for n, v in SL5.items():
+        col = reg[n]['matrix_col']; rg = f'{MX}!${col}$2:${col}$62'
+        ws.cell(r, 2, n); c = ws.cell(r, 3, ' / '.join(f'{x}%' for x in v)); c.font = font(color=BLUE_, size=9)
+        ws.cell(r, 4, v[2] / 100).number_format = PCT
+        for j, lv in enumerate(['INSUFFICIENT CONTROL', 'MODERATE CONTROL', 'UNDER CONTROL', 'N/A']):
+            cc = ws.cell(r, 5 + j, f'=COUNTIF({rg},"{lv}")/COUNTA({rg})'); cc.number_format = '0%'
+        ws.cell(r, 9, f'=ROUND((G{r}-D{r})*100,0)').number_format = '+0;-0;0'
+        ws.cell(r, 10, f'=IF(ROUND(G{r}*100,0)=D{r}*100,"Matches","Update slide")')
+        for j in range(2, 11): cell_style(ws.cell(r, j), size=9, fmt=ws.cell(r, j).number_format)
+        ws.cell(r, 3).font = font(color=BLUE_, size=9); ws.cell(r, 4).font = font(color=BLUE_, size=9)
+        r += 1
+    ws.cell(r0 - 1, 4, 'Slide UC')
+    _status_cf(ws, f'J{r0}:J{r-1}')
+    # ---------------- table B: slide 4
+    r += 2
+    put(ws, f'A{r}', 'B. Slide 4 – per Scope (% of all answers incl. N/A, as on the slide)', bold=True, color=NAVY, size=11); r += 1
+    header_row(ws, r, 1, ['', 'Scope (slide label)', 'Slide IC / MC / UC / N/A', 'Slide N/A', 'Corr. IC', 'Corr. MC', 'Corr. UC', 'Corr. N/A', 'Δ N/A (pp)', 'Status'], height=30); r += 1
+    S0, S1 = LAY['S0'], LAY['S1']
+    sc = lambda col: f"{q(CE_)}!${col}${S0}:${col}${S1}"
+    r0 = r
+    for lab, key, v in SL4:
+        ws.cell(r, 2, lab); ws.cell(r, 3, ' / '.join(f'{x}%' for x in v)); ws.cell(r, 4, v[3] / 100)
+        tot = f'(INDEX({sc("C")},MATCH("{key}",{sc("A")},0))+INDEX({sc("D")},MATCH("{key}",{sc("A")},0))+INDEX({sc("E")},MATCH("{key}",{sc("A")},0))+INDEX({sc("F")},MATCH("{key}",{sc("A")},0)))'
+        for j, col in enumerate(['E', 'D', 'C', 'F']):
+            ws.cell(r, 5 + j, f'=INDEX({sc(col)},MATCH("{key}",{sc("A")},0))/{tot}')
+        ws.cell(r, 9, f'=ROUND((H{r}-D{r})*100,0)')
+        ws.cell(r, 10, f'=IF(ABS(I{r})<=1,"Matches","Update slide")')
+        for j in range(2, 11):
+            cell_style(ws.cell(r, j), size=9, fmt='0%' if j in (4, 5, 6, 7, 8) else ('+0;-0;0' if j == 9 else None))
+        ws.cell(r, 3).font = font(color=BLUE_, size=9); ws.cell(r, 4).font = font(color=BLUE_, size=9)
+        r += 1
+    _status_cf(ws, f'J{r0}:J{r-1}')
+    # ---------------- table C: slide 11
+    r += 2
+    put(ws, f'A{r}', 'C. Slides 11-12 – Risk Assessment by Control (count of countries; source "4.Final-AM Risk Assessment")', bold=True, color=NAVY, size=11); r += 1
+    header_row(ws, r, 1, ['', 'Control', 'Slide UC / MC / IC / N/A', 'Slide %', 'Corr. UC', 'Corr. MC', 'Corr. IC', 'Corr. N/A', 'Corr. %', 'Status', 'Slide result', 'Corrected result'], height=30); r += 1
+    am = json.load(open(os.path.join(HERE, 'ppt_am.json')))
+    r0 = r
+    for row in am:
+        rr_ = row['row']
+        ws.cell(r, 2, row['label']); ws.cell(r, 3, ' / '.join(str(x) for x in row['vals'])); ws.cell(r, 4, row['pct'])
+        AM = "'4.Final-AM Risk Assessment'"
+        for j, col in enumerate('BDFH'):
+            ws.cell(r, 5 + j, f'={AM}!{col}{rr_}')
+        ws.cell(r, 9, f'={AM}!L{rr_}'); ws.cell(r, 11, row['res']); ws.cell(r, 12, f'={AM}!M{rr_}')
+        ws.cell(r, 10, f'=IF(AND(E{r}&" / "&F{r}&" / "&G{r}&" / "&H{r}=C{r},L{r}=K{r}),"Matches",IF(L{r}<>K{r},"Result changes","Counts change"))')
+        for j in range(2, 13):
+            cell_style(ws.cell(r, j), size=9, fmt='0%' if j in (4, 9) else None)
+        for j in (3, 4, 11): ws.cell(r, j).font = font(color=BLUE_, size=9)
+        r += 1
+    _status_cf(ws, f'J{r0}:J{r-1}')
+    # ---------------- table D: key countries
+    r += 2
+    put(ws, f'A{r}', 'D. Key-country lists (slides 9, 26-37) vs. 2026 answers (question level; live lists from 13 – Calc Engine)', bold=True, color=NAVY, size=11); r += 1
+    header_row(ws, r, 1, ['Slide', 'Topic', 'Slide – red (Insufficient) / yellow (Moderate)', 'Workbook – Insufficient (live)', 'Workbook – Moderate (live)', '', '', '', '', 'Status'], height=30); r += 1
+    X0, X1 = LAY['X0'], LAY['X1']
+    cx = lambda col: f"{q(CE_)}!${col}${X0}:${col}${X1}"
+    for sl, topic, labs, red, yel, note in KEYS:
+        ws.cell(r, 1, str(sl)); ws.cell(r, 2, topic); ws.cell(r, 3, f'Red: {red}\nYellow: {yel}')
+        def _j(col):
+            parts = [f'INDEX({cx(col)},MATCH("{l}",{cx("A")},0))' for l in labs]
+            if len(parts) == 1:
+                return f'IF({parts[0]}="","None",{parts[0]})'
+            a_, b_ = parts
+            return f'IF(AND({a_}="",{b_}=""),"None",IF({a_}="",{b_},IF({b_}="",{a_},{a_}&"; "&{b_})))'
+        ic = _j('O'); mc = _j('P')
+        ws.cell(r, 4, '=' + ic); ws.cell(r, 5, '=' + mc); ws.merge_cells(start_row=r, start_column=5, end_row=r, end_column=9)
+        ws.cell(r, 10, note)
+        for j in range(1, 11): cell_style(ws.cell(r, j), size=9, wrap=True)
+        ws.cell(r, 3).font = font(color=BLUE_, size=9)
+        ws.row_dimensions[r].height = 75; r += 1
+    ws.column_dimensions['J'].width = 60
+    ws.cell(r, 1, '9'); ws.cell(r, 2, 'Key Countries (slide 9)')
+    ws.cell(r, 3, 'Insufficient: Bahamas 6, Barbados 5, Bermuda 3, Cayman Island 3\nModerate: Nicaragua 6, Panama 4, Guatemala 4')
+    lk = lambda h, n: f'INDEX({CER(h)},MATCH("{n}",{CER("Country")},0))'
+    ws.cell(r, 4, '="Questions – Bahamas "&' + lk('Insufficient', 'Bahamas') + '&", Barbados "&' + lk('Insufficient', 'Barbados') + '&", Bermuda "&' + lk('Insufficient', 'Bermuda') + '&", Cayman Islands "&' + lk('Insufficient', 'Cayman Islands'))
+    ws.cell(r, 5, '="Questions – Nicaragua "&' + lk('Moderate', 'Nicaragua') + '&", Paraguay "&' + lk('Moderate', 'Paraguay') + '&", Guatemala "&' + lk('Moderate', 'Guatemala') + '&", Panama "&' + lk('Moderate', 'Panama'))
+    ws.merge_cells(start_row=r, start_column=5, end_row=r, end_column=9)
+    ws.cell(r, 10, 'Bermuda has 6 Insufficient questions (slide 3). Moderate: Nicaragua 9, Paraguay 9, Guatemala 6, Panama 5 questions; Paraguay missing on the slide.')
+    for j in range(1, 11): cell_style(ws.cell(r, j), size=9, wrap=True)
+    ws.cell(r, 3).font = font(color=BLUE_, size=9); ws.row_dimensions[r].height = 60; r += 1
+    # ---------------- table E: slide 13
+    r += 2
+    put(ws, f'A{r}', 'E. Slide 13 – Self-Assessment Compliance per country', bold=True, color=NAVY, size=11); r += 1
+    header_row(ws, r, 1, ['', 'Country', 'Slide value', '', 'Corrected score', 'Δ (pp)', '', '', '', 'Status'], height=30); r += 1
+    r0 = r
+    for n, v in SL13.items():
+        ws.cell(r, 2, n); ws.cell(r, 3, v)
+        ws.cell(r, 5, f'=INDEX({CER("Score")},MATCH(B{r},{CER("Country")},0))')
+        ws.cell(r, 6, f'=ROUND((E{r}-C{r})*100,1)')
+        ws.cell(r, 10, f'=IF(ROUND(E{r},2)=C{r},"Matches","Update slide")')
+        for j in range(2, 11): cell_style(ws.cell(r, j), size=9, fmt=PCT if j == 5 else ('0%' if j == 3 else ('+0.0;-0.0;0.0' if j == 6 else None)))
+        ws.cell(r, 3).font = font(color=BLUE_, size=9); r += 1
+    _status_cf(ws, f'J{r0}:J{r-1}')
+    # ---------------- table F: slide 15
+    r += 2
+    put(ws, f'A{r}', 'F. Slide 15 – per Cluster (% of controls; source table "3. Data-Assessments control")', bold=True, color=NAVY, size=11); r += 1
+    header_row(ws, r, 1, ['', 'Cluster', 'Slide IC / MC / UC', 'Slide UC', 'Corr. IC', 'Corr. MC', 'Corr. UC', 'Corr. N/A', 'Δ UC (pp)', 'Status'], height=30); r += 1
+    DA = "'3. Data-Assessments control'"
+    r0 = r
+    for lab, key, v in SL15:
+        ws.cell(r, 2, lab); ws.cell(r, 3, ' / '.join(f'{x}%' for x in v)); ws.cell(r, 4, v[2] / 100)
+        for j, lv in enumerate(['INSUFFICIENT CONTROL', 'MODERATE CONTROL', 'UNDER CONTROL', 'N/A']):
+            ws.cell(r, 5 + j, f'=COUNTIFS({DA}!$A$3:$A$1154,"{key}",{DA}!$F$3:$F$1154,"{lv}")/COUNTIF({DA}!$A$3:$A$1154,"{key}")')
+        ws.cell(r, 9, f'=ROUND((G{r}-D{r})*100,0)'); ws.cell(r, 10, f'=IF(ABS(I{r})<=1,"Matches","Update slide")')
+        for j in range(2, 11): cell_style(ws.cell(r, j), size=9, fmt='0%' if j in (4, 5, 6, 7, 8) else ('+0;-0;0' if j == 9 else None))
+        ws.cell(r, 3).font = font(color=BLUE_, size=9); ws.cell(r, 4).font = font(color=BLUE_, size=9); r += 1
+    _status_cf(ws, f'J{r0}:J{r-1}')
+    ws.freeze_panes = 'A5'
+
+
+def _status_cf(ws, rng):
+    from openpyxl.formatting.rule import CellIsRule
+    from openpyxl.styles import Font as _F
+    for t, colr in [('Matches', GREEN), ('Update slide', RED), ('Result changes', RED), ('Counts change', ORANGE)]:
+        ws.conditional_formatting.add(rng, CellIsRule(operator='equal', formula=[f'"{t}"'], fill=fill(colr[0]), font=_F(color=colr[1], bold=True)))

@@ -242,6 +242,9 @@ cx = rd(SP['5.Compliance 2026']); cc = cells(cx); repl = {}
 for r in range(2, 34):
     if f'J{r}' in cc and '<f' in (cc[f'J{r}'].group(4) or ''):
         repl[f'J{r}'] = fxml(f'J{r}', cc[f'J{r}'].group(3), f'IF(K{r}="","N/A",IF(K{r}>=0.91,"UNDER CONTROL",IF(K{r}>=0.61,"MODERATE CONTROL","INSUFFICIENT CONTROL")))')
+for r in range(2, 34):
+    if f'C{r}' in cc and f'K{r}' in cc:
+        repl[f'K{r}'] = fxml(f'K{r}', cc[f'K{r}'].group(3), f"IFERROR(INDEX('13 – Calc Engine'!$P$5:$P$36,MATCH(IF(C{r}=\"United States\",\"USA\",C{r}),'13 – Calc Engine'!$A$5:$A$36,0)),\"\")")
 wr(SP['5.Compliance 2026'], apply(unshare(cx), repl))
 
 

@@ -19,7 +19,8 @@ AU = '10 – Audit Report'
 CL = '11 – Change Log'
 KF = '12 – Key Regional Findings'
 CE = '13 – Calc Engine'
-NEW_SHEETS = [D, R, P, CD, RK, AP, SD, CF, AR, AU, CL, KF, CE]
+PR = '14 – PPT Reconciliation'
+NEW_SHEETS = [D, R, P, CD, RK, AP, SD, CF, AR, AU, CL, KF, CE, PR]
 
 
 def q(name):
@@ -88,7 +89,7 @@ def nav(ws, row=3, col=1):
     """Navigation links (HYPERLINK formulas, no relationship parts needed)."""
     links = [(D, 'Dashboard'), (R, 'Ranking'), (P, 'Policy Sections'), (CD, 'Country Details'),
              (RK, 'Risk'), (AP, 'Action Plan'), (SD, 'Source Data'), (CF, 'Methodology'),
-             (AR, 'Archive'), (AU, 'Audit Report'), (CL, 'Change Log'), (KF, 'Key Findings')]
+             (AR, 'Archive'), (AU, 'Audit Report'), (CL, 'Change Log'), (KF, 'Key Findings'), (PR, 'PPT Check')]
     for j, (s, lab) in enumerate(links):
         c = ws.cell(row=row, column=col + j)
         c.value = f'=HYPERLINK("#{q(s)}!A1","{lab}")'

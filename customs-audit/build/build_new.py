@@ -854,12 +854,12 @@ ws.sheet_view.showGridLines = False
 put(ws, 'B1', 'Americas Region – Customs Compliance Self-Assessment 2026', bold=True, size=18, color=NAVY)
 put(ws, 'B2', '="Regional Customs Compliance Control Dashboard  |  Report date: "&TEXT(p_ReportDate,"dd-mmm-yyyy")&"  |  32 country self-assessments, 61 questions, 36 Policy Sections"', italic=True, size=10, color='595959')
 links = [(D, 'Dashboard'), (R, '02 Country Ranking'), (P, '03 Policy Sections'), (CD, '04 Country Details'), (RK, '05 Regional Risk'), (AP, '06 Action Plan'),
-         (SD, '07 Source Data'), (CF, '08 Methodology'), (AR, '09 Archive'), (AU, '10 Audit Report'), (CL, '11 Change Log'), (KF, '12 Key Findings')]
-spans = [('B', 'C'), ('D', 'E'), ('F', 'G'), ('H', 'I'), ('J', 'L'), ('M', 'M')]
+         (SD, '07 Source Data'), (CF, '08 Methodology'), (AR, '09 Archive'), (AU, '10 Audit Report'), (CL, '11 Change Log'), (KF, '12 Key Findings'), (PR, '14 PPT Check')]
+spans = [('B', 'C'), ('D', 'E'), ('F', 'G'), ('H', 'I'), ('J', 'L'), ('M', 'M'), ('N', 'N')]
 for k, (s_, lab) in enumerate(links[1:] + [(D, '')][:0]):
     pass
 for k, (s_, lab) in enumerate(links[1:]):
-    row = 3 + k // 6; a, b = spans[k % 6]
+    row = 3 + k // 6 if k < 12 else 3; a, b = spans[k % 6] if k < 12 else spans[6]
     c = ws[f'{a}{row}']; c.value = f'=HYPERLINK("#{q(s_)}!A1","► {lab}")'
     c.font = Font(name=FONT, size=9, color='0563C1', underline='single'); c.alignment = Alignment(horizontal='left')
     if a != b: ws.merge_cells(f'{a}{row}:{b}{row}')
@@ -995,6 +995,7 @@ for i in range(NC):
 
 # ======================================================================= text sheets
 content.build_text_sheets(WS, LAY, globals())
+content.build_ppt_sheet(WS, LAY, globals())
 
 for w in WS.values():
     w.page_setup.orientation = 'landscape'; w.page_setup.fitToWidth = 1; w.page_setup.fitToHeight = 0
@@ -1004,7 +1005,7 @@ for n, ref in NAMES.items():
     wb.defined_names[n] = DefinedName(n, attr_text=ref)
 for w in WS.values():
     w.sheet_properties.tabColor = {D: 'C00000', R: '1F3864', P: '1F3864', CD: '1F3864', RK: '1F3864', AP: '1F3864',
-                                   SD: '548235', CF: '7F7F7F', AR: 'A6A6A6', AU: 'BF8F00', CL: 'BF8F00', KF: 'BF8F00', CE: '7F7F7F'}[w.title]
+                                   SD: '548235', CF: '7F7F7F', AR: 'A6A6A6', AU: 'BF8F00', CL: 'BF8F00', KF: 'BF8F00', CE: '7F7F7F', PR: 'C00000'}[w.title]
 out = sys.argv[1] if len(sys.argv) > 1 else 'new_sheets.xlsx'
 wb.save(out)
 import json
