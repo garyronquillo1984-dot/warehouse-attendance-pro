@@ -295,6 +295,19 @@ for ref, mm in cs.items():
         r_ = mm.group(2); repl[ref] = fxml(ref, mm.group(3), f'C{r_}&" "&D{r_}')
 wr(SP['3. Data-Assessments control'], apply(x, repl)); LOG['concat_fix'].append(len(repl))
 
+# F24 2.Final-byScope chart source (A16:E26) was a pasted copy of old pivot values -> formulas
+TQ = "'2. SelfAssessmentPerQuestions'"
+x = unshare(rd(SP['2.Final-byScope'])); cs = cells(x); repl = {}
+for r in range(17, 27):
+    for col, src in zip('BCDE', 'NOPQ'):
+        a_ = cs[f'{col}{r}'].group(3) if f'{col}{r}' in cs else ''
+        if r < 26:
+            f_ = f'IFERROR(SUMIFS({TQ}!${src}$6:${src}$66,{TQ}!$K$6:$K$66,$A{r})/SUMIFS({TQ}!$R$6:$R$66,{TQ}!$K$6:$K$66,$A{r}),0)'
+        else:
+            f_ = f'IFERROR(SUM({TQ}!${src}$6:${src}$66)/SUM({TQ}!$R$6:$R$66),0)'
+        repl[f'{col}{r}'] = fxml(f'{col}{r}', a_, f_)
+wr(SP['2.Final-byScope'], apply(x, repl)); LOG['byscope_chart'].append(len(repl))
+
 # Data validation on country forms and action plans
 DV_ORDER = ['<hyperlinks', '<printOptions', '<pageMargins', '<pageSetup', '<headerFooter', '<rowBreaks', '<colBreaks', '<customProperties',
             '<cellWatches', '<ignoredErrors', '<smartTags', '<drawing', '<legacyDrawing', '<picture', '<oleObjects', '<controls',

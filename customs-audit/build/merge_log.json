@@ -73,6 +73,9 @@
   "concat_fix": [
    1152
   ],
+  "byscope_chart": [
+   40
+  ],
   "names_removed": [
    "name=\"_xlnm._FilterDatabase\" localSheetId=\"20\" hidden=\"1\""
   ]
