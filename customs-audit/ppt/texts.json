@@ -1,0 +1,281 @@
+[
+ {
+  "slide": 26,
+  "title": "Documentation of Local Procedures (Annex 1)",
+  "controls": [
+   "Annex 1 Documentation of Local Procedures"
+  ],
+  "blocks": [
+   {
+    "head": "Opportunities identified:",
+    "items": [
+     "Procedures not document or not up to date",
+     "Lack of process and tools to support annual procedure review",
+     "Lack of control log/database for local procedures management (records of last updates)"
+    ]
+   },
+   {
+    "head": "Recommended actions:",
+    "items": [
+     "Ensure all customs local procedures are documented and updated as per Global Customs Compliance Policy (Annex I)",
+     "Ensure implementation of a control log for local procedure including last update",
+     "Ensure most up to date procedures and local control document are uploaded in the Americas Customs Compliance SharePoint Page.",
+     "Ensure procedures are updated timely, when required, per regulatory and/or operation changes."
+    ]
+   },
+   {
+    "head": "Regional Action Plan",
+    "items": [
+     "Coordinate a full review of country status of documenting procedures to ensure alignment with Policy requirements, mostly with Caribbean CCCL’s.",
+     "Provide a template procedures control document for countries."
+    ]
+   }
+  ]
+ },
+ {
+  "slide": 27,
+  "title": "Personnel Training (Policy Section 2.5)",
+  "controls": [
+   "2.5 Personnel Training"
+  ],
+  "blocks": [
+   {
+    "head": "Opportunities identified:",
+    "items": [
+     "Lack of training plan or materials on customs related requirements and processes",
+     "No training records available"
+    ]
+   },
+   {
+    "head": "Recommended actions:",
+    "items": [
+     "Create a country training plan for customs processes – informal/formal training formats",
+     "Track participation and ensure proper record retention.",
+     "Utilize root cause analysis of F&P, abandon shipments, and other incidents to identify potential training needs and develop targeted trainings."
+    ]
+   },
+   {
+    "head": "Regional Action Plan",
+    "items": [
+     "Collaborate with Global to develop a standard training plan for customs topics."
+    ]
+   },
+   {
+    "head": "Best practice identified",
+    "items": [
+     "Cross training between team members would help improve and maximize knowledge in specialized areas (Argentina, Colombia)."
+    ]
+   }
+  ]
+ },
+ {
+  "slide": 28,
+  "title": "Definitions/ Independence (Policy Section 1.6/1.7)",
+  "controls": [
+   "1.6 Definitions",
+   "1.7 Independence"
+  ],
+  "blocks": [
+   {
+    "head": "Opportunities identified:",
+    "items": [
+     "Individual Customs Compliance Objectives, IKO, not in place for Country Customs Compliance Lead.",
+     "Contact details of Country Customs Compliance Lead (CCCL) not provided",
+     "Lack of follow up and visibility to SMT/RCCH"
+    ]
+   },
+   {
+    "head": "Recommended actions:",
+    "items": [
+     "All designated Country Customs Compliance Leads (CCCL) must have at least one IKO related to Customs Compliance.",
+     "CCCL's contact information should be shared with SMT timely, for visibility and proper support during Self-Assessment process, corrective action plans implementation, etc."
+    ]
+   },
+   {
+    "head": "Regional Action Plan",
+    "items": [
+     "Reinforce responsibilities for CCCL’s roles."
+    ]
+   }
+  ]
+ },
+ {
+  "slide": 29,
+  "title": "Regulatory Supervision – Third Party Brokers Controls (Policy Section 3.5)",
+  "controls": [
+   "3.5 Third Party Brokers Controls"
+  ],
+  "blocks": [
+   {
+    "head": "Opportunities identified:",
+    "items": [
+     "Broker contracts must be updated with the inclusion of KPIs and SLAs (aligned with the Customs Compliance Policy)."
+    ]
+   },
+   {
+    "head": "Recommended actions:",
+    "items": [
+     "Periodic evaluations of KPI’s needs to be implemented and monitored."
+    ]
+   },
+   {
+    "head": "Regional Action Plan",
+    "items": [
+     "Continue-monitoring of Third-Party documents uploaded in SharePoint, reporting upcoming due dates.",
+     "Guide and support the migration process to Shield."
+    ]
+   }
+  ]
+ },
+ {
+  "slide": 30,
+  "title": "Customs Bonded Facility (Policy Section 3.2)",
+  "controls": [
+   "3.2 Customs Bonded Facility"
+  ],
+  "blocks": [
+   {
+    "head": "Opportunities identified:",
+    "items": [
+     "Local reconciliation inventory frequency."
+    ]
+   },
+   {
+    "head": "Recommended actions:",
+    "items": [
+     "Ensure the process is aligned with the Policy definitions about Inventory control/reconciliation that must be performed at least twice per week)",
+     "Define and implement action plans in case of systemic issues identified",
+     "Keep updated the procedures related to this topic."
+    ]
+   },
+   {
+    "head": "Regional Action Plan",
+    "items": [
+     "Map and support the countries that report F&P for inventory inconsistencies as a root case."
+    ]
+   }
+  ]
+ },
+ {
+  "slide": 31,
+  "title": "Post Clearance Modifications (PCM) (Policy Section 4.8)",
+  "controls": [
+   "4.8 Post Clearance Modifications (PCM)"
+  ],
+  "blocks": [
+   {
+    "head": "Opportunities identified:",
+    "items": [
+     "Local review process shows that PCM cases are required by cnee (not for DHL’s errors), but number of cases or requestors are not recorded. Sporadic cases."
+    ]
+   },
+   {
+    "head": "Recommended actions:",
+    "items": [
+     "Documented procedure must be aligned and updated regularly.",
+     "Ensure proper records of PCM requests and define root causes to analyze if PCM could be a compliance risk from Customs perspective."
+    ]
+   },
+   {
+    "head": "Regional Action Plan",
+    "items": [
+     "Follow-Up actions if this topic is included into “Show Me The Reds”"
+    ]
+   }
+  ]
+ },
+ {
+  "slide": 32,
+  "title": "Unauthorized Release (URL) (Policy Section 4.11)",
+  "controls": [
+   "4.11 Unauthorized Release (URL)"
+  ],
+  "blocks": [
+   {
+    "head": "Opportunities",
+    "items": [
+     "No effective process executed in place to identify/control unauthorized releases.",
+     "No established communication process when the unauthorized release is identified.",
+     "No documented procedures aligned to GCCP."
+    ]
+   },
+   {
+    "head": "Recommendation:",
+    "items": [
+     "Implement a process to ensure control and proper handling of shipments held by customs or other government agencies.",
+     "Develop a reconciliation process to identify and properly handle import shipments that lack a DS, CR event. Verify if they were cleared by customs",
+     "Implement a contingency and communication plan when the unauthorized release is identified.",
+     "Complete frequent root causes analysis for URL and implement the respective corrective actions.",
+     "Perform a GEMBA walk to identify potential risk areas/activities that could lead to unauthorized releases"
+    ]
+   },
+   {
+    "head": "Regional Action Plan",
+    "items": [
+     "Follow Up URL’s incidences in the region",
+     "Provide a regulatory analysis of the impact across the region, including fines and penalties.",
+     "Support the implementation of corrective and preventive action plans"
+    ]
+   }
+  ]
+ },
+ {
+  "slide": 33,
+  "title": "Customs Compliance Culture (Policy Section 2.1)",
+  "controls": [
+   "2.1 Customs Compliance Culture"
+  ],
+  "blocks": [
+   {
+    "head": "Opportunities identified:",
+    "items": [
+     "Local communications related to Customs Compliance information and regulatory changes, are not shared timely"
+    ]
+   },
+   {
+    "head": "Recommended actions:",
+    "items": [
+     "Ensure proper and timely communication of all relevant regulatory or process changes."
+    ]
+   },
+   {
+    "head": "Regional Action Plan",
+    "items": [
+     "No actions needed"
+    ]
+   }
+  ]
+ },
+ {
+  "slide": 37,
+  "title": "Regular Customs Declaration Quality Reviews (Policy Section 4.14)",
+  "controls": [
+   "4.14 Regular Customs Declaration Quality Reviews"
+  ],
+  "blocks": [
+   {
+    "head": "Opportunities identified:",
+    "items": [
+     "Local review process not fully documented and/or implemented to ensure 2% review of formal shipments.",
+     "Quality reviews of Low value and other import/export clearance not in place.",
+     "Lack of documentation of reviews completed and actions taken."
+    ]
+   },
+   {
+    "head": "Recommended actions:",
+    "items": [
+     "Ensure implementation of process to complete quality reviews in alignment with the requirements of the Customs Compliance Policy",
+     "Ensure quality reviews are performed for all customs clearance processes. For low value, transit, and others processes the % of shipments reviewed shall be based on local capabilities.",
+     "Ensure proper documentation of quality reviews and root cause analysis; Addressing opportunities respectively."
+    ]
+   },
+   {
+    "head": "Regional Action Plan",
+    "items": [
+     "Reinforce requirement and support full implementation of Customs Quality Reviews at country level",
+     "Collaborate with global to develop a tool to support the country’s documentation of reviews, root cause analysis, and action plans."
+    ]
+   }
+  ]
+ }
+]

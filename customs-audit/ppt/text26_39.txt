@@ -1,0 +1,335 @@
+FOR INTERNAL USE
+
+
+
+
+ Documentation of Local Procedures (Annex 1)
+                                                                                                                          Key Countries
+  Opportunities identified:
+  • Procedures not document or not up to date                                                                            Caribbean Countries
+                                                                                                                              Guatemala
+  • Lack of process and tools to support annual procedure review
+                                                                                                                              Nicaragua
+  • Lack of control log/database for local procedures management (records of last updates)
+  Recommended actions:                                                                                                          Peru
+                                                                                                                              Paraguay
+  • Ensure all customs local procedures are documented and updated as per Global Customs Compliance Policy (Annex I)
+                                                                                                                              Panama
+  • Ensure implementation of a control log for local procedure including last update                                           Mexico
+  • Ensure most up to date procedures and local control document are uploaded in the Americas Customs Compliance               Canada
+    SharePoint Page.
+  • Ensure procedures are updated timely, when required, per regulatory and/or operation changes.
+  Regional Action Plan
+  • Coordinate a full review of country status of documenting procedures to ensure alignment with Policy requirements,
+    mostly with Caribbean CCCL’s.
+  • Provide a template procedures control document for countries.
+
+
+
+
+  DHL | Self Assessment Results | November 2026                                                                                                26
+FOR INTERNAL USE
+
+
+
+
+ Personnel Training (Policy Section 2.5)
+                                                                                                                             Key Countries
+  Opportunities identified:
+                                                                                                                             Cayman Islands
+  • Lack of training plan or materials on customs related requirements and processes                                                Haiti
+  • No training records available                                                                                                Paraguay
+                                                                                                                                  Trinidad
+  Recommended actions:
+                                                                                                                          Virgin Islands (British)
+  • Create a country training plan for customs processes – informal/formal training formats
+  • Track participation and ensure proper record retention.                                                                     Barbados
+                                                                                                                                Bermuda
+  • Utilize root cause analysis of F&P, abandon shipments, and other incidents to identify potential training needs and          Curacao
+    develop targeted trainings.                                                                                                  Ecuador
+  Regional Action Plan                                                                                                          Honduras
+  • Collaborate with Global to develop a standard training plan for customs topics.
+  Best practice identified
+   Cross training between team members would help improve and maximize knowledge in specialized areas (Argentina,
+    Colombia).
+
+
+
+
+  DHL | Self Assessment Results | November 2026                                                                                                      27
+FOR INTERNAL USE
+
+
+ Definitions/ Independence (Policy Section 1.6/1.7)
+  Opportunities identified:
+  •   Individual Customs Compliance Objectives, IKO, not in place for Country Customs Compliance Lead.
+  •   Contact details of Country Customs Compliance Lead (CCCL) not provided                                             Key Countries
+  •   Lack of follow up and visibility to SMT/RCCH
+                                                                                                                             Bahamas
+  Recommended actions:
+                                                                                                                              Jamaica
+                                                                                                                          Cayman Islands
+  •   All designated Country Customs Compliance Leads (CCCL) must have at least one IKO related to Customs Compliance.      Martinique
+  •   CCCL's contact information should be shared with SMT timely, for visibility and proper support during Self-          Virgin Islands
+      Assessment process, corrective action plans implementation, etc.
+  Regional Action Plan
+                                                                                                                               Curacao
+  •   Reinforce responsibilities for CCCL’s roles.
+                                                                                                                            Guadeloupe
+                                                                                                                                Haiti
+                                                                                                                         Trinidad & Tobago
+                                                                                                                              Uruguay
+
+
+
+
+  DHL | Self Assessment Results | November 2026                                                                                              28
+FOR INTERNAL USE
+
+
+
+
+ Regulatory Supervision Third Party Brokers Controls (Policy Section 3.5)
+                                                                                                     Key Countries
+  Opportunities identified:
+  • Broker contracts must be updated with the inclusion of KPIs and SLAs (aligned with the Customs
+    Compliance Policy).
+  Recommended actions:
+                                                                                                           Haiti
+
+  • Periodic evaluations of KPI’s needs to be implemented and monitored.                                    Brazil
+  Regional Action Plan                                                                                    Ecuador
+                                                                                                           Mexico
+  • Continue-monitoring of Third-Party documents uploaded in SharePoint, reporting upcoming due
+                                                                                                     Trinidad & Tobago
+    dates.
+  • Guide and support the migration process to Shield.
+
+
+
+
+  DHL | Self Assessment Results | November 2026                                                                          29
+FOR INTERNAL USE
+
+
+
+
+ Customs Bonded Facility (Policy Section 3.2)
+  Opportunities identified:                                                                                         Key Countries
+  • Local reconciliation inventory frequency.
+
+                                                                                                                     Guatemala
+  • Recommended actions:
+  • Ensure the process is aligned with the Policy definitions about Inventory control/reconciliation that must be
+    performed at least twice per week)                                                                                Bermuda
+                                                                                                                      Ecuador
+  • Define and implement action plans in case of systemic issues identified
+                                                                                                                        Haiti
+  • Keep updated the procedures related to this topic.
+
+
+  Regional Action Plan
+  • Map and support the countries that report F&P for inventory inconsistencies as a root case.
+
+
+
+
+  DHL | Self Assessment Results | November 2026                                                                                     30
+FOR INTERNAL USE
+
+
+
+
+ Post Clearance Modifications (PCM)(Policy Section 4.8)
+  Opportunities identified:                                                                                          Key Countries
+  • Local review process shows that PCM cases are required by cnee (not for DHL’s errors), but number of cases or
+    requestors are not recorded. Sporadic cases.
+                                                                                                                        Curacao
+
+  Recommended actions:                                                                                                 Bahamas
+                                                                                                                         Brazil
+  • Documented procedure must be aligned and updated regularly.
+                                                                                                                       Costa Rica
+  • Ensure proper records of PCM requests and define root causes to analyze if PCM could be a compliance risk from        Haiti
+    Customs perspective.                                                                                                Salvador
+
+
+  Regional Action Plan
+  • Follow-Up actions if this topic is included into “Show Me The Reds”
+
+
+
+
+  DHL | Self Assessment Results | November 2026                                                                                      31
+FOR INTERNAL USE
+
+
+
+
+   Unauthorized Release (URL) (Policy Section 4.11)
+  Opportunities                                                                                                                Key Countries
+  No eﬀec ve process executed in place to iden fy/control unauthorized releases.
+  No stablished communica on process when the unauthorized release is iden ﬁed.                                                  Bermuda
+  No documented procedures aligned to GCCP.                                                                                      Nicaragua
+
+  Recommendation:                                                                                                                  Chile
+  Implement a process to ensure control and proper handling of shipments held by customs or other government                     Colombia
+  agencies.                                                                                                                      Costa Rica
+                                                                                                                                 Paraguay
+  Develop a reconciliation process to identify and properly handle import shipments that lack a DS, CR event. Verify if they
+  were cleared by customs
+  Implement a con ngency and communica on plan when the unauthorized release is iden ﬁed.
+  Complete frequent root causes analysis for URL and implement the respec ve correc ve ac ons.
+  Perform a GEMBA walk to iden fy poten al risk areas/ac vi es that could lead to unauthorized releases
+  Regional Ac on Plan
+  Follow Up URL’s incidences in the region
+  Provide a regulatory analysis of the impact across the region, including ﬁnes and penal es.
+  Support the implementa on of correc ve and preven ve ac on plans
+
+
+  DHL | Self Assessment Results | November 2026                                                                                                32
+FOR INTERNAL USE
+
+
+
+
+ (Customs Compliance Culture)(Policy Section 2.1)
+  Opportunities identified:                                                                                        Key Countries
+  • Local communications related to Customs Compliance information and regulatory changes, are not shared timely
+
+
+  Recommended actions:
+                                                                                                                       Bolivia
+  • Ensure proper and mely communica on of all relevant regulatory or process changes.
+                                                                                                                     Costa Rica
+  Regional Action Plan                                                                                                Panama
+  • No actions needed
+
+
+
+
+  DHL | Self Assessment Results | November 2026                                                                                    33
+FOR INTERNAL USE
+
+
+
+
+Additional Opportunities Identified
+
+
+
+
+  DHL | Self Assessment Results | November 2026   34
+Additional opportunities identified in one or more countries
+Fines and Penalties Import (Policy Section 2.6)
+• Lack of review and action plans for customs penalties
+Recommendation:
+• Ensure full implementation of Regional F&P Control process: Implement root cause analysis of fines and penalties and take actions to mitigate the risk of
+  potential penalties
+• Perform consistent feedback to Operations/Customs team on fines and penalties incurred to convey consequence of operational errors, promoting awareness
+  and corrective actions with monthly follow ups.
+• As results of the root cause analysis, identify opportunities for training and reinforce the procedures with the staff involved in the operation.
+
+
+
+
+Import/Export High risk goods Clearance (Policy Section 4.3/4.12)
+• No country process in place to define scope and complete review of import/export high-risk goods
+• Export declarations of high-risk goods not always reviewed by at least two qualified employees prior to the submission to customs authorities
+Recommendation:
+• Implement a process to ensure proper review of high-risk goods for imports and exports as outlined in the Policy.
+
+
+
+
+DHL | Self Assessment Results | November 2026                                                                                                                 35
+Additional opportunities identified in one or more countries
+Definitions/ Independence (Policy Section 1.6/1.7)
+• Develop Follow Up sessions with CCCL’s to provide support/guidance about Self-Assessment/Action Plan implementation process. Focused on quality (proper
+  and complete answers, evidences) and other risks that may not included in the questionnaire (Show Me The Reds). Mostly with Caribbean and Nicaragua.
+
+
+
+
+Country Self-Assessment & Action Plan (Policy Section 2.3)
+• 2024 Assessment Action Plan not fully documented and/or worked.
+Recommendation:
+• Countries must ensure Self-Assessment and Action Plan process is followed per Global Policy Implementation Timelines, properly documenting and
+  Implementing Corrective Action plans.
+• Countries must ensure proper structure and designated resources are in place to support and manage the implementation of documented Action Plans.
+
+
+
+
+DHL | Self Assessment Results | November 2026                                                                                                               36
+FOR INTERNAL USE
+
+
+
+
+ Regular Customs Declaration Quality Reviews (Policy Section 4.14)
+  Opportunities identified:                                                                                                Key Countries
+  • Local review process not fully documented and/or implemented to ensure 2% review of formal shipments.
+  • Quality reviews of Low value and other import/export clearance not in place.
+  • Lack of documentation of reviews completed and actions taken.                                                       Virgin Islands (British)
+  Recommended actions:
+                                                                                                                              Guatemala
+  • Ensure implementation of process to complete quality reviews in alignment with the requirements of the Customs              Mexico
+    Compliance Policy                                                                                                     Trinidad & Tobago
+  • Ensure quality reviews are performed for all customs clearance processes. For low value, transit, and others
+    processes the % of shipments reviewed shall be based on local capabilities.
+  • Ensure proper documentation of quality reviews and root cause analysis; Addressing opportunities respectively.
+  Regional Action Plan
+  • Reinforce requirement and support full implementation of Customs Quality Reviews at country level
+  • Collaborate with global to develop a tool to support the country’s documentation of reviews, root cause analysis,
+    and action plans.
+
+
+
+
+  DHL | Self Assessment Results | November 2026                                                                                                    37
+FOR INTERNAL USE
+
+
+
+
+Summary of regional actions
+
+
+
+
+  DHL | Self Assessment Results | November 2026   38
+Country Self Assessments – Regional Action Plan 2026
+                         Section                                              Area of Opportunity                                  Regional Actions
+
+1. About the DHL Express Global Customs Compliance                                                      • Provide specific feedback and support to countries based in the
+                                                     1.7 Independence
+Policy                                                                                                  information assessed
+
+                                                                                                        • Develop training of how to document and update procedures.
+Annex 1                                              Documentation of Local Procedures                  • Ensure proper and timely communication of all relevant regulatory or
+                                                                                                        process changes
+
+                                                                                                        • Develop additional tools to reinforce the country self-assessment
+                                                     2.3 Country Self-Assessment & Action Plan
+                                                                                                        process and support action plans.
+2. Customs Awareness & Risk Management
+                                                                                                        • Collaborate with Global to develop a standard training plan for
+                                                     2.5 Personnel Training
+                                                                                                        customs topics.
+
+
+
+                                                     4.11 Post Clearence Modification
+4. Customs Process Controls
+
+                                                     4.12 Export Clearance
+                                                     4.14 Regular Customs Declaration Quality Reviews
+
+
+Countries with more opportunities identified (% Compliance):
+Nicaragua, Virgin Islands (British), Haiti, El Salvador, Cayman Island
+
+
+DHL | Self Assessment Results | November 2026                                                                                                                                 39
+
