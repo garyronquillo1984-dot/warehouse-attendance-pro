@@ -271,6 +271,23 @@ for c in CFG['reg']:
             repl[ref] = fxml(ref, m.group(3), nf); LOG['summary_fix'].append(f"{c['sheet']}!{ref}: {f} -> {nf}")
     if repl: wr(SP[c['sheet']], apply(x, repl))
 
+
+# F22 TableQuestions (2. SelfAssessmentPerQuestions and its copy): counts N:Q were hand-typed from the defective
+# pivot; % columns S:V divided every row by row 6; total row 67 hand-typed.
+SRC = "'1. Data-All Assessments 2026'"
+for tq in ['2. SelfAssessmentPerQuestions', '2. SelfAssessmentPerQuestio (2)']:
+    x = unshare(rd(SP[tq])); cs = cells(x); repl = {}
+    attr = lambda ref: cs[ref].group(3) if ref in cs else ''
+    for r in range(6, 67):
+        for col, lv in zip('NOPQ', ['INSUFFICIENT CONTROL', 'MODERATE CONTROL', 'UNDER CONTROL', 'N/A']):
+            repl[f'{col}{r}'] = fxml(f'{col}{r}', attr(f'{col}{r}'), f'COUNTIFS({SRC}!$C$3:$C$1954,$J{r},{SRC}!$J$3:$J$1954,"{lv}")')
+    for col in 'NOPQ':
+        repl[f'{col}67'] = fxml(f'{col}67', attr(f'{col}67'), f'SUM({col}6:{col}66)')
+    for r in range(6, 68):
+        for col, src in zip('STUV', 'NOPQ'):
+            repl[f'{col}{r}'] = fxml(f'{col}{r}', attr(f'{col}{r}'), f'IF(SUM($N{r}:$Q{r})=0,0,{src}{r}/SUM($N{r}:$Q{r}))')
+    wr(SP[tq], apply(x, repl)); LOG['tablequestions'].append((tq, len(repl)))
+
 # Data validation on country forms and action plans
 DV_ORDER = ['<hyperlinks', '<printOptions', '<pageMargins', '<pageSetup', '<headerFooter', '<rowBreaks', '<colBreaks', '<customProperties',
             '<cellWatches', '<ignoredErrors', '<smartTags', '<drawing', '<legacyDrawing', '<picture', '<oleObjects', '<controls',

@@ -60,6 +60,16 @@
    "Curacao!F67: COUNTIF($F$2:$F$62,\"YES\") -> COUNTIF($F$2:$F$62,\"Yes\")+COUNTIF($F$2:$F$62,\"Si\")+COUNTIF($F$2:$F$62,\"S\u00ed\")",
    "Dominican Republic!F67: COUNTIF($F$2:$F$62,\"YES\") -> COUNTIF($F$2:$F$62,\"Yes\")+COUNTIF($F$2:$F$62,\"Si\")+COUNTIF($F$2:$F$62,\"S\u00ed\")"
   ],
+  "tablequestions": [
+   [
+    "2. SelfAssessmentPerQuestions",
+    496
+   ],
+   [
+    "2. SelfAssessmentPerQuestio (2)",
+    496
+   ]
+  ],
   "names_removed": [
    "name=\"_xlnm._FilterDatabase\" localSheetId=\"20\" hidden=\"1\""
   ]
