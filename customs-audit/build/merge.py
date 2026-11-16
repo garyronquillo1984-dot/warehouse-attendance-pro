@@ -308,6 +308,15 @@ for r in range(17, 27):
         repl[f'{col}{r}'] = fxml(f'{col}{r}', a_, f_)
 wr(SP['2.Final-byScope'], apply(x, repl)); LOG['byscope_chart'].append(len(repl))
 
+# F25 Self Assessment Results – cluster block B120:E126 (chart = presentation slide 15) hand-typed -> formulas
+x = unshare(rd(SP['Self Assessment Results'])); cs = cells(x); repl = {}
+tot = 'SUMIFS($E$39:$E$70,$D$39:$D$70,$B{r})+SUMIFS($F$39:$F$70,$D$39:$D$70,$B{r})+SUMIFS($G$39:$G$70,$D$39:$D$70,$B{r})+SUMIFS($H$39:$H$70,$D$39:$D$70,$B{r})'
+for r in range(121, 127):
+    for col, src in zip('CDE', 'GFE'):
+        a_ = cs[f'{col}{r}'].group(3) if f'{col}{r}' in cs else ''
+        repl[f'{col}{r}'] = fxml(f'{col}{r}', a_, f'IFERROR(SUMIFS(${src}$39:${src}$70,$D$39:$D$70,$B{r})/(' + tot.format(r=r) + '),0)')
+wr(SP['Self Assessment Results'], apply(x, repl)); LOG['cluster_block'].append(len(repl))
+
 # Data validation on country forms and action plans
 DV_ORDER = ['<hyperlinks', '<printOptions', '<pageMargins', '<pageSetup', '<headerFooter', '<rowBreaks', '<colBreaks', '<customProperties',
             '<cellWatches', '<ignoredErrors', '<smartTags', '<drawing', '<legacyDrawing', '<picture', '<oleObjects', '<controls',
