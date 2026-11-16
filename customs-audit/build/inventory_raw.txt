@@ -1,0 +1,130 @@
+1 '2. SelfAssessmentPerQuestio (2)' visible A1:W67 f= 372 err= 1 piv= 1 tbl= ['TableQuestions14'] charts= 0 merged= 0 cf= 0 dv= 0
+2 'Regional Actions Draft' visible A1:C8 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 2 cf= 0 dv= 0
+3 'Assessments bkp' visible A1:K1965 f= 0 err= 0 piv= 0 tbl= ['AssessmentsTable8'] charts= 0 merged= 1 cf= 2 dv= 0
+4 'Summary' visible A1:G8 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+5 'DetailsScope' visible A1:P67 f= 32 err= 0 piv= 1 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+6 '1.RawPivot-ByScope' visible A1:AH49 f= 0 err= 2 piv= 1 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+7 '2.Formula-Details by Scope' visible A1:AH85 f= 864 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+8 'Final-ByScope' visible A1:A1 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+9 'Annex 1' visible A1:AG71 f= 0 err= 0 piv= 0 tbl= [] charts= 1 merged= 2 cf= 0 dv= 0
+10 '7. Escalations ' visible A1:AG48 f= 0 err= 0 piv= 0 tbl= [] charts= 1 merged= 4 cf= 0 dv= 0
+11 '6. Reporting & Investigation of' visible A1:AG86 f= 0 err= 0 piv= 0 tbl= [] charts= 1 merged= 3 cf= 0 dv= 0
+12 '5. Customs Representation' visible A1:BO77 f= 0 err= 0 piv= 0 tbl= [] charts= 1 merged= 4 cf= 0 dv= 0
+13 '4. Customs Process Controls' visible A1:BO109 f= 293 err= 0 piv= 0 tbl= [] charts= 2 merged= 2 cf= 0 dv= 0
+14 'PIVOT TABLAS' visible A1:O149 f= 0 err= 0 piv= 2 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+15 'Sheet10' visible A1:A1 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+16 'Sheet7' visible A1:A1 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+17 '3. Regulatory Supervision' visible A1:BQ76 f= 0 err= 0 piv= 0 tbl= [] charts= 1 merged= 4 cf= 0 dv= 0
+18 '2. Customs Awareness & Risk Man' visible A1:BP77 f= 0 err= 0 piv= 0 tbl= [] charts= 1 merged= 4 cf= 0 dv= 0
+19 '1. About the DHL Express Global' visible A1:BP112 f= 320 err= 0 piv= 0 tbl= [] charts= 1 merged= 2 cf= 0 dv= 0
+20 'SelfAssessment' visible A1:A1 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+21 'Details' visible A1:AG19 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 3 cf= 1 dv= 0
+22 'A' visible A1:H16 f= 0 err= 1 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+23 'Scopes ' visible A1:P31 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 4 dv= 0
+24 'Countries' visible A1:AE16 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+25 'Countries 2' visible A1:P31 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 4 dv= 0
+26 'Countries 3' visible A1:K50 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 3 dv= 0
+27 'matrix 1' visible A1:M50 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 3 dv= 0
+28 'Matrix 2' visible A1:N96 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 13 dv= 0
+29 'B' visible A1:S31 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 6 dv= 0
+30 'Quality' visible A1:W46 f= 18 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 8 dv= 0
+31 'Regional Action' visible A1:C11 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 3 cf= 0 dv= 0
+32 'Draft Regional Action Plan' visible A1:D37 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 5 cf= 0 dv= 0
+33 'SelfAssessmentPerQuestions bkp' visible A1:L62 f= 239 err= 0 piv= 0 tbl= ['Table6'] charts= 1 merged= 0 cf= 0 dv= 0
+34 'bySection bkp' visible A1:E26 f= 0 err= 0 piv= 1 tbl= [] charts= 1 merged= 0 cf= 0 dv= 0
+35 '3.Final-DetailsControlCountries' visible A1:AG37 f= 1152 err= 0 piv= 0 tbl= ['Table4'] charts= 0 merged= 0 cf= 33 dv= 0
+36 'SelfAssessment 2026' visible A1:A1 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+37 'Config - Structure' visible A1:D62 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 21 cf= 0 dv= 0
+38 'Config - Configuracion' visible A1:B19 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+39 '5.Policy Tracker 2026' visible A1:R55 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 16 cf= 0 dv= 0
+40 '5.Compliance 2026' visible A1:K72 f= 64 err= 0 piv= 1 tbl= [] charts= 2 merged= 0 cf= 2 dv= 0
+41 '4.Final-AM Risk Assessment' visible A1:S129 f= 432 err= 0 piv= 0 tbl= ['TableCountryControl'] charts= 1 merged= 0 cf= 5 dv= 0
+42 'Sheet6' visible A1:A1 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+43 '3.FinalPiv-KeyCountriesControl' visible A1:M37 f= 0 err= 0 piv= 1 tbl= ['KeyCountries'] charts= 0 merged= 1 cf= 0 dv= 0
+44 '3.Final-SAPerControlAreas' visible A1:E18 f= 0 err= 0 piv= 1 tbl= [] charts= 1 merged= 0 cf= 0 dv= 0
+45 'Sheet3' visible A1:A1 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+46 '3.Final-SAPerControl' visible A1:K37 f= 98 err= 0 piv= 0 tbl= ['Table5'] charts= 2 merged= 0 cf= 0 dv= 0
+47 '3.RawPivot-TopControl' visible A1:G40 f= 0 err= 0 piv= 1 tbl= [] charts= 0 merged= 2 cf= 0 dv= 0
+48 'Sheet2' visible A1:A1 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+49 'Sheet5' visible A1:A1 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+50 'Sheet33' visible A1:A1 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+51 '3. Data-Assessments control' visible A1:F1154 f= 2304 err= 0 piv= 0 tbl= ['AssessmentControlTable'] charts= 0 merged= 0 cf= 1 dv= 0
+52 '2. Final-TopQuestions' visible A1:I62 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+53 '2. RawPivot-TopQuestions' visible A1:H64 f= 0 err= 1 piv= 1 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+54 '2. RawPivot-CountriesByPolSec' visible A1:H44 f= 0 err= 0 piv= 1 tbl= [] charts= 0 merged= 1 cf= 0 dv= 0
+55 '2.Final-byScope' visible A1:I86 f= 18 err= 0 piv= 3 tbl= [] charts= 2 merged= 1 cf= 0 dv= 0
+56 '2. SelfAssessmentPerQuestions' visible A1:W67 f= 372 err= 1 piv= 1 tbl= ['TableQuestions'] charts= 0 merged= 0 cf= 0 dv= 0
+57 '1. Data-All Assessments TOP20' visible A1:N2100 f= 5857 err= 6 piv= 1 tbl= ['AssessmentsTable13'] charts= 0 merged= 2 cf= 10 dv= 0
+58 'No-DetailsPerQuestionsCountries' visible A1:AH63 f= 0 err= 0 piv= 0 tbl= ['Table2'] charts= 0 merged= 0 cf= 66 dv= 0
+59 'Sheet32' visible A1:C20 f= 0 err= 0 piv= 1 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+60 '1. Data-All Assessments 2026' visible A1:K1965 f= 5857 err= 6 piv= 0 tbl= ['AssessmentsTable'] charts= 0 merged= 1 cf= 10 dv= 0
+61 '1. Data-Control Country Matrix' visible A1:CU62 f= 4875 err= 0 piv= 0 tbl= [] charts= 0 merged= 533 cf= 0 dv= 0
+62 'Self Assessment Results' visible A1:AA148 f= 526 err= 1 piv= 2 tbl= [] charts= 2 merged= 16 cf= 5 dv= 0
+63 'Countries 2026' visible A1:A1 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+64 'Venezuela' visible A1:I78 f= 15 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+65 'Venezuela Action Plan' visible A1:J5 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+66 'Uruguay' visible A1:I78 f= 15 err= 0 piv= 0 tbl= [] charts= 0 merged= 1 cf= 1 dv= 0
+67 'Uruguay Action Plan' visible A1:J2 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+68 'Trinidad' visible A1:I78 f= 15 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+69 'Trinidad & T Action Plan' visible A1:J4 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+70 'USA' visible A1:I81 f= 15 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+71 'US Action Plan' visible A1:J5 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+72 'Argentina' visible A1:I78 f= 15 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+73 'AR Action Plan' visible A1:J5 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+74 'Bolivia' visible A1:I78 f= 15 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+75 'Bolivia Action Plan' visible A1:J4 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+76 'Chile' visible A1:H71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 1 cf= 0 dv= 0
+77 'Chile Action Plan' visible A1:J8 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 8 cf= 0 dv= 0
+78 'Colombia' visible A1:I71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+79 'Colombia Action Plan' visible A1:J9 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+80 'Costa Rica' visible A1:I71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+81 'Costa Rica Action Plan' visible A1:J2 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+82 'El Salvador' visible A1:H71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+83 'El Salvador Action Plan' visible A1:J6 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+84 'Paraguay' visible A1:H71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 1 cf= 1 dv= 0
+85 'Paraguay Action Plan' visible A1:J11 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+86 'Peru' visible A1:H71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+87 'Peru Action Plan' visible A1:J8 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+88 'Panama' visible A1:H71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+89 'Panama Action Plan' visible A1:J8 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 9 cf= 0 dv= 0
+90 'Nicaragua' visible A1:H62 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+91 'Nicaragua Action Plan' visible A1:J11 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+92 'Mexico' visible A1:H71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+93 'Mexico Action Plan' visible A1:J5 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+94 'Martinique' visible A1:H71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+95 'Martinique Action Plan' visible A1:J3 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+96 'Jamaica' visible A1:H71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+97 'Jamaica Action Plan' visible A1:J4 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+98 'Honduras' visible A1:H71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+99 'Honduras Action Plan' visible A1:J2 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+100 'Haiti' visible A1:H71 f= 7 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+101 'Haiti Action Plan' visible A1:J4 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+102 'Guatemala' visible A1:H68 f= 7 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+103 'Guatemala Action Plan' visible A1:J9 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+104 'Guadeloupe' visible A1:H68 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+105 'Guadeloupe Action Plan' visible A1:J3 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+106 'French Guiana' visible A1:H68 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+107 'French Guiana Action Plan' visible A1:J3 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+108 'Ecuador' visible A1:H68 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 1 cf= 1 dv= 0
+109 'Ecuador Action Plan' visible A1:I16 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 34 cf= 0 dv= 0
+110 'Bahamas' visible A1:H68 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+111 'Bahamas Action Plan' visible A1:J7 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+112 'Barbados' visible A1:H71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+113 'Barbados Action Plan' visible A1:J7 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+114 'Bermuda' visible A1:H71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+115 'Bermuda Action Plan' visible A1:J8 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+116 'Cayman Islands' visible A1:H71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+117 'Cayman Islands Action Plan' visible A1:J4 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+118 'Canada' visible A1:H68 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+119 'Canada Action Plan' visible A1:J10 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+120 'Brazil' visible A1:H71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+121 'Brazil Action Plan' visible A1:J13 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 26 cf= 0 dv= 0
+122 'British Virgin Islands' visible A1:H71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+123 'BVI Action Plan' visible A1:J4 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+124 'Curacao' visible A1:H71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+125 'Curacao Action Plan' visible A1:J4 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+126 'Dominican Republic' visible A1:H71 f= 8 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 1 dv= 0
+127 'Dom Republic Action Plan' visible A1:J6 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+128 'Mapping' visible A1:D147 f= 2 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+129 'Sheet4' visible A1:A1 f= 0 err= 0 piv= 0 tbl= [] charts= 0 merged= 0 cf= 0 dv= 0
+names 0

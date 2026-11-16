@@ -1,0 +1,408 @@
+"""Text content: methodology, inventory, audit report, change log, archive index, key findings."""
+import json, os, re
+from common import *
+
+TRACKER_ROWS = [(n, r) for r, n in [(37, 'Guyana'), (38, 'St. Maarten'), (40, 'Belize'), (41, 'Aruba'), (42, 'St. Lucia'), (43, 'St. Barthelemy'),
+                                    (44, 'Antigua'), (45, 'Suriname'), (46, 'Dominica'), (47, 'St. Kitts'), (48, 'St. Vincent & Grenadines'),
+                                    (49, 'Grenada'), (50, 'Anguilla'), (51, 'Nevis'), (52, 'Bonaire'), (53, 'Montserrat'), (54, 'St. Eustatius'),
+                                    (55, 'Turks and Caicos Islands')]]
+# Regional Actions Draft rows (aligned with section labels).  'Draft Regional Action Plan' column D is misaligned -> not used.
+RAD = {'1.7 Independence': 2, 'Annex 1 Documentation of Local Procedures': 3, '2.3 Country Self-Assessment & Action Plan': 4,
+       '2.5 Personnel Training': 5, '4.11 Unauthorized Release (URL)': 6, '4.12 Export Clearance': 7,
+       '4.14 Regular Customs Declaration Quality Reviews': 8}
+
+
+def regional_action_formula(cell):
+    e = '""'
+    for lab, r in reversed(list(RAD.items())):
+        e = f"IF({cell}=\"{lab}\",IF('Regional Actions Draft'!C{r}=\"\",\"(section listed, no action text yet)\",'Regional Actions Draft'!C{r}),{e})"
+    return e
+
+
+METHODOLOGY = [
+    ('Purpose', 'Provide a fair, transparent and reproducible comparison of the Customs Compliance control environment of the 32 Americas countries, based exclusively on the country self-assessment worksheets contained in this workbook.'),
+    ('Authoritative source', 'The 32 country assessment worksheets (e.g. "USA", "Bahamas") are the authoritative source: they hold the country answer, evidence flag, Control Level and gap comments. All consolidated views (07 – Source Data and everything built on it) are LIVE formulas over those sheets. Legacy consolidations ("1. Data-All Assessments 2026", "1. Data-Control Country Matrix") were found to contain errors and are not used as sources.'),
+    ('Unit of analysis', 'Question level (61 questions × 32 countries = 1,952 answers). Questions are grouped into 36 Policy Sections (controls) exactly as in "1. Data-Control Country Matrix", and into 8 Scopes (Policy chapters) as in "Config - Structure".'),
+    ('Response categories', 'UNDER CONTROL, MODERATE CONTROL, INSUFFICIENT CONTROL (English or Spanish labels accepted, see mapping B), N/A (not applicable), MISSING (blank control level), INVALID (any other text). N/A, MISSING and INVALID are reported separately and are NEVER counted as failures.'),
+    ('Denominator', 'Applicable answers = Under + Moderate + Insufficient. N/A and missing answers are excluded from all percentages and from the score, but are shown in separate columns.'),
+    ('Percentages', 'UC % = Under Control / Applicable; MC % = Moderate / Applicable; IC % = Insufficient / Applicable. The three always add up to 100% of applicable answers.'),
+    ('Control score', 'Weighted average over applicable answers using the workbook\'s established value table (Config - Configuracion): UNDER CONTROL = 1.00, MODERATE = 0.75, INSUFFICIENT = 0. A stricter 100/50/0 sensitivity score is shown alongside to test robustness of the ranking.'),
+    ('Country classification', '1 Strong: score ≥ 95% and no Insufficient answer. 2 Moderate: score ≥ 90% and Insufficient ≤ 5% of applicable. 3 Weak: score ≥ 75% and Insufficient < 10%. 4 Critical Attention Required: otherwise. 5 Insufficient Data: >10% missing/invalid answers or <50% applicable questions (not forced into a performance category).'),
+    ('Rationale for thresholds', '0.90 and 0.75 are the thresholds already used by the workbook to classify a control as UNDER / MODERATE (1. Data-Control Country Matrix). The 95% tier separates best-in-class countries. The Insufficient-% guard rails prevent a high average from masking concentrated Insufficient Control answers. All values are parameters (section A) and must be validated by Regional Management – they are NOT official DHL scoring rules.'),
+    ('Control gap', 'Any applicable answer rated MODERATE or INSUFFICIENT. "Gap without action plan" = gap whose question number does not appear in any action of the country Action Plan.'),
+    ('Evidence', '"Evidence Uploaded to SharePoint" standardized (Yes/Si → Uploaded; No / N/A / blank → not uploaded). A country is not assumed compliant because it answered: answers rated UNDER CONTROL without uploaded evidence are flagged for verification.'),
+    ('Action plans', 'Consolidated from the 32 Action Plan sheets by live links. Due dates typed as text are interpreted (DD.MM.YYYY unless the second number > 12, in which case MM.DD.YYYY) and every interpretation is flagged; non-dates (e.g. "TBD", "Todo el Año") are not interpreted. Open = status not Completed/Cancelled (missing status = open and flagged). Overdue = open and interpreted due date before the report date.'),
+    ('Support priority', 'HIGH: Critical classification, ≥3 Insufficient answers or ≥3 overdue actions. MEDIUM: Weak classification, any overdue action, ≥3 gaps without action plan, or an Insufficient answer without action plan. LOW: otherwise. DATA FOLLOW-UP: insufficient data.'),
+    ('Trend', 'Compared with the undated backup snapshot "Assessments bkp" (answers reference 2023 evidence, i.e. a previous cycle). Δ ≥ +2 pp Improving, ≤ −2 pp Deteriorating, otherwise Stable. Because the snapshot is undated and unvalidated, trends are indicative only.'),
+    ('Policy Section implementation', 'Section score ≥ 90% Strong, ≥ 75% Moderate, otherwise Weak (same scoring and thresholds as countries).'),
+    ('Recalculation', 'Everything recalculates when a country sheet changes. The only volatile function is TODAY() in the report date parameter. Workbook is set to full recalculation on open; PivotTables in legacy sheets are set to refresh on open.'),
+]
+
+# ----------------------------------------------------------------------------- inventory
+CAT = {'A': 'Essential source data', 'B': 'Country-level assessment', 'C': 'Country action plan', 'D': 'Regional analysis',
+       'E': 'Dashboard & reporting', 'F': 'Configuration & mapping', 'G': 'Backup / historical', 'H': 'Redundant / removable'}
+EMPTY = ['Final-ByScope', 'Sheet10', 'Sheet7', 'SelfAssessment', 'SelfAssessment 2026', 'Sheet6', 'Sheet3', 'Sheet2', 'Sheet5', 'Sheet33',
+         'Countries 2026', 'Sheet4']
+LEGACY = {
+    '1. Data-Control Country Matrix': ('D', 'Question → 36-control matrix per country (VLOOKUP to country sheets, value lookup to Config - Configuracion).', 'Improve', 'Formula defects corrected (Canada range, approximate match, hardcoded N/A, inconsistent thresholds). Retained as legacy control-level view; superseded by 07/13.'),
+    '1. Data-All Assessments 2026': ('D', 'Long table (AssessmentsTable) consolidating all answers; source of pivot caches 5 and 8.', 'Improve', 'Label-translation defect corrected (549 answers wrongly shown as N/A) and Canada #N/A fixed. Superseded by 07 – Source Data.'),
+    '1. Data-All Assessments TOP20': ('G', 'Duplicate of AssessmentsTable with extra columns; source of pivot cache 1.', 'Archive', 'Same defects corrected as in 1. Data-All Assessments 2026; duplicate – archive.'),
+    'Self Assessment Results': ('D', 'Country summary (question and control counts, quality rating) + 2 pivots.', 'Improve', 'Hardcoded counts replaced by formulas; superseded by 02 – Country Ranking.'),
+    '2. SelfAssessmentPerQuestions': ('D', 'Pivot/table of answers per question (TableQuestions).', 'Consolidate', 'Superseded by 03 section C; retained.'),
+    '2. SelfAssessmentPerQuestio (2)': ('G', 'Copy of 2. SelfAssessmentPerQuestions (TableQuestions14).', 'Archive', 'Duplicate – archived.'),
+    'SelfAssessmentPerQuestions bkp': ('G', 'Older backup of per-question analysis (Table6, chart, pivot cache 2).', 'Archive', 'Backup – archived.'),
+    'bySection bkp': ('G', 'Older backup of by-section pivot and chart.', 'Archive', 'Backup – archived.'),
+    'Assessments bkp': ('G', 'Static snapshot of all answers from a previous cycle (2023 evidence references).', 'Archive', 'Used as prior snapshot for indicative trend analysis.'),
+    '3. Data-Assessments control': ('D', 'Long table country × 36 controls (links to matrix); source of pivot caches 6/7.', 'Consolidate', 'Retained (feeds pivots); superseded by 13 – Calc Engine.'),
+    '3.Final-DetailsControlCountries': ('D', 'Control × country matrix of control levels (links to matrix).', 'Consolidate', 'Retained; superseded by 05 heat map.'),
+    '3.Final-SAPerControl': ('D', 'Regional distribution per control (charts).', 'Improve', 'Hardcoded counts replaced by COUNTIF formulas on 3.Final-DetailsControlCountries.'),
+    '3.Final-SAPerControlAreas': ('D', 'Pivot of control areas %.', 'Consolidate', 'Pivot – refresh on open; superseded by 03.'),
+    '3.FinalPiv-KeyCountriesControl': ('D', 'Pivot of key countries per control.', 'Consolidate', 'Pivot – refresh on open.'),
+    '3.RawPivot-TopControl': ('D', 'Raw pivot over controls.', 'Consolidate', 'Pivot – refresh on open.'),
+    '4.Final-AM Risk Assessment': ('D', 'Regional risk/control assessment per control (weights 1/0.5/0, thresholds 0.91/0.61).', 'Improve', 'Hardcoded counts replaced by formulas; methodology inconsistency documented; superseded by 05.'),
+    '2. Final-TopQuestions': ('D', 'Static list of top questions.', 'Consolidate', 'Static values – superseded by 03 section C.'),
+    '2. RawPivot-TopQuestions': ('D', 'Pivot over AssessmentsTable.', 'Consolidate', 'Pivot – refresh on open.'),
+    '2. RawPivot-CountriesByPolSec': ('D', 'Pivot over AssessmentsTable.', 'Consolidate', 'Pivot – refresh on open.'),
+    '2.Final-byScope': ('D', 'By-scope pivots and charts.', 'Consolidate', 'Superseded by 03 section A.'),
+    'No-DetailsPerQuestionsCountries': ('D', 'Static question × country matrix (Table2).', 'Archive', 'Static values; superseded by 05/07.'),
+    'DetailsScope': ('D', 'Scope details + pivot.', 'Archive', 'Legacy analysis.'),
+    '1.RawPivot-ByScope': ('D', 'Raw pivot by scope.', 'Archive', 'Legacy pivot.'),
+    '2.Formula-Details by Scope': ('D', 'Formula details by scope.', 'Archive', 'Legacy analysis.'),
+    'Summary': ('E', 'Static summary of most frequent gaps (prior cycle).', 'Archive', 'Static, prior-cycle values.'),
+    'Annex 1': ('E', 'Scope presentation sheet with chart.', 'Archive', 'Presentation sheet (static).'),
+    '7. Escalations ': ('E', 'Scope presentation sheet with chart.', 'Archive', 'Presentation sheet (static).'),
+    '6. Reporting & Investigation of': ('E', 'Scope presentation sheet with chart.', 'Archive', 'Presentation sheet (static).'),
+    '5. Customs Representation': ('E', 'Scope presentation sheet with chart.', 'Archive', 'Presentation sheet (static).'),
+    '4. Customs Process Controls': ('E', 'Scope presentation sheet with charts and formulas.', 'Archive', 'Presentation sheet.'),
+    '3. Regulatory Supervision': ('E', 'Scope presentation sheet with chart.', 'Archive', 'Presentation sheet (static).'),
+    '2. Customs Awareness & Risk Man': ('E', 'Scope presentation sheet with chart.', 'Archive', 'Presentation sheet (static).'),
+    '1. About the DHL Express Global': ('E', 'Scope presentation sheet with chart and formulas.', 'Archive', 'Presentation sheet.'),
+    'PIVOT TABLAS': ('D', 'Two pivots over the results summary.', 'Archive', 'Legacy pivots – refresh on open.'),
+    'Details': ('E', 'Static detail layout.', 'Archive', 'Static.'),
+    'A': ('E', 'Static working table.', 'Archive', 'Static working sheet.'),
+    'Scopes ': ('E', 'Static scope matrix (prior cycle).', 'Archive', 'Static.'),
+    'Countries': ('E', 'Static country matrix (prior cycle).', 'Archive', 'Static.'),
+    'Countries 2': ('E', 'Static country matrix.', 'Archive', 'Static.'),
+    'Countries 3': ('E', 'Static country matrix.', 'Archive', 'Static.'),
+    'matrix 1': ('E', 'Static matrix.', 'Archive', 'Static.'),
+    'Matrix 2': ('E', 'Static matrix.', 'Archive', 'Static.'),
+    'B': ('E', 'Static working table.', 'Archive', 'Static working sheet.'),
+    'Quality': ('D', 'Quality evaluation of submissions (form / iShare / test).', 'Retain', 'Retained (management input).'),
+    'Regional Action': ('E', 'Draft regional actions (by area).', 'Retain', 'Retained – management draft.'),
+    'Regional Actions Draft': ('E', 'Draft regional actions by Policy Section.', 'Retain', 'Retained; texts surfaced in 03 section B.'),
+    'Draft Regional Action Plan': ('E', 'Draft regional action plan by control ID.', 'Archive', 'Column D texts are misaligned with control IDs – not used; archived.'),
+    '5.Policy Tracker 2026': ('E', 'Policy roll-out tracker per country (incl. agent countries).', 'Retain', 'Retained; non-assessed countries listed in 02.'),
+    '5.Compliance 2026': ('E', 'Compliance % per country (hardcoded, unexplained source) + pivot and charts.', 'Improve', 'Threshold gap in formula corrected; source of K values unverifiable – flagged.'),
+    'Sheet32': ('H', 'Pivot output without labels.', 'Archive', 'Contains a PivotTable – archived, not deleted.'),
+    'Config - Structure': ('F', 'Question master (scope, section, question).', 'Retain', 'Retained; normalised copy in 08.'),
+    'Config - Configuracion': ('F', 'Label → value table (weights) and quality rating scale.', 'Retain', 'Retained; weights linked from 08.'),
+    'Mapping': ('F', 'Company code ↔ country mapping.', 'Retain', 'Retained.'),
+}
+
+
+def inventory(cfg):
+    inv = {}
+    for line in open(os.path.join(HERE, 'inventory_raw.txt')):
+        m = re.match(r"(\d+) '(.*)' (\w+) (\S+) f= (\d+) err= (\d+) piv= (\d+) tbl= (\[.*?\]) charts= (\d+) merged= (\d+) cf= (\d+) dv= (\d+)", line)
+        if m:
+            inv[m.group(2)] = dict(pos=int(m.group(1)), state=m.group(3), dim=m.group(4), f=int(m.group(5)), piv=int(m.group(7)),
+                                   tbl=m.group(8), charts=int(m.group(9)), merged=int(m.group(10)), cf=int(m.group(11)))
+    ctry = {c['sheet'] for c in cfg['reg']}; aps = {c['ap'] for c in cfg['reg']}
+    rows = []
+    for n, d in sorted(inv.items(), key=lambda x: x[1]['pos']):
+        if n in ctry:
+            cat, purpose, rec, action = 'B', 'Country self-assessment form (61 questions; answers, evidence, Control Level, gaps). AUTHORITATIVE SOURCE.', 'Retain', 'Retained unchanged; linked live into 07 – Source Data. Data validation added to the Control Level column.'
+        elif n in aps:
+            cat, purpose, rec, action = 'C', 'Country Action Plan.', 'Retain', 'Retained unchanged; linked live into 06 – Regional Action Plan. Data validation added to Status column.'
+        elif n in EMPTY:
+            cat, purpose, rec, action = 'H', 'Empty placeholder (no cells, no formulas, no references, no objects).', 'Remove', 'REMOVED (verified empty and unreferenced).'
+        else:
+            cat, purpose, rec, action = LEGACY.get(n, ('D', '', 'Archive', ''))
+        rows.append([d['pos'], n, cat + ' – ' + CAT[cat], purpose, d['dim'], d['f'], d['piv'], d['tbl'].strip('[]').replace("'", ''), d['charts'], d['merged'], d['cf'], rec, action])
+    return rows
+
+
+def write_table(ws, r, headers, rows, widths_=None, wrapcols=(), height=None, fmt=None):
+    header_row(ws, r, 1, headers, height=32)
+    for i, row in enumerate(rows):
+        for j, v in enumerate(row):
+            c = ws.cell(r + 1 + i, j + 1, v)
+            if isinstance(v, str) and v.startswith('=') and not v.startswith('=HYPERLINK'):
+                c.value = v; c.data_type = 's'
+            cell_style(c, wrap=(j in wrapcols), size=9, fmt=(fmt or {}).get(j))
+    return r + 1 + len(rows)
+
+
+def build_text_sheets(WS, LAY, g):
+    cfg = CFG
+    narrative = json.load(open(os.path.join(HERE, 'narrative.json'))) if os.path.exists(os.path.join(HERE, 'narrative.json')) else {}
+    inv = inventory(cfg)
+    CE = g['CE']; R = g['R']; P = g['P']; CER = g['CER']; CET = g['CET']; CEC = LAY['CEC']
+
+    # ------------------------------------------------------------ 09 archive
+    ws = WS[AR]
+    title(ws, 'Historical Archive – index of retained legacy, backup and draft worksheets',
+          'Nothing in this list was deleted. These sheets are kept (grey tabs, placed after sheet 13) for traceability, for the PivotTables / charts they contain, and because some feed each other. Click a name to open it.')
+    nav(ws)
+    arch = [r for r in inv if r[11] in ('Archive', 'Consolidate', 'Improve', 'Retain') and not r[2].startswith(('B', 'C', 'F'))]
+    rows = [[f'=HYPERLINK("#{q(r[1])}!A1","{r[1]}")', r[2], r[3], r[11], r[12], r[6], r[8]] for r in arch]
+    write_table(ws, 5, ['Worksheet', 'Category', 'Purpose', 'Recommendation', 'Status / action taken', 'PivotTables', 'Charts'], rows,
+                wrapcols=(2, 4))
+    widths(ws, {'A': 34, 'B': 26, 'C': 60, 'D': 14, 'E': 60, 'F': 10, 'G': 8})
+    ws.freeze_panes = 'A6'
+
+    # ------------------------------------------------------------ 10 audit report
+    ws = WS[AU]
+    title(ws, 'Audit Report – Self-Assessment Matrix 2026 (Americas)  |  Deliverable 2',
+          'Scope: complete audit of the workbook "Self-Assessment_Matrix_2026___v1__DRAFT.xlsx" (original preserved unchanged as a separate backup file).')
+    nav(ws)
+    r = 5
+    for sec_title, paras in AUDIT_INTRO:
+        put(ws, f'A{r}', sec_title, bold=True, color=NAVY, size=11); r += 1
+        for p_ in paras:
+            put(ws, f'A{r}', p_, wrap=True); ws.merge_cells(f'A{r}:H{r}')
+            ws.row_dimensions[r].height = max(15, 14 * (len(p_) // 150 + 1)); r += 1
+        r += 1
+    put(ws, f'A{r}', '1. Workbook inventory – verified counts', bold=True, color=NAVY, size=11); r += 1
+    r = write_table(ws, r, ['Item', 'Expected (prompt)', 'Verified in original', 'Comment'], INV_COUNTS, wrapcols=(3,)) + 1
+    put(ws, f'A{r}', '2. Formula findings (problem → impact → corrected formula → implemented → validation)', bold=True, color=NAVY, size=11); r += 1
+    r = write_table(ws, r, ['ID', 'Worksheet', 'Cell / range', 'Problem', 'Impact on the analysis', 'Corrected formula / treatment', 'Implemented', 'Validation'],
+                    FINDINGS, wrapcols=(1, 2, 3, 4, 5, 7)) + 1
+    put(ws, f'A{r}', '3. Data-quality findings', bold=True, color=NAVY, size=11); r += 1
+    r = write_table(ws, r, ['ID', 'Area', 'Finding', 'Treatment in the improved workbook'], DQ, wrapcols=(1, 2, 3)) + 1
+    put(ws, f'A{r}', '4. Live reconciliation checks (recalculate automatically)', bold=True, color=NAVY, size=11); r += 1
+    checks = reconciliation_checks(LAY, g)
+    header_row(ws, r, 1, ['#', 'Check', 'Value A', 'Value B', 'Result'])
+    r += 1; c0 = r
+    for i, (lab, a, b) in enumerate(checks):
+        ws.cell(r, 1, i + 1); ws.cell(r, 2, lab); ws.cell(r, 3, a); ws.cell(r, 4, b)
+        ws.cell(r, 5, f'=IF(ROUND(C{r}-D{r},9)=0,"PASS","FAIL")')
+        for j in range(5): cell_style(ws.cell(r, j + 1), size=9, wrap=j == 1)
+        r += 1
+    from openpyxl.formatting.rule import CellIsRule
+    from openpyxl.styles import Font as _F
+    ws.conditional_formatting.add(f'E{c0}:E{r-1}', CellIsRule(operator='equal', formula=['"PASS"'], fill=fill(GREEN[0]), font=_F(color=GREEN[1], bold=True)))
+    ws.conditional_formatting.add(f'E{c0}:E{r-1}', CellIsRule(operator='equal', formula=['"FAIL"'], fill=fill(RED[0]), font=_F(color=RED[1], bold=True)))
+    r += 1
+    put(ws, f'A{r}', '5. Worksheet inventory and disposition (129 original worksheets)', bold=True, color=NAVY, size=11); r += 1
+    r = write_table(ws, r, ['#', 'Worksheet (original)', 'Category', 'Purpose', 'Used range', 'Formulas', 'Pivots', 'Tables', 'Charts', 'Merged', 'CF rules',
+                            'Recommendation', 'Action taken'], inv, wrapcols=(3, 12)) + 1
+    put(ws, f'A{r}', '6. Worksheets improved / consolidated / archived / removed', bold=True, color=NAVY, size=11); r += 1
+    for k in ['Improve', 'Consolidate', 'Archive', 'Remove', 'Retain']:
+        lst = [x[1] for x in inv if x[11] == k]
+        put(ws, f'A{r}', f'{k} ({len(lst)})', bold=True); put(ws, f'B{r}', ', '.join(lst) if k not in ('Retain',) else ', '.join(lst[:12]) + (' … (+ 32 country and 32 action-plan sheets)' if len(lst) > 12 else ''), wrap=True)
+        ws.merge_cells(f'B{r}:H{r}'); ws.row_dimensions[r].height = max(15, 14 * (len(', '.join(lst)) // 140 + 1)); r += 1
+    r += 1
+    put(ws, f'A{r}', '7. Improvements implemented', bold=True, color=NAVY, size=11); r += 1
+    for p_ in IMPROVEMENTS:
+        put(ws, f'A{r}', '▪ ' + p_, wrap=True); ws.merge_cells(f'A{r}:H{r}'); ws.row_dimensions[r].height = max(15, 14 * (len(p_) // 150 + 1)); r += 1
+    r += 1
+    put(ws, f'A{r}', '8. Remaining limitations', bold=True, color=NAVY, size=11); r += 1
+    for p_ in LIMITATIONS:
+        put(ws, f'A{r}', '▪ ' + p_, wrap=True); ws.merge_cells(f'A{r}:H{r}'); ws.row_dimensions[r].height = max(15, 14 * (len(p_) // 150 + 1)); r += 1
+    widths(ws, {'A': 8, 'B': 30, 'C': 22, 'D': 48, 'E': 40, 'F': 50, 'G': 14, 'H': 36, 'I': 8, 'J': 8, 'K': 8, 'L': 14, 'M': 50})
+
+    # ------------------------------------------------------------ 11 change log
+    ws = WS[CL]
+    title(ws, 'Change Log – significant changes  |  Deliverable 3', 'Every change applied to produce "Self-Assessment Matrix 2026 – FINAL IMPROVED.xlsx". Original file kept unchanged as backup.')
+    nav(ws)
+    write_table(ws, 5, ['#', 'Worksheet', 'Original situation', 'Problem identified', 'Action taken', 'Result'],
+                [[i + 1] + list(x) for i, x in enumerate(CHANGES)], wrapcols=(1, 2, 3, 4, 5))
+    md = json.load(open(os.path.join(HERE, 'matrix_diff.json'))) if os.path.exists(os.path.join(HERE, 'matrix_diff.json')) else None
+    if md:
+        r0 = 5 + len(CHANGES) + 3
+        put(ws, f'A{r0}', f"Appendix – '1. Data-Control Country Matrix': control results that changed after replacing the {md['hard']} hardcoded cells ({len(md['diff'])} changes)", bold=True, color=NAVY, size=11)
+        write_table(ws, r0 + 1, ['#', 'Country', 'Policy Section (Control)', 'Cell', 'Previous value', 'Corrected value (formula)', 'Previous cell type'],
+                    [[i + 1] + d for i, d in enumerate(md['diff'])])
+    widths(ws, {'A': 5, 'B': 30, 'C': 50, 'D': 50, 'E': 55, 'F': 45, 'G': 16})
+    ws.freeze_panes = 'A6'
+
+    # ------------------------------------------------------------ 12 key findings
+    ws = WS[KF]
+    title(ws, 'Key Regional Findings  |  Deliverable 4',
+          'Results columns are LIVE formulas. "Analyst commentary" was written from the data as at the report date shown and must be re-read if source assessments change.')
+    nav(ws)
+    put(ws, 'A4', '="Report date: "&TEXT(p_ReportDate,"dd-mmm-yyyy")', italic=True)
+    TOT = LAY['TOT']
+    ce = lambda col, row: f"{q(CE)}!${col}${row}"
+    X0, X1, Q0, Q1 = LAY['X0'], LAY['X1'], LAY['Q0'], LAY['Q1']
+    CEx = lambda col: f"{q(CE)}!${col}${X0}:${col}${X1}"
+    CEq = lambda col: f"{q(CE)}!${col}${Q0}:${col}${Q1}"
+    def wsec(k):
+        return (f'INDEX({CEx("A")},MATCH({k},{CEx("U")},0))&" – score "&TEXT(INDEX({CEx("K")},MATCH({k},{CEx("U")},0)),"0.0%")&"; Insufficient in "&INDEX({CEx("M")},MATCH({k},{CEx("U")},0))&" countries; Moderate in "&INDEX({CEx("N")},MATCH({k},{CEx("U")},0))')
+    def wq(k):
+        return (f'"Q"&INDEX({CEq("A")},MATCH({k},{CEq("L")},0))&" ("&INDEX({CEq("B")},MATCH({k},{CEq("L")},0))&"): gap in "&INDEX({CEq("I")},MATCH({k},{CEq("L")},0))&" of "&INDEX({CEq("H")},MATCH({k},{CEq("L")},0))&" applicable countries ("&INDEX({CEq("F")},MATCH({k},{CEq("L")},0))&" Insufficient, "&INDEX({CEq("E")},MATCH({k},{CEq("L")},0))&" Moderate)"')
+    rows = [
+        ('Top-performing countries (Strong)', f'={ce(CEC["sorted list 1"], TOT)}', f'="Count: "&{ce(CEC["L1"], TOT)}'),
+        ('Countries with moderate control', f'={ce(CEC["sorted list 2"], TOT)}', f'="Count: "&{ce(CEC["L2"], TOT)}'),
+        ('Countries with weak controls', f'={ce(CEC["sorted list 3"], TOT)}', f'="Count: "&{ce(CEC["L3"], TOT)}'),
+        ('Countries requiring immediate attention (Critical)', f'={ce(CEC["sorted list 4"], TOT)}', f'="Count: "&{ce(CEC["L4"], TOT)}'),
+        ('Countries with insufficient data', f'={ce(CEC["sorted list 5"], TOT)}', f'="Count: "&{ce(CEC["L5"], TOT)}'),
+        ('Countries needing regional support (priority HIGH)', f"=IFERROR(LEFT(_xlfn.CONCAT({q(CE)}!$BG${LAY['C0']}:$BG${LAY['C1']}),LEN(_xlfn.CONCAT({q(CE)}!$BG${LAY['C0']}:$BG${LAY['C1']}))-2),\"None\")", '="See 05 – Regional Risk Assessment"'),
+        ('Weakest Policy Section #1', '=' + wsec(1), ''), ('Weakest Policy Section #2', '=' + wsec(2), ''), ('Weakest Policy Section #3', '=' + wsec(3), ''),
+        ('Weakest Policy Section #4', '=' + wsec(4), ''), ('Weakest Policy Section #5', '=' + wsec(5), ''),
+        ('Most frequent control deficiency #1', '=' + wq(1), ''), ('Most frequent control deficiency #2', '=' + wq(2), ''),
+        ('Most frequent control deficiency #3', '=' + wq(3), ''), ('Most frequent control deficiency #4', '=' + wq(4), ''),
+        ('Most frequent control deficiency #5', '=' + wq(5), ''),
+        ('Regional control profile', f'="Score "&TEXT({ce("P", TOT)},"0.0%")&" | UC "&TEXT({ce("L", TOT)},"0.0%")&" | MC "&TEXT({ce("M", TOT)},"0.0%")&" | IC "&TEXT({ce("N", TOT)},"0.0%")&" of "&{ce("K", TOT)}&" applicable answers ("&{ce("H", TOT)}&" N/A excluded)"', ''),
+        ('Action plan execution', f'={ce(CEC["Actions"], TOT)}&" actions; "&{ce(CEC["Open actions"], TOT)}&" open; "&{ce(CEC["Overdue actions"], TOT)}&" overdue; "&{ce(CEC["Gaps w/o action plan"], TOT)}&" of "&{ce(CEC["Gaps (MC+IC)"], TOT)}&" gaps without a linked action"', ''),
+        ('Evidence coverage', f'={ce(CEC["Applicable w/o uploaded evidence"], TOT)}&" applicable answers without uploaded evidence ("&{ce(CEC["UC w/o evidence"], TOT)}&" rated UNDER CONTROL)"', ''),
+        ('Trend vs prior snapshot (indicative)', f'="Improving: "&COUNTIF({CER("Trend")},"Improving")&" | Stable: "&COUNTIF({CER("Trend")},"Stable")&" | Deteriorating: "&COUNTIF({CER("Trend")},"Deteriorating")&" | Regional score prior "&TEXT({ce(CEC["Prior score"], TOT)},"0.0%")&" → now "&TEXT({ce("P", TOT)},"0.0%")', ''),
+    ]
+    header_row(ws, 6, 1, ['Finding area', 'Result (live)', 'Supporting metric (live)', 'Analyst commentary (as at report date)'])
+    for i, (a, b, c) in enumerate(rows):
+        rr = 7 + i
+        ws.cell(rr, 1, a); ws.cell(rr, 2, b); ws.cell(rr, 3, c); ws.cell(rr, 4, narrative.get(a, ''))
+        for j in range(4): cell_style(ws.cell(rr, j + 1), wrap=True, size=9, bold=j == 0)
+        ws.row_dimensions[rr].height = 45
+    rr = 8 + len(rows)
+    put(ws, f'A{rr}', 'Main regional improvement priorities (ANALYTICAL recommendations derived from the findings above)', bold=True, color=NAVY, size=11)
+    for k, t in enumerate(narrative.get('_priorities', [])):
+        put(ws, f'A{rr+1+k}', f'{k+1}.', bold=True); put(ws, f'B{rr+1+k}', t, wrap=True); ws.merge_cells(f'B{rr+1+k}:D{rr+1+k}')
+        ws.row_dimensions[rr + 1 + k].height = 32
+    widths(ws, {'A': 34, 'B': 70, 'C': 34, 'D': 70})
+    ws.freeze_panes = 'A7'
+
+
+def reconciliation_checks(LAY, g):
+    CE_ = q(CE); TOT = LAY['TOT']; CEC = LAY['CEC']
+    SDn = q(SD); APn = q(AP)
+    return [
+        ('Answers in 07 – Source Data = 32 countries × 61 questions', f'=COUNTA({SDn}!B{LAY["SD_H"]+1}:B{LAY["SD_LAST"]})', '=32*61'),
+        ('Sum of country totals (13) = rows in Source Data', f'={CE_}!D{TOT}', f'=COUNTA({SDn}!B{LAY["SD_H"]+1}:B{LAY["SD_LAST"]})'),
+        ('UC+MC+IC+N/A+Missing+Invalid = total answers', f'={CE_}!E{TOT}+{CE_}!F{TOT}+{CE_}!G{TOT}+{CE_}!H{TOT}+{CE_}!I{TOT}+{CE_}!J{TOT}', f'={CE_}!D{TOT}'),
+        ('UNDER CONTROL in Source Data = direct COUNTIF over the 32 country sheets', f'=COUNTIF(src_Std,"UNDER CONTROL")', '=' + '+'.join(f"COUNTIF({q(c['sheet'])}!${gl(c['cl']+1)}$2:${gl(c['cl']+1)}$62,\"UNDER CONTROL\")" for c in CFG['reg'])),
+        ('INSUFFICIENT in Source Data = direct COUNTIF over the 32 country sheets', f'=COUNTIF(src_Std,"INSUFFICIENT CONTROL")', '=' + '+'.join(f"COUNTIF({q(c['sheet'])}!${gl(c['cl']+1)}$2:${gl(c['cl']+1)}$62,\"INSUFFICIENT CONTROL\")" for c in CFG['reg'])),
+        ('N/A in Source Data = direct COUNTIF over the 32 country sheets', f'=COUNTIF(src_Std,"N/A")', '=' + '+'.join(f"COUNTIF({q(c['sheet'])}!${gl(c['cl']+1)}$2:${gl(c['cl']+1)}$62,\"N/A\")" for c in CFG['reg'])),
+        ('Regional UC% + MC% + IC% = 100%', f'={CE_}!L{TOT}+{CE_}!M{TOT}+{CE_}!N{TOT}', '=1'),
+        ('Sum of scope applicable answers = regional applicable', f'=SUM({CE_}!B{LAY["S0"]}:B{LAY["S1"]})', f'={CE_}!K{TOT}'),
+        ('Sum of Policy Section applicable answers = regional applicable', f'=SUM({CE_}!C{LAY["X0"]}:C{LAY["X1"]})', f'={CE_}!K{TOT}'),
+        ('Section×country matrix total (UC) = regional UC', f'=SUM({CE_}!D{LAY["MAT"]["UC"]}:{gl(3+32)}{LAY["MAT"]["UC"]+35})', f'={CE_}!E{TOT}'),
+        ('Section×country matrix total (IC) = regional IC', f'=SUM({CE_}!D{LAY["MAT"]["IC"]}:{gl(3+32)}{LAY["MAT"]["IC"]+35})', f'={CE_}!G{TOT}'),
+        ('Question block gaps = regional gaps', f'=SUM({CE_}!I{LAY["Q0"]}:I{LAY["Q1"]})', f'={CE_}!R{TOT}'),
+        ('Ranks 1..32 unique (sum of ranks = 528)', f'=SUM({CE_}!AJ{LAY["C0"]}:AJ{LAY["C1"]})', '=528'),
+        ('Countries classified = 32', f'=SUM({CE_}!{CEC["L1"]}{TOT}:{CEC["L5"]}{TOT})', '=32'),
+        ('Dashboard regional score = Calc Engine regional score', f"={q(D)}!K17", f'={CE_}!P{TOT}'),
+        ('Ranking table UC total = Calc Engine UC total', f"=SUM({q(R)}!F6:F37)", f'={CE_}!E{TOT}'),
+        ('Actions in 06 = action rows found in the 32 Action Plan sheets at build time (147)', '=SUM(ap_IsAction)', '=147'),
+        ('Status distribution total = number of actions', f'=SUM({CE_}!B{LAY["A0"]}:B{LAY["A0"]+6})', '=SUM(ap_IsAction)'),
+        ('Sum of country actions (13) = actions in 06', f'={CE_}!{CEC["Actions"]}{TOT}', '=SUM(ap_IsAction)'),
+        ('No formula errors in Source Data standardized level (MISSING/INVALID count)', f'=COUNTIF(src_Std,"MISSING")+COUNTIF(src_Std,"INVALID")', '=0'),
+    ]
+
+
+INV_COUNTS = [
+    ['Worksheets', '129', '129', 'All verified by direct inspection of workbook.xml.'],
+    ['Hidden / very hidden worksheets', '0', '0', 'All 129 visible.'],
+    ['PivotTables', '20', '20', 'On 16 worksheets; 11 pivot caches.'],
+    ['Pivot caches', '11', '11', 'Last refreshed before the current answers were final – set to refresh on open.'],
+    ['Defined names', '48', '48', 'All are sheet-level _FilterDatabase (AutoFilter) names; one (on "Details") pointed to #REF! and was removed.'],
+    ['External links / data connections', '0 / 0', '0 / 0', 'No externalLinks or connections parts; no Power Query.'],
+    ['Excel Tables', 'n/a', '12', 'AssessmentsTable, AssessmentsTable8, AssessmentsTable13, TableQuestions, TableQuestions14, Table2, Table4, Table5, Table6, TableCountryControl, KeyCountries, AssessmentControlTable.'],
+    ['Charts', 'n/a', '21', 'In 17 drawings; all preserved (new sheets injected at file-package level so legacy objects are not rewritten).'],
+    ['Formulas (cells)', 'n/a', '≈ 22,000', 'Largest: 1. Data-All Assessments 2026 / TOP20 (5,857 each), 1. Data-Control Country Matrix (4,875).'],
+    ['Cached formula errors', 'n/a', '12', '#N/A in 1. Data-All Assessments 2026 and TOP20 (Canada Q60–61) – corrected.'],
+    ['Empty worksheets', '"SelfAssessment 2026", "Countries 2026", "SelfAssessment", "Final-ByScope" + placeholders', '12 empty', 'Confirmed: Sheet2, Sheet3, Sheet4, Sheet5, Sheet6, Sheet7, Sheet10, Sheet33, SelfAssessment, SelfAssessment 2026, Countries 2026, Final-ByScope have no cells. Sheet32 is NOT empty (contains a PivotTable).'],
+    ['Country assessment / action plan sheets', '≈30 / ≈30', '32 / 32', 'Each country sheet holds 61 questions, all with a Control Level (no missing answers).'],
+]
+
+AUDIT_INTRO = [
+    ('Executive summary', [
+        'The workbook contained the correct country answers, but several consolidated views did not reflect them. The most material defect: in "1. Data-All Assessments 2026" (and its copy "TOP20") the Control Level of 9 countries (Bolivia, Chile, Costa Rica, Ecuador, El Salvador, Mexico, Nicaragua, Panama, Venezuela – 549 answers) was displayed as "N/A" because the formula only recognised the Spanish labels (BAJO CONTROL / CONTROL MODERADO / CONTROL INSUFICIENTE) while those countries now answer in English. Every PivotTable built on that table therefore under-reported these countries.',
+        'Other defects: a truncated lookup range for Canada (#N/A for Q60–61), an approximate-match VLOOKUP, hardcoded "N/A" text overwriting formulas, three different scoring/threshold schemes (0.75 vs 0.5 for Moderate; 0.90/0.75 vs 0.91/0.61 vs 91%/61–90%/≤60% thresholds), N/A included in percentage denominators, hardcoded counts in summary sheets, inconsistent country names, and action-plan dates stored as text in 25+ formats.',
+        'All defects that could be corrected safely were corrected in place. A new formula-driven analytical layer (sheets 01–08 and 13) was added that reads directly from the 32 authoritative country sheets, applies one documented methodology and reconciles back to the country sheets (section 4 – live checks).',
+    ]),
+    ('Approach & technical method', [
+        'Inventory and formula analysis were performed programmatically on every worksheet (formula text and cached values compared). Because common Python Excel libraries discard charts and drawings when saving, the improved workbook was produced by editing the original file package directly: new sheets were injected, specific legacy formulas rewritten at XML level, and the 21 charts, 20 PivotTables, comments, tables and formats of the original were left untouched. Formulas were recalculated with LibreOffice (Excel-compatible engine) to verify results and populate cached values; the file is flagged for full recalculation when opened in Microsoft Excel.',
+    ]),
+]
+
+FINDINGS = [
+    ['F01', '1. Data-All Assessments 2026 (AssessmentsTable), column J "Question Level"', 'J rows for Bolivia, Chile, Costa Rica, Ecuador, Mexico, Nicaragua, Panamá, Salvador, Venezuela (549 cells)',
+     'Formula only translated Spanish labels; any other value (incl. the English labels now used) fell through to "N/A".',
+     '9 countries showed 0 Under/Moderate/Insufficient answers – PivotTables (caches 5, 8) and every report built on them were wrong.',
+     '=IF(OR(v="UNDER CONTROL",v="BAJO CONTROL"),"UNDER CONTROL",IF(OR(v="MODERATE CONTROL",v="CONTROL MODERADO"),"MODERATE CONTROL",IF(OR(v="INSUFFICIENT CONTROL",v="CONTROL INSUFICIENTE"),"INSUFFICIENT CONTROL",IF(v="N/A","N/A",IF(TRIM(v&"")="","MISSING","INVALID"))))) with v = VLOOKUP(Q#, country range, CL col, FALSE)',
+     'Yes', 'Recalculated: distribution per country now equals direct counts on the country sheets (check #4–6).'],
+    ['F02', '1. Data-All Assessments 2026, columns H:J (Canada)', 'Canada rows Q60, Q61 (6 cells)', 'Lookup range Canada!$A$2:$G$60 stops at Q59.', '#N/A errors; Canada Q60–61 missing from pivots.', 'Range extended to Canada!$A$2:$G$62.', 'Yes', 'No #N/A remaining.'],
+    ['F03', '1. Data-All Assessments TOP20 (AssessmentsTable13)', 'Same cells as F01/F02', 'Duplicate table carries the same defects.', 'Pivot cache 1 wrong.', 'Same corrections as F01/F02.', 'Yes', 'Recalculated.'],
+    ['F04', '1. Data-Control Country Matrix', 'CG2:CG62 (Canada)', 'VLOOKUP range $A$2:$G$60 excludes Q60–61.', 'Canada controls 6 and 7 (Reporting / Escalations) not evaluated.', '=VLOOKUP($C2,Canada!$A$2:$G$62,7,FALSE)', 'Yes', 'Recalculated.'],
+    ['F05', '1. Data-Control Country Matrix', 'D2:D62 (Venezuela)', 'VLOOKUP without 4th argument = approximate match.', 'Silent wrong match if question order ever changes.', '=VLOOKUP($C2,Venezuela!$A$2:$H$62,8,FALSE)', 'Yes', 'Values unchanged (data sorted) – risk removed.'],
+    ['F06', '1. Data-Control Country Matrix', 'AE2:AE62 (El Salvador)', 'Range starts at header row $A$1 (inconsistent with all other countries).', 'Low (header never matches), but inconsistent.', '=VLOOKUP($C2,\'El Salvador\'!$A$2:$G$62,7,FALSE)', 'Yes', 'Recalculated.'],
+    ['F07', '1. Data-Control Country Matrix', 'All 32 "Control" columns (36 control cells each = 1,152 cells)',
+     'Three formula variants (thresholds <0.9/≥0.9 vs <1/=1; N/A test "" vs " "); 179 of the 1,152 control cells contained the hardcoded text "N/A" instead of a formula, because N/A maps to a space (" ") and AVERAGE() then returns #DIV/0!.',
+     'Hardcoded N/A never updates when a country changes an answer; inconsistent thresholds across rows.',
+     '=IF(COUNT(Erange)=0,"N/A",IF(AVERAGE(Erange)>=0.9,"UNDER CONTROL",IF(AVERAGE(Erange)>=0.75,"MODERATE CONTROL","INSUFFICIENT CONTROL"))) – one formula for every control, N/A excluded via COUNT.',
+     'Yes', 'All 1,152 control cells now formula-driven; 45 results changed (stale hardcoded N/A where the country has since answered) – listed in the Change Log.'],
+    ['F08', 'Self Assessment Results', 'O4:P35', 'Hardcoded constants 61 and 36 ("=61-M4", "=36-N4").', 'Wrong if a question/control is added or an answer is missing.', 'O = G+I+K (applicable questions); P = H+J+L (applicable controls).', 'Yes', 'Same values today; now dynamic.'],
+    ['F09', 'Self Assessment Results', 'E39:L70 and E73:H104', 'Hardcoded control counts/percentages from an earlier calculation (differ from the current matrix).', 'Pivot cache 4 and the related charts showed stale figures.', 'E..H = COUNTIF(matrix control column of the country,"UNDER CONTROL"/…); I..L (rows 39–70) = count / SUM(E:H).', 'Yes', 'Recalculated – sums to 100% per row.'],
+    ['F10', '3.Final-SAPerControl', 'D2:G37; H2:K37', 'Counts hardcoded; percentages divided by a hardcoded 32 (N/A included in the denominator).', 'Stale and not reproducible; N/A diluted percentages.', 'D..G = COUNTIF(row of the control in 3.Final-DetailsControlCountries, level); /32 replaced by /COUNTA(country header). Percent-of-applicable provided in 03.', 'Yes', 'Recalculated.'],
+    ['F11', '4.Final-AM Risk Assessment', 'B, D, F, H (counts); C/E/G weights; M thresholds', 'Counts hardcoded; Moderate weighted 0.5 (Config uses 0.75); thresholds 0.91 / 0.61 differ from matrix (0.90 / 0.75).', 'Regional risk conclusion depends on an undocumented, inconsistent methodology.', 'Counts linked by COUNTIF to 3.Final-DetailsControlCountries. Weights/thresholds left as authored (management choice) and flagged; harmonised model in 05 / 08.', 'Partly', 'Counts recalculated; methodology difference documented.'],
+    ['F12', '5.Compliance 2026', 'J2:J33', 'Thresholds ≥91% / 61–90% / ≤60% leave gaps (e.g. 90.5% or 60.5% → "N/A").', 'Countries could be shown as N/A instead of a level.', '=IF(K2="","N/A",IF(K2>=0.91,"UNDER CONTROL",IF(K2>=0.61,"MODERATE CONTROL","INSUFFICIENT CONTROL")))', 'Yes', 'Recalculated.'],
+    ['F13', '5.Compliance 2026', 'K2:K33', 'Compliance % typed as constants; source not documented.', 'Cannot be validated against the assessments.', 'Not changed (no source to rebuild from). Flagged; 02 provides the reproducible score.', 'No – flagged', '—'],
+    ['F14', 'Workbook defined names', '_FilterDatabase (sheet "Details")', 'Name refers to #REF!.', 'Broken reference.', 'Removed.', 'Yes', '—'],
+    ['F15', 'Legacy PivotTables (20)', 'All pivot caches', 'Caches not refreshed after source corrections.', 'Pivots would display stale values.', 'refreshOnLoad set on all 11 caches (Excel refreshes when the file is opened).', 'Yes', 'Pivots refresh in Excel; not refreshable in the validation engine (see limitations).'],
+    ['F16', '1. Data-All Assessments 2026', 'J1957', 'Unexplained arithmetic "=49/64".', 'Hardcoded figure of unknown meaning.', 'Left unchanged, documented.', 'No – flagged', '—'],
+    ['F17', 'Several legacy reports (3.Final-*, Self Assessment Results)', 'Percent columns', 'Percentages calculated over all countries/controls including N/A.', 'Understates control levels of countries with many N/A answers.', 'New analysis uses applicable answers as denominator and reports N/A separately.', 'Yes (new sheets)', 'Check #7.'],
+]
+
+DQ = [
+    ['D01', 'Country names', 'Inconsistent names across legacy sheets: "Cayman Island", "French Guyana", "Panamá", "Rep Dominicana", "Salvador", "Virgin Islands (British)", "Trinidad" vs "Trinidad and Tobago".', 'Canonical country register in 08 (section E) with legacy name mapping.'],
+    ['D02', 'Colombia, Costa Rica forms', 'Header row has one more column than the data: the header "Control Level" sits over the gap-comment column; Control Level data are in column G.', 'Column layout detected from the data, not the header (08 section E). Headers left as submitted.'],
+    ['D03', 'Country form layouts', 'Two layouts: 9 columns (Venezuela, Uruguay, Trinidad, USA, Argentina, Bolivia – Control Level in H) and 8 columns (others – Control Level in G).', 'Handled by the country register.'],
+    ['D04', 'Evidence column', 'Values: Yes 764, N/A 675, Si 334, No 117, blank 30, YES 22, si 4, SI 3, NO 3.', 'Standardized mapping (08 section C).'],
+    ['D05', 'Nicaragua Action Plan', 'Header has "Issue Category" but data are shifted one column left (status values sit under "by When").', 'Column mapping corrected in 06 (no data changed).'],
+    ['D06', 'Ecuador / Brazil / Chile / Panama action plans', 'Merged cells across several rows per action (sub-steps).', 'One consolidated row per action; sub-step texts concatenated with " | ".'],
+    ['D07', 'Action plan dates', 'Only 50 of 147 due dates are real dates; others are text in 25+ formats (30.09.2026, 03.30.2027, 31/08/2026, 15-9-2026, "Todo el Año", "TBD", "Ongoing"), incl. an invalid date "31/09/2026" and ambiguous dates (04.09.2026).', 'Interpreted with an explicit, flagged rule (06 columns N–O); nothing overwritten in the source.'],
+    ['D08', 'Action plan statuses', 'Blank status cells exist only on merged sub-step rows (Ecuador, Brazil, Chile, Panama); once consolidated every action has a status. Nicaragua statuses sit in the "by When" column. 10 actions NOT STARTED (Barbados 6, Bahamas 3, Canada 1), 15 IN PROGRESS.', 'Standardized status; a missing status would be treated as open and flagged.'],
+    ['D09', 'Action plan ↔ assessment', '1 action has no question number (Dominican Republic, "4.2 Manifest"); 13 actions carry a section label without a number (e.g. "Personnel Trianing", "Training") and 1 genuine conflict (2 actions): Canada Q50 labelled "4.13 Reconciliation" although Q50 belongs to 4.11 Unauthorized Release.', 'Section check column in 06; actions linked to the assessment via Country|Q# key.'],
+    ['D10', '3.Final-SAPerControl / Draft Regional Action Plan', 'Control numbers 4.10 and 2.10 stored as numbers (shown as 4.1 / 2.1 → duplicates of other controls).', 'New sheets use text labels from the matrix control list.'],
+    ['D11', 'Draft Regional Action Plan', 'Column D action texts are not aligned with the control IDs (e.g. "URL incidence" against 2.3; "export clearance" against 3.3).', 'Not used; "Regional Actions Draft" (aligned) used instead.'],
+    ['D12', '5.Policy Tracker 2026', 'Lists 18 further countries (agents, Guyana, St. Maarten) without an assessment worksheet.', 'Listed separately in 02 – not ranked (no data).'],
+    ['D13', 'Assessments bkp', 'Undated static snapshot of a previous cycle (2023 evidence references).', 'Used only for an indicative trend; labelled as such.'],
+    ['D14', 'Questions / duplicates', 'All 32 forms contain questions 1–61 exactly once; no duplicate country; no missing Control Level.', 'Live checks in section 4.'],
+]
+
+IMPROVEMENTS = [
+    '01 – Executive Dashboard: first sheet; live executive summary, 10 KPI tiles, ranked country table with colour coding, top-5 risk lists, policy-scope summary and 4 charts.',
+    '02 – Country Ranking: all requested metrics per country, five-tier classification, sensitivity score, gaps without action plan, evidence coverage, open/overdue actions, indicative trend; sorted automatically.',
+    '03 – Policy Section Analysis: 8 scopes and 36 Policy Sections ranked strongest → weakest with weakest countries per section and existing regional draft actions; top 15 systemic question-level weaknesses.',
+    '04 – Country Details: select any country; KPIs, analytical recommendations (clearly labelled), list of Moderate/Insufficient questions with original answers/comments, the country\'s actions, and the full 61-question view.',
+    '05 – Regional Risk Assessment: risk register ordered by support priority, top-5 lists per indicator, section × country heat map.',
+    '06 – Regional Action Plan: 147 actions consolidated by live links (+5 spare slots per country), standardized status, interpreted due dates, overdue days, priority, link to assessment, data-quality flags.',
+    '07 – Source Data: one auditable 1,952-row table linked live to the country forms, with standardized level, applicability, score, evidence status, consistency flags, action-plan linkage and prior-cycle value.',
+    '08 – Config & Methodology: all parameters, mappings, country register and question master in one place; documented methodology.',
+    '13 – Calc Engine: all aggregations as transparent formulas (no hardcoded results).',
+    'Legacy sheets: formula defects corrected (F01–F15), PivotTables set to refresh on open, data validation added to Control Level (country forms) and Status (action plans), tabs colour-coded, workbook reordered (new sheets first, legacy/archived last).',
+    '12 empty placeholder worksheets removed after confirming they held no data and were not referenced.',
+]
+
+LIMITATIONS = [
+    'Legacy PivotTables cannot be refreshed by the validation engine used here (LibreOffice); they are set to refresh automatically when the workbook is opened in Microsoft Excel. Until refreshed, their displayed values are those cached in the original file.',
+    'Scoring weights and classification thresholds are an analytical model proposed for management validation; they are not official DHL compliance scoring rules.',
+    'Text due dates were interpreted with a documented rule; ambiguous dates (both parts ≤ 12) are read as DD.MM.YYYY and flagged – owners should confirm them in the country Action Plans.',
+    'Trend analysis relies on the undated "Assessments bkp" snapshot and is indicative only.',
+    'Compliance percentages typed in "5.Compliance 2026" (column K) and the hardcoded figure in "1. Data-All Assessments 2026"!J1957 could not be traced to a source and were left unchanged.',
+    'Evidence quality was assessed from the "Evidence Uploaded" flag only; the documents on SharePoint were not reviewed.',
+    'Legacy presentation sheets (scope sheets, Countries, Matrix 1/2, Summary) contain static prior-cycle values; they were archived, not rebuilt.',
+]
+
+CHANGES = [
+    ('(file)', 'Single draft workbook.', 'Original must not be overwritten.', 'Original copied unchanged to "…DRAFT - BACKUP ORIGINAL.xlsx"; deliverable saved as a new file.', 'Original preserved.'),
+    ('01 – Executive Dashboard … 13 – Calc Engine', 'No reliable regional overview.', 'Answers to the management questions not visible.', '13 new worksheets added (dashboard, ranking, policy sections, country details, risk, action plan, source data, methodology, archive index, audit report, change log, key findings, calc engine).', 'Formula-driven management tool; reconciles to country sheets.'),
+    ('1. Data-All Assessments 2026', 'Column J translated only Spanish labels.', '549 answers of 9 countries shown as N/A.', 'Formula rewritten to accept English and Spanish labels; blank → MISSING; other → INVALID.', 'Correct levels for all 32 countries.'),
+    ('1. Data-All Assessments 2026', 'Canada lookups range $A$2:$G$60.', '#N/A for Q60–61 (6 cells).', 'Range extended to $G$62.', 'Errors removed.'),
+    ('1. Data-All Assessments TOP20', 'Same as above (duplicate table).', 'Same defects.', 'Same corrections.', 'Consistent with corrected table.'),
+    ('1. Data-Control Country Matrix', 'Canada range to row 60; Venezuela approximate match; El Salvador range from row 1.', 'Missing / fragile lookups.', 'Ranges and match type standardized (exact match, $A$2:$x$62).', 'All 32 countries evaluated on 61 questions.'),
+    ('1. Data-Control Country Matrix', '1,152 control cells: 3 formula variants + hardcoded "N/A" texts.', 'Static values and inconsistent thresholds.', 'Single N/A-aware formula (0.90 / 0.75 thresholds) in every control cell.', 'See list of changed control results below.'),
+    ('Self Assessment Results', 'Constants 61/36; hardcoded control counts in two blocks.', 'Stale figures feeding pivot cache 4 and charts.', 'Replaced with formulas linked to the corrected matrix.', 'Dynamic.'),
+    ('3.Final-SAPerControl', 'Hardcoded counts; /32.', 'Stale; not reproducible.', 'COUNTIF formulas on 3.Final-DetailsControlCountries; /COUNTA(countries).', 'Dynamic.'),
+    ('4.Final-AM Risk Assessment', 'Hardcoded counts.', 'Stale.', 'COUNTIF formulas; methodology difference flagged.', 'Dynamic counts.'),
+    ('5.Compliance 2026', 'Threshold formula with gaps.', 'Values between bands returned N/A.', 'Contiguous thresholds.', 'Every value classified.'),
+    ('Workbook names', '_FilterDatabase on "Details" = #REF!.', 'Broken name.', 'Removed.', 'No broken names.'),
+    ('PivotTables (11 caches)', 'Caches stale.', 'Pivots show old values.', 'refreshOnLoad = 1.', 'Pivots refresh when opened in Excel.'),
+    ('32 country assessment sheets', 'No data validation on Control Level.', 'Free text allowed (risk of invalid labels).', 'List validation (warning style) added: UNDER CONTROL, MODERATE CONTROL, INSUFFICIENT CONTROL, N/A.', 'Standardized input; existing answers untouched.'),
+    ('32 Action Plan sheets', 'No validation on Status.', 'Inconsistent statuses.', 'List validation (warning style) added: NOT STARTED, IN PROGRESS, COMPLETED, ON HOLD, CANCELLED.', 'Standardized input; existing entries untouched.'),
+    ('12 empty sheets', 'Sheet2, Sheet3, Sheet4, Sheet5, Sheet6, Sheet7, Sheet10, Sheet33, SelfAssessment, SelfAssessment 2026, Countries 2026, Final-ByScope.', 'Empty, unreferenced clutter.', 'Removed after dependency check.', '117 original sheets retained.'),
+    ('Sheet order & tabs', 'Analysis, backups, drafts and country forms interleaved; 129 tabs.', 'Hard to navigate.', 'New sheets first, then country forms & action plans, configuration, documentation; legacy/backup sheets at the end with grey tabs; navigation links on every new sheet.', 'Clear structure.'),
+    ('Workbook calculation', 'calcChain present; manual expectation of recalculation.', 'Cached values could be stale after edits.', 'calcChain removed (Excel rebuilds it); full recalculation on load enabled.', 'Values recalculated on open.'),
+]

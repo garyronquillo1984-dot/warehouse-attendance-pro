@@ -1,0 +1,31 @@
+{
+ "Top-performing countries (Strong)": "15 countries score ≥95% with no Insufficient Control answer. Honduras, Costa Rica and the three French Caribbean territories lead. Caution: Martinique, Guadeloupe and French Guiana have identical answer profiles (53/2/0/6) and 31 of 55 applicable answers without uploaded evidence – their Strong rating should be confirmed by evidence review. USA and Chile are Strong on controls but each has 4 overdue actions.",
+ "Countries with moderate control": "13 countries score ≥90% with Insufficient answers ≤5% of applicable questions. Nicaragua (93.6%), Paraguay (93.9%) and Panama (94.2%) have the lowest scores in this group because of many Moderate answers (9, 9 and 5). Canada has 3 Insufficient answers plus 3 overdue actions. Uruguay declares 43% of questions N/A – applicability should be validated.",
+ "Countries with weak controls": "Barbados (5 Insufficient, score 89.9%) and Cayman Islands (3 Insufficient, 6% of applicable answers). Barbados has 6 action-plan items NOT STARTED and all overdue.",
+ "Countries requiring immediate attention (Critical)": "Bahamas (6 Insufficient = 11.1% of applicable answers, score 88.4%) and Bermuda (6 Insufficient = 12.2%, score 87.2%) exceed the 10% Insufficient threshold. Bahamas has 3 overdue NOT STARTED actions; Bermuda reports all 7 actions COMPLETED while 6 controls remain Insufficient – completion should be verified.",
+ "Countries with insufficient data": "No country is in this category: all 32 forms contain a Control Level for all 61 questions. 18 further countries in '5.Policy Tracker 2026' (mainly agent countries) have no assessment worksheet and are not ranked.",
+ "Countries needing regional support (priority HIGH)": "Combines classification, Insufficient answers and overdue actions: the four Caribbean countries above plus Canada (3 Insufficient + 3 overdue) and USA / Chile (4 overdue actions each).",
+ "Weakest Policy Section #1": "2.5 Personnel Training is the weakest control in the region: Insufficient in 9 countries (all Caribbean) and Moderate in 6. A regional action already exists in draft (standard training plan with Global).",
+ "Weakest Policy Section #2": "4.14 Declaration Quality Reviews: 6 Insufficient answers in 4 countries (Mexico, Bahamas, Jamaica, BVI) – the 2% quality-review sample and root-cause analysis are not in place.",
+ "Weakest Policy Section #3": "Annex 1 Documentation of Local Procedures has the lowest share of Under Control answers (47%): 13 Moderate and 4 Insufficient – procedures are documented but not up to date in most countries.",
+ "Weakest Policy Section #4": "4.3 Import Clearance: 4 Insufficient answers (Panama, Nicaragua, Ecuador, Bermuda), mainly on CAPA for systemic non-compliance (Q38).",
+ "Weakest Policy Section #5": "2.3 Country Self-Assessment & Action Plan: 2 Insufficient, 6 Moderate – gaps from the last self-assessment are not consistently carried into action plans, consistent with 19 current gaps without a linked action.",
+ "Most frequent control deficiency #1": "Q3 (local procedures up to date) – gap in more than half of the countries.",
+ "Most frequent control deficiency #2": "Q7 (country-specific training with training log) – the most frequent Insufficient answer in the region.",
+ "Most frequent control deficiency #3": "Q56 (quality review of ≥2% of formal declarations).",
+ "Most frequent control deficiency #4": "Q6 (previous self-assessment findings carried into the action plan).",
+ "Most frequent control deficiency #5": "Q51 (root-cause assessment of systemic Unauthorized Releases).",
+ "Regional control profile": "The region is largely under control (96% score); weaknesses are concentrated in a few controls and in the Caribbean cluster rather than spread across the policy.",
+ "Action plan execution": "Most actions are reported COMPLETED, but 21 open actions are past their due date (Barbados 6, USA 4, Chile 4, Bahamas 3, Canada 3, BVI 1). 16 due dates are not dates at all ('TBD', 'Ongoing', 'Todo el Año', '30-Junio-2026') and 3 are ambiguous.",
+ "Evidence coverage": "Evidence is the main reliability issue: a large share of applicable answers, most of them rated UNDER CONTROL, have no evidence flagged as uploaded (often 'N/A' typed in the evidence column). These ratings should not be relied on without evidence.",
+ "Trend vs prior snapshot (indicative)": "Against the undated backup snapshot, BVI, Jamaica, Nicaragua and Curacao improved most; Bermuda, Barbados and Haiti declined most. Indicative only (snapshot undated).",
+ "_priorities": [
+  "Launch a regional Customs training programme (Policy 2.5) with a country-specific curriculum and training log – first in the 9 Caribbean countries with Insufficient Control; align with the draft regional action in 'Regional Actions Draft'.",
+  "Run a procedure-refresh campaign (Annex 1): template, owner and deadline per country; 17 countries have outdated or incomplete local procedures.",
+  "Make declaration quality reviews (4.14) and root-cause / CAPA processes (4.3, 4.11, 4.13) mandatory routines with a regional reporting format; start with Mexico, Bahamas, Jamaica, BVI.",
+  "Targeted RCCH intervention for Bahamas and Bermuda (Critical) and Barbados and Cayman Islands (Weak): joint remediation plan, monthly follow-up, independent verification of actions reported COMPLETED.",
+  "Clear the 21 overdue actions and add actions for the 19 control gaps without one; require real dates and standard statuses (data validation now added to all Action Plan sheets).",
+  "Evidence verification: sample-test answers rated UNDER CONTROL without uploaded evidence (French Caribbean, Trinidad, Haiti, Paraguay first) and validate high N/A declarations (Uruguay 43%, Costa Rica 28%).",
+  "Have Regional Management validate the scoring weights and classification thresholds in 08 – Config & Methodology before the results are used for formal country ratings."
+ ]
+}

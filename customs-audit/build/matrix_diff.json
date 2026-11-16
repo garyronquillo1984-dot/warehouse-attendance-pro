@@ -1,0 +1,366 @@
+{
+ "total": 1152,
+ "hard": 179,
+ "diff": [
+  [
+   "Trinidad and Tobago",
+   "4.1 Pre-Arrival Processing",
+   "L33",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Trinidad and Tobago",
+   "4.7 Temporary Imports & Temporary Exports",
+   "L46",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Trinidad and Tobago",
+   "4.9 Diplomatic Shipments",
+   "L49",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Trinidad and Tobago",
+   "4.11 Unauthorized Release (URL)",
+   "L51",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Trinidad and Tobago",
+   "6. Reporting & Investigation of Material Violations",
+   "L61",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Argentina",
+   "2.9 Trusted Trader Programs",
+   "R20",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Bolivia",
+   "4.1 Pre-Arrival Processing",
+   "U33",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Bolivia",
+   "5.1 Importer/Exporter of Record (IOR/EOR)",
+   "U59",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Bolivia",
+   "5.2 Power of Attorney (PoA)",
+   "U60",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Colombia",
+   "3.5 Third Party Brokers Controls",
+   "AA30",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Colombia",
+   "5.1 Importer/Exporter of Record (IOR/EOR)",
+   "AA59",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Paraguay",
+   "4.6 Transit / Bonded Movements",
+   "AJ44",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Paraguay",
+   "4.14 Regular Customs Declaration Quality Reviews",
+   "AJ57",
+   "N/A",
+   "MODERATE CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Nicaragua",
+   "4.7 Temporary Imports & Temporary Exports",
+   "AS46",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Martinique",
+   "2.9 Trusted Trader Programs",
+   "AY20",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Jamaica",
+   "4.1 Pre-Arrival Processing",
+   "BB33",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Haiti",
+   "3.1 Licenses & Permits to Operate",
+   "BH23",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Haiti",
+   "6. Reporting & Investigation of Material Violations",
+   "BH61",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Guatemala",
+   "5.1 Importer/Exporter of Record (IOR/EOR)",
+   "BK59",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Guadeloupe",
+   "2.9 Trusted Trader Programs",
+   "BN20",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Guadeloupe",
+   "4.9 Diplomatic Shipments",
+   "BN49",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "French Guiana",
+   "1.6 Definitions",
+   "BQ2",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "French Guiana",
+   "1.7 Independence",
+   "BQ3",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "French Guiana",
+   "2.9 Trusted Trader Programs",
+   "BQ20",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "French Guiana",
+   "4.9 Diplomatic Shipments",
+   "BQ49",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Ecuador",
+   "2.7 Voluntary Disclosures",
+   "BT13",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Ecuador",
+   "4.7 Temporary Imports & Temporary Exports",
+   "BT46",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Bermuda",
+   "2.7 Voluntary Disclosures",
+   "CC13",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Bermuda",
+   "4.7 Temporary Imports & Temporary Exports",
+   "CC46",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Bermuda",
+   "5.2 Power of Attorney (PoA)",
+   "CC60",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Canada",
+   "3.5 Third Party Brokers Controls",
+   "CI30",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Canada",
+   "4.7 Temporary Imports & Temporary Exports",
+   "CI46",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Canada",
+   "4.12 Export Clearance",
+   "CI53",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "British Virgin Islands",
+   "3.2 Customs Bonded Facility",
+   "CO24",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "British Virgin Islands",
+   "3.5 Third Party Brokers Controls",
+   "CO30",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "British Virgin Islands",
+   "4.1 Pre-Arrival Processing",
+   "CO33",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "British Virgin Islands",
+   "4.4 Broker Handover",
+   "CO40",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "British Virgin Islands",
+   "4.5 Prohibited & Restricted Goods",
+   "CO41",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "British Virgin Islands",
+   "4.6 Transit / Bonded Movements",
+   "CO44",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "British Virgin Islands",
+   "4.7 Temporary Imports & Temporary Exports",
+   "CO46",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "British Virgin Islands",
+   "4.8 Post Clearance Modifications (PCM)",
+   "CO47",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "British Virgin Islands",
+   "4.12 Export Clearance",
+   "CO53",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "British Virgin Islands",
+   "4.13 Reconciliation of Physical Shipments vs. Data",
+   "CO55",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Dominican Republic",
+   "4.1 Pre-Arrival Processing",
+   "CU33",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ],
+  [
+   "Dominican Republic",
+   "5.1 Importer/Exporter of Record (IOR/EOR)",
+   "CU59",
+   "N/A",
+   "UNDER CONTROL",
+   "hardcoded"
+  ]
+ ]
+}

@@ -1,0 +1,4629 @@
+{
+ "master": [
+  {
+   "q": 1,
+   "scope": "1. About the DHL Express Global Customs Compliance Policy",
+   "section": "1.6 Definitions",
+   "question": "Is there a Country Customs Compliance Lead (CCCL), endorsed by the Country Senior Management Team (SMT)?",
+   "control": "1.6 Definitions",
+   "control_idx": 1
+  },
+  {
+   "q": 2,
+   "scope": "1. About the DHL Express Global Customs Compliance Policy",
+   "section": "1.7 Independence",
+   "question": "Does the CCCL have at least one (1) Individual Key Objective (IKO) related to Customs Compliance?",
+   "control": "1.7 Independence",
+   "control_idx": 2
+  },
+  {
+   "q": 3,
+   "scope": "Annex 1",
+   "section": "Annex 1 \u2013 Documentation of Local Procedures",
+   "question": "Are the local procedures documented and up-to-date (as outlined on Annex 1 of the Policy), to ensure compliance with Customs Regulations?",
+   "control": "Annex 1 Documentation of Local Procedures",
+   "control_idx": 3
+  },
+  {
+   "q": 4,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.1 Customs Compliance Culture",
+   "question": "Are there internal awareness communications (regarding Customs Compliance) developed & released internally on a periodic basis?",
+   "control": "2.1 Customs Compliance Culture",
+   "control_idx": 4
+  },
+  {
+   "q": 5,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.2 Customs Regulatory Changes",
+   "question": "Are changes in Customs Regulations timely identified, communicated, and implemented operationally?",
+   "control": "2.2 Customs Regulatory Changes",
+   "control_idx": 5
+  },
+  {
+   "q": 6,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.3 Country Self-Assessment & Action Plan",
+   "question": "Are the opportunities/ areas of improvement identified during the last Country Self-Assessment documented on a Country Action Plan (with clear responsibilities & timelines)?",
+   "control": "2.3 Country Self-Assessment & Action Plan",
+   "control_idx": 6
+  },
+  {
+   "q": 7,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.5 Personnel Training",
+   "question": "Have the relevant DHL Express Customs personnel received a Country-Specific Customs Operational & Customs Regulatory Training, with a training log created and monitored regularly?",
+   "control": "2.5 Personnel Training",
+   "control_idx": 7
+  },
+  {
+   "q": 8,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.6 Fines & Penalties",
+   "question": "Are Fines & Penalties (or Customs Debt) received from Customs Authorities recorded, monitored & managed locally, including updates in relevant DHL Financial Systems?",
+   "control": "2.6 Fines & Penalties",
+   "control_idx": 8
+  },
+  {
+   "q": 9,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.6 Fines & Penalties",
+   "question": "Are there Corrective and Preventive Action (CAPA) plans in place to reduce / mitigate / avoid recurrent systemic issues identified (which led to Fines & Penalties or Customs Debt)?",
+   "control": "2.6 Fines & Penalties",
+   "control_idx": 8
+  },
+  {
+   "q": 10,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.6 Fines & Penalties",
+   "question": "Are Fines & Penalties (or Customs Debt) with a value equal or above \u20ac10,000 EUR for a single incident (or with a value equal or above \u20ac50,000 EUR for a number of incidents of one type within a year) periodically reported to the RCCH (minimum monthly)?",
+   "control": "2.6 Fines & Penalties",
+   "control_idx": 8
+  },
+  {
+   "q": 11,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.6 Fines & Penalties",
+   "question": "Are Fines & Penalties (or Customs Debt) with a value equal or above \u20ac100,000 EUR against DHL Express in connection with a single incident or repeated incidents within a year (and/or violations representing a potential or imminent suspension or removal of a Customs privilege, license, or DHL Express ability to perform Customs services in a country) immediately escalated to the RCCH?",
+   "control": "2.6 Fines & Penalties",
+   "control_idx": 8
+  },
+  {
+   "q": 12,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.7 Voluntary Disclosures",
+   "question": "Are potential Voluntary Disclosures pre-aligned and signed-off by the Country Senior Management Team (SMT), GBS Legal, and the CCCL prior submission to Customs Authorities?",
+   "control": "2.7 Voluntary Disclosures",
+   "control_idx": 9
+  },
+  {
+   "q": 13,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.7 Voluntary Disclosures",
+   "question": "Are there Corrective and Preventive Action (CAPA) plans in place to reduce / mitigate / avoid recurrent of systemic issues (which led to the Voluntary Disclosure)?",
+   "control": "2.7 Voluntary Disclosures",
+   "control_idx": 9
+  },
+  {
+   "q": 14,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.7 Voluntary Disclosures",
+   "question": "Are payments related to Voluntary Disclosures with a value equal or above \u20ac10,000 EUR for a single disclosure (or with a value equal or above \u20ac50,000 EUR for a number of disclosures of one type within a year) periodically reported to the RCCH (minimum monthly)?",
+   "control": "2.7 Voluntary Disclosures",
+   "control_idx": 9
+  },
+  {
+   "q": 15,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.7 Voluntary Disclosures",
+   "question": "Are payments related to Voluntary Disclosures with value equal or above \u20ac100,000 EUR in connection with a single voluntary disclosure or repeated disclosures within a year (and/or disclosures that may result in a potential or imminent suspension or removal of a Customs privilege, license, or DHL Express ability to perform Customs services in a country) immediately escalated to the RCCH and requested sign-off (pre-approval prior the Voluntary Disclosure)?",
+   "control": "2.7 Voluntary Disclosures",
+   "control_idx": 9
+  },
+  {
+   "q": 16,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.8 Interaction with Authorities (Communications)",
+   "question": "Are communications with Customs & Other Government Authorities done in a professionally, accurately & timely manner, approved by DHL stakeholders outlined in the Policy, followed-up & archived?",
+   "control": "2.8 Interaction with Authorities (Communications)",
+   "control_idx": 10
+  },
+  {
+   "q": 17,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.8 Interaction with Authorities (Communications)",
+   "question": "Are inquiries, requests, issues or investigations regarding compliance with Customs Regulations that may affect the DHL Express\u2019 ability to operate escalated internally (as per the Policy)?",
+   "control": "2.8 Interaction with Authorities (Communications)",
+   "control_idx": 10
+  },
+  {
+   "q": 18,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.8 Interaction with Authorities (Audits and In-Person Visits)",
+   "question": "Are Audits and In-Person Visits (planned or unannounced) conducted by Customs & Other Government Authorities immediately notified to relevant parties (as per the Policy), documented with clear meeting minutes /meeting report and follow-up actions agreed?",
+   "control": "2.8 Interaction with Authorities (Communications)",
+   "control_idx": 10
+  },
+  {
+   "q": 19,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.9 Trusted Trader Programs",
+   "question": "Has DHL Express obtained the AEO \u2013 or equivalent \u2013 certification, and maintains the certification status?",
+   "control": "2.9 Trusted Trader Programs",
+   "control_idx": 11
+  },
+  {
+   "q": 20,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.9 Trusted Trader Programs",
+   "question": "Are changes in the AEO \u2013 or equivalent \u2013 certification status (or if certification is at risk) notified to the RCCH?",
+   "control": "2.9 Trusted Trader Programs",
+   "control_idx": 11
+  },
+  {
+   "q": 21,
+   "scope": "2. Customs Awareness & Risk Management",
+   "section": "2.10 Customs Contract Clauses",
+   "question": "Are customer contracts (with non-standard Customs-related clauses) raised to the Country Customs Customer Support Lead and GBS Legal for review and approval?",
+   "control": "2.10 Customs Contract Clauses",
+   "control_idx": 12
+  },
+  {
+   "q": 22,
+   "scope": "3. Regulatory Supervision",
+   "section": "3.1 Licenses & Permits to Operate",
+   "question": "Are the Licenses & Permits to operate reviewed on a periodic basis (minimum once a year) to ensure that DHL Express complies with the conditions/requirements stated in a license or permit?",
+   "control": "3.1 Licenses & Permits to Operate",
+   "control_idx": 13
+  },
+  {
+   "q": 23,
+   "scope": "3. Regulatory Supervision",
+   "section": "3.2 Customs Bonded Facility",
+   "question": "Are the requirements outlined in the country bonded facility authorization reviewed on a periodic basis (minimum once a year) to ensure that DHL Express complies with the conditions/requirements?",
+   "control": "3.2 Customs Bonded Facility",
+   "control_idx": 14
+  },
+  {
+   "q": 24,
+   "scope": "3. Regulatory Supervision",
+   "section": "3.2 Customs Bonded Facility",
+   "question": "Is there a reconciliation inventory control in place, including inventory reconciliation performed at least twice per week (with action plan in case of systemic issues identified)?",
+   "control": "3.2 Customs Bonded Facility",
+   "control_idx": 14
+  },
+  {
+   "q": 25,
+   "scope": "3. Regulatory Supervision",
+   "section": "3.3 DHL Express Customs Systems & Applications",
+   "question": "Are there controls in place to ensure that Customs systems developments /changes are not creating compliance issues (including controls in case of automations in place, e.g., RPA/Robotic Process Automation)?",
+   "control": "3.3 DHL Express Customs Systems & Applications",
+   "control_idx": 15
+  },
+  {
+   "q": 26,
+   "scope": "3. Regulatory Supervision",
+   "section": "3.3 DHL Express Customs Systems & Applications",
+   "question": "Is there a system documentation (including controls in case of automations in place, e.g., RPA/Robotic Process Automation) and system contingency plan (in case of system malfunction and/or system failure - also agreed with Customs Authorities)?",
+   "control": "3.3 DHL Express Customs Systems & Applications",
+   "control_idx": 15
+  },
+  {
+   "q": 27,
+   "scope": "3. Regulatory Supervision",
+   "section": "3.3 DHL Express Customs Systems & Applications",
+   "question": "Are the user access right controls (of the country Customs Systems & Applications) in place and up-to-date? (e.g., access granted only to authorized active DHL users and authorized representative from Customs Authorities)",
+   "control": "3.3 DHL Express Customs Systems & Applications",
+   "control_idx": 15
+  },
+  {
+   "q": 28,
+   "scope": "3. Regulatory Supervision",
+   "section": "3.4 Customs Agent License & Qualification",
+   "question": "Do the DHL Express employees performing Customs activities have the required qualification? If a Customs Agent License (individual license per employee) is required by Customs Regulations, are there controls in place to ensure that employees have a valid license in place?",
+   "control": "3.4 Customs Agent License & Qualification",
+   "control_idx": 16
+  },
+  {
+   "q": 29,
+   "scope": "3. Regulatory Supervision",
+   "section": "3.5 Third Party Brokers Controls (Sub-Contracted by DHL)",
+   "question": "Are the required documents signed, dated and uploaded on the DHL Express Third Party Broker SharePoint (plus broker also logged in the country\u2019s Vendor Master Database/VMD) as outlined in the 'Overview \u2013 Due Diligence of Third Party Brokers' process document (as per Policy section 3.5)?",
+   "control": "3.5 Third Party Brokers Controls",
+   "control_idx": 17
+  },
+  {
+   "q": 30,
+   "scope": "3. Regulatory Supervision",
+   "section": "3.5 Third Party Brokers Controls (Sub-Contracted by DHL)",
+   "question": "Are Third Party Brokers periodically reviewed (minimum once a year) to ensure that the contractual requirements, operational performance and KPIs are met (including transactional-level audits of Customs Declarations)?",
+   "control": "3.5 Third Party Brokers Controls",
+   "control_idx": 17
+  },
+  {
+   "q": 31,
+   "scope": "3. Regulatory Supervision",
+   "section": "3.6. Recordkeeping",
+   "question": "Are import/export/transit customs clearance records retained in an orderly and accessible manner for a minimum of five (5) years, or in accordance with regulations (whichever is longer)?",
+   "control": "3.6 Recordkeeping",
+   "control_idx": 18
+  },
+  {
+   "q": 32,
+   "scope": "4. Customs Process Controls",
+   "section": "4.1 Pre-Arrival Processing",
+   "question": "If allowed (as per Customs Regulations), are Pre-Arrival Customs Declarations processed and timely submitted to Customs Authorities prior to physical arrival of shipments, with complete and accurate information as per Customs Regulations requirements? - including (but not limited to) Incoterms\u00ae, Customs Value, Tariff Classification, Country of Origin, etc.",
+   "control": "4.1 Pre-Arrival Processing",
+   "control_idx": 19
+  },
+  {
+   "q": 33,
+   "scope": "4. Customs Process Controls",
+   "section": "4.2 Manifest",
+   "question": "Are Manifests timely transmitted to Customs Authorities with complete and accurate information as per Customs Regulations requirements?",
+   "control": "4.2 Manifest",
+   "control_idx": 20
+  },
+  {
+   "q": 34,
+   "scope": "4. Customs Process Controls",
+   "section": "4.2 Manifest",
+   "question": "Are manifest discrepancies identified, logged in a report, and addressed to Customs Authorities (if required by Customs Regulations/Authorities)?",
+   "control": "4.2 Manifest",
+   "control_idx": 20
+  },
+  {
+   "q": 35,
+   "scope": "4. Customs Process Controls",
+   "section": "4.3 Import Clearance",
+   "question": "Are import shipments compliantly allocated into the correct De Minimis / Low Value / High Value categorization (as per the Customs Regulations requirements)?",
+   "control": "4.3 Import Clearance",
+   "control_idx": 21
+  },
+  {
+   "q": 36,
+   "scope": "4. Customs Process Controls",
+   "section": "4.3 Import Clearance",
+   "question": "Are Import Customs declarations timely transmitted to Customs Authorities with complete and accurate information as per Customs Regulations requirements? - including (but not limited to) Incoterms\u00ae, Customs Value, Tariff Classification, Country of Origin, etc.",
+   "control": "4.3 Import Clearance",
+   "control_idx": 21
+  },
+  {
+   "q": 37,
+   "scope": "4. Customs Process Controls",
+   "section": "4.3 Import Clearance",
+   "question": "Are Import Customs Declarations of high-risk/sensitive goods (such as anti-dumping, high-value goods, and other high-risk profiles defined locally) reviewed by (at least) two (2) qualified employees prior to the submission to Customs Authorities?",
+   "control": "4.3 Import Clearance",
+   "control_idx": 21
+  },
+  {
+   "q": 38,
+   "scope": "4. Customs Process Controls",
+   "section": "4.3 Import Clearance Undervaluation (UV)",
+   "question": "Are Corrective and Preventive Action Plans (CAPA) requested in case of systemic non-compliant Undervalued (UV) shipments identified?",
+   "control": "4.3 Import Clearance",
+   "control_idx": 21
+  },
+  {
+   "q": 39,
+   "scope": "4. Customs Process Controls",
+   "section": "4.4 Broker Handover (to Customer\u2019s Nominated Broker)",
+   "question": "Are Broker Handover instructions (obtained from customers to handover shipments to their nominated broker) received by the Customs Operations Team and archived in the applicable DHL system(s) \u2013 e.g., Customer Master File?",
+   "control": "4.4 Broker Handover",
+   "control_idx": 22
+  },
+  {
+   "q": 40,
+   "scope": "4. Customs Process Controls",
+   "section": "4.5 Prohibited & Restricted Goods",
+   "question": "Are there controls in place to ensure that Prohibited Goods are identified during the Customs Clearance process (and handed over to Customs Authorities)?",
+   "control": "4.5 Prohibited & Restricted Goods",
+   "control_idx": 23
+  },
+  {
+   "q": 41,
+   "scope": "4. Customs Process Controls",
+   "section": "4.5 Prohibited & Restricted Goods",
+   "question": "Are there controls in place to ensure shipments with Restricted Goods are not released without the licenses /permits required by Regulations?",
+   "control": "4.5 Prohibited & Restricted Goods",
+   "control_idx": 23
+  },
+  {
+   "q": 42,
+   "scope": "4. Customs Process Controls",
+   "section": "4.5 Prohibited & Restricted Goods (IPR)",
+   "question": "Are Corrective and Preventive Action Plans (CAPA) requested in case of systemic non-compliant Intellectual Property Rights (IPR) infringement shipments identified?",
+   "control": "4.5 Prohibited & Restricted Goods",
+   "control_idx": 23
+  },
+  {
+   "q": 43,
+   "scope": "4. Customs Process Controls",
+   "section": "4.6 Transit / Bonded Movements",
+   "question": "Are there controls in place to ensure that Transit / Bonded Movement shipments are accurately and timely declared to Customs Authorities?",
+   "control": "4.6 Transit / Bonded Movements",
+   "control_idx": 24
+  },
+  {
+   "q": 44,
+   "scope": "4. Customs Process Controls",
+   "section": "4.6 Transit / Bonded Movements",
+   "question": "Are the DHL guarantees (related to Transit / Bonded Movements) in place (as per Customs Regulations), with sufficient coverage?",
+   "control": "4.6 Transit / Bonded Movements",
+   "control_idx": 24
+  },
+  {
+   "q": 45,
+   "scope": "4. Customs Process Controls",
+   "section": "4.7 Temporary Imports & Temporary Exports",
+   "question": "Are controls in place to ensure compliant Temporary Imports/Exports declarations to Customs Authorities?",
+   "control": "4.7 Temporary Imports & Temporary Exports",
+   "control_idx": 25
+  },
+  {
+   "q": 46,
+   "scope": "4. Customs Process Controls",
+   "section": "4.8 Post Clearance Modifications (PCM)",
+   "question": "Are there controls in place to ensure that Post Clearance Modifications (PCM) are filed, monitored for progress, and followed-up until closure?",
+   "control": "4.8 Post Clearance Modifications (PCM)",
+   "control_idx": 26
+  },
+  {
+   "q": 47,
+   "scope": "4. Customs Process Controls",
+   "section": "4.8 Post Clearance Modifications (PCM)",
+   "question": "Is there a root cause assessment performed for Post Clearance Modifications (PCM) and definition of Corrective and Preventive Action (CAPA) plans for systemic issues to prevent reoccurrence?",
+   "control": "4.8 Post Clearance Modifications (PCM)",
+   "control_idx": 26
+  },
+  {
+   "q": 48,
+   "scope": "4. Customs Process Controls",
+   "section": "4.9 Diplomatic Shipments",
+   "question": "Are there controls in place to ensure that Diplomatic Shipments identified & processed in accordance with Customs Regulations and Global SOP requirements?",
+   "control": "4.9 Diplomatic Shipments",
+   "control_idx": 27
+  },
+  {
+   "q": 49,
+   "scope": "4. Customs Process Controls",
+   "section": "4.10 Duties & Taxes Process Accounting",
+   "question": "Are there controls in place to ensure that Duties & Taxes are paid accurately & timely to Customs Authorities (as per Customs Regulations)?",
+   "control": "4.10 Duties & Taxes Process Accounting",
+   "control_idx": 28
+  },
+  {
+   "q": 50,
+   "scope": "4. Customs Process Controls",
+   "section": "4.11 Unauthorized Release (URL)",
+   "question": "Are there controls in place to identify and stop Unauthorized Release (URL) shipments from leaving the facility unauthorized?",
+   "control": "4.11 Unauthorized Release (URL)",
+   "control_idx": 29
+  },
+  {
+   "q": 51,
+   "scope": "4. Customs Process Controls",
+   "section": "4.11 Unauthorized Release (URL)",
+   "question": "Is there a root cause assessment performed for systemic issues that led to Unauthorized Releases (URL), and definition of Corrective and Preventive Action (CAPA) plans for systemic issues to prevent reoccurrence?",
+   "control": "4.11 Unauthorized Release (URL)",
+   "control_idx": 29
+  },
+  {
+   "q": 52,
+   "scope": "4. Customs Process Controls",
+   "section": "4.12 Export Clearance",
+   "question": "Are Export Customs declarations timely transmitted to Customs Authorities with complete and accurate information as per Customs Regulations requirements?",
+   "control": "4.12 Export Clearance",
+   "control_idx": 30
+  },
+  {
+   "q": 53,
+   "scope": "4. Customs Process Controls",
+   "section": "4.12 Export Clearance",
+   "question": "Are Export Customs Declarations of high-risk/sensitive goods (such as high-value goods, and other high-risk profiles defined locally) reviewed by (at least) two (2) qualified employees prior to the submission to Customs Authorities?",
+   "control": "4.12 Export Clearance",
+   "control_idx": 30
+  },
+  {
+   "q": 54,
+   "scope": "4. Customs Process Controls",
+   "section": "4.13 Reconciliation of Physical Shipments vs. Data",
+   "question": "Is there a Reconciliation process/report in place to identify discrepancies between the actual physical shipment flow and the data (to ensure compliance with Customs Regulations)?",
+   "control": "4.13 Reconciliation of Physical Shipments vs. Data",
+   "control_idx": 31
+  },
+  {
+   "q": 55,
+   "scope": "4. Customs Process Controls",
+   "section": "4.13 Reconciliation of Physical Shipments vs. Data",
+   "question": "Is there a root cause assessment performed for systemic issues identified based on the reconciliation discrepancies, and definition of Corrective and Preventive Action (CAPA) plans for systemic issues identified to prevent repetition of errors?",
+   "control": "4.13 Reconciliation of Physical Shipments vs. Data",
+   "control_idx": 31
+  },
+  {
+   "q": 56,
+   "scope": "4. Customs Process Controls",
+   "section": "4.14 Regular Customs Declaration Quality Reviews",
+   "question": "Is there a Quality Review in place performed for at least 2% of the Formal Export/Import declarations (performed either on a daily or weekly basis)?",
+   "control": "4.14 Regular Customs Declaration Quality Reviews",
+   "control_idx": 32
+  },
+  {
+   "q": 57,
+   "scope": "4. Customs Process Controls",
+   "section": "4.14 Regular Customs Declaration Quality Reviews",
+   "question": "Is there a root cause assessment performed based on the systemic issues identified during the Quality Review, and definition of Corrective and Preventive Action (CAPA) plans for systemic issues identified to prevent repetition of errors?",
+   "control": "4.14 Regular Customs Declaration Quality Reviews",
+   "control_idx": 32
+  },
+  {
+   "q": 58,
+   "scope": "5. Customs Representation",
+   "section": "5.1 Importer/Exporter of Record (IOR/EOR)",
+   "question": "Is DHL Express currently acting as IOR/EOR (or sub-contract a Third Party IOR/EOR Service Provider) for DHL own\u2019s Customs purposes if operationally required (as per DHL Express\u2019 own strategic decision) and/or legally required (as per Customs Regulations)? - e.g., for Low Value shipments where Customs Regulations allow.",
+   "control": "5.1 Importer/Exporter of Record (IOR/EOR)",
+   "control_idx": 33
+  },
+  {
+   "q": 59,
+   "scope": "5. Customs Representation",
+   "section": "5.2 Power of Attorney (PoA)",
+   "question": "Are Power of Attorneys (PoA) \u2013 or equivalent authorizations - collected from exporters/importers, and archived on the country\u2019s DHL system(s) \u2013 e.g., Customer Master File (CMF) - with the respective expiration date (where applicable), as per Customs Regulations requirements?",
+   "control": "5.2 Power of Attorney (PoA)",
+   "control_idx": 34
+  },
+  {
+   "q": 60,
+   "scope": "6. Reporting & Investigation of Material Violations",
+   "section": "6. Reporting & Investigation of Material Violations",
+   "question": "Are there controls in place to ensure that Material Violations of Customs Regulations or this Policy are reported and investigated (as outlined on the Policy section 6)? NOTE: 'Material Violation' is defined on section 1.6 (Definitions) of the Policy.",
+   "control": "6. Reporting & Investigation of Material Violations",
+   "control_idx": 35
+  },
+  {
+   "q": 61,
+   "scope": "7. Escalations",
+   "section": "7. Escalations",
+   "question": "Are actual issues (or potential concerns) related to Customs Compliance escalated by the Country Customs Compliance Lead (CCCL) to the Country Senior Management Team (SMT) and to the Regional Customs Compliance Head (RCCH), as outlined in the Policy?",
+   "control": "7. Escalations",
+   "control_idx": 36
+  }
+ ],
+ "controls": [
+  {
+   "idx": 1,
+   "num": "1.6",
+   "name": "Definitions",
+   "label": "1.6 Definitions",
+   "rows": [
+    2,
+    2
+   ],
+   "qs": [
+    1
+   ]
+  },
+  {
+   "idx": 2,
+   "num": "1.7",
+   "name": "Independence",
+   "label": "1.7 Independence",
+   "rows": [
+    3,
+    3
+   ],
+   "qs": [
+    2
+   ]
+  },
+  {
+   "idx": 3,
+   "num": "Annex 1",
+   "name": "Documentation of Local Procedures",
+   "label": "Annex 1 Documentation of Local Procedures",
+   "rows": [
+    4,
+    4
+   ],
+   "qs": [
+    3
+   ]
+  },
+  {
+   "idx": 4,
+   "num": "2.1",
+   "name": "Customs Compliance Culture",
+   "label": "2.1 Customs Compliance Culture",
+   "rows": [
+    5,
+    5
+   ],
+   "qs": [
+    4
+   ]
+  },
+  {
+   "idx": 5,
+   "num": "2.2",
+   "name": "Customs Regulatory Changes",
+   "label": "2.2 Customs Regulatory Changes",
+   "rows": [
+    6,
+    6
+   ],
+   "qs": [
+    5
+   ]
+  },
+  {
+   "idx": 6,
+   "num": "2.3",
+   "name": "Country Self-Assessment & Action Plan",
+   "label": "2.3 Country Self-Assessment & Action Plan",
+   "rows": [
+    7,
+    7
+   ],
+   "qs": [
+    6
+   ]
+  },
+  {
+   "idx": 7,
+   "num": "2.5",
+   "name": "Personnel Training",
+   "label": "2.5 Personnel Training",
+   "rows": [
+    8,
+    8
+   ],
+   "qs": [
+    7
+   ]
+  },
+  {
+   "idx": 8,
+   "num": "2.6",
+   "name": "Fines & Penalties",
+   "label": "2.6 Fines & Penalties",
+   "rows": [
+    9,
+    12
+   ],
+   "qs": [
+    8,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "idx": 9,
+   "num": "2.7",
+   "name": "Voluntary Disclosures",
+   "label": "2.7 Voluntary Disclosures",
+   "rows": [
+    13,
+    16
+   ],
+   "qs": [
+    12,
+    13,
+    14,
+    15
+   ]
+  },
+  {
+   "idx": 10,
+   "num": "2.8",
+   "name": "Interaction with Authorities (Communications)",
+   "label": "2.8 Interaction with Authorities (Communications)",
+   "rows": [
+    17,
+    19
+   ],
+   "qs": [
+    16,
+    17,
+    18
+   ]
+  },
+  {
+   "idx": 11,
+   "num": "2.9",
+   "name": "Trusted Trader Programs",
+   "label": "2.9 Trusted Trader Programs",
+   "rows": [
+    20,
+    21
+   ],
+   "qs": [
+    19,
+    20
+   ]
+  },
+  {
+   "idx": 12,
+   "num": "2.10",
+   "name": "Customs Contract Clauses",
+   "label": "2.10 Customs Contract Clauses",
+   "rows": [
+    22,
+    22
+   ],
+   "qs": [
+    21
+   ]
+  },
+  {
+   "idx": 13,
+   "num": "3.1",
+   "name": "Licenses & Permits to Operate",
+   "label": "3.1 Licenses & Permits to Operate",
+   "rows": [
+    23,
+    23
+   ],
+   "qs": [
+    22
+   ]
+  },
+  {
+   "idx": 14,
+   "num": "3.2",
+   "name": "Customs Bonded Facility",
+   "label": "3.2 Customs Bonded Facility",
+   "rows": [
+    24,
+    25
+   ],
+   "qs": [
+    23,
+    24
+   ]
+  },
+  {
+   "idx": 15,
+   "num": "3.3",
+   "name": "DHL Express Customs Systems & Applications",
+   "label": "3.3 DHL Express Customs Systems & Applications",
+   "rows": [
+    26,
+    28
+   ],
+   "qs": [
+    25,
+    26,
+    27
+   ]
+  },
+  {
+   "idx": 16,
+   "num": "3.4",
+   "name": "Customs Agent License & Qualification",
+   "label": "3.4 Customs Agent License & Qualification",
+   "rows": [
+    29,
+    29
+   ],
+   "qs": [
+    28
+   ]
+  },
+  {
+   "idx": 17,
+   "num": "3.5",
+   "name": "Third Party Brokers Controls",
+   "label": "3.5 Third Party Brokers Controls",
+   "rows": [
+    30,
+    31
+   ],
+   "qs": [
+    29,
+    30
+   ]
+  },
+  {
+   "idx": 18,
+   "num": "3.6",
+   "name": "Recordkeeping",
+   "label": "3.6 Recordkeeping",
+   "rows": [
+    32,
+    32
+   ],
+   "qs": [
+    31
+   ]
+  },
+  {
+   "idx": 19,
+   "num": "4.1",
+   "name": "Pre-Arrival Processing",
+   "label": "4.1 Pre-Arrival Processing",
+   "rows": [
+    33,
+    33
+   ],
+   "qs": [
+    32
+   ]
+  },
+  {
+   "idx": 20,
+   "num": "4.2",
+   "name": "Manifest",
+   "label": "4.2 Manifest",
+   "rows": [
+    34,
+    35
+   ],
+   "qs": [
+    33,
+    34
+   ]
+  },
+  {
+   "idx": 21,
+   "num": "4.3",
+   "name": "Import Clearance",
+   "label": "4.3 Import Clearance",
+   "rows": [
+    36,
+    39
+   ],
+   "qs": [
+    35,
+    36,
+    37,
+    38
+   ]
+  },
+  {
+   "idx": 22,
+   "num": "4.4",
+   "name": "Broker Handover",
+   "label": "4.4 Broker Handover",
+   "rows": [
+    40,
+    40
+   ],
+   "qs": [
+    39
+   ]
+  },
+  {
+   "idx": 23,
+   "num": "4.5",
+   "name": "Prohibited & Restricted Goods",
+   "label": "4.5 Prohibited & Restricted Goods",
+   "rows": [
+    41,
+    43
+   ],
+   "qs": [
+    40,
+    41,
+    42
+   ]
+  },
+  {
+   "idx": 24,
+   "num": "4.6",
+   "name": "Transit / Bonded Movements",
+   "label": "4.6 Transit / Bonded Movements",
+   "rows": [
+    44,
+    45
+   ],
+   "qs": [
+    43,
+    44
+   ]
+  },
+  {
+   "idx": 25,
+   "num": "4.7",
+   "name": "Temporary Imports & Temporary Exports",
+   "label": "4.7 Temporary Imports & Temporary Exports",
+   "rows": [
+    46,
+    46
+   ],
+   "qs": [
+    45
+   ]
+  },
+  {
+   "idx": 26,
+   "num": "4.8",
+   "name": "Post Clearance Modifications (PCM)",
+   "label": "4.8 Post Clearance Modifications (PCM)",
+   "rows": [
+    47,
+    48
+   ],
+   "qs": [
+    46,
+    47
+   ]
+  },
+  {
+   "idx": 27,
+   "num": "4.9",
+   "name": "Diplomatic Shipments",
+   "label": "4.9 Diplomatic Shipments",
+   "rows": [
+    49,
+    49
+   ],
+   "qs": [
+    48
+   ]
+  },
+  {
+   "idx": 28,
+   "num": "4.10",
+   "name": "Duties & Taxes Process Accounting",
+   "label": "4.10 Duties & Taxes Process Accounting",
+   "rows": [
+    50,
+    50
+   ],
+   "qs": [
+    49
+   ]
+  },
+  {
+   "idx": 29,
+   "num": "4.11",
+   "name": "Unauthorized Release (URL)",
+   "label": "4.11 Unauthorized Release (URL)",
+   "rows": [
+    51,
+    52
+   ],
+   "qs": [
+    50,
+    51
+   ]
+  },
+  {
+   "idx": 30,
+   "num": "4.12",
+   "name": "Export Clearance",
+   "label": "4.12 Export Clearance",
+   "rows": [
+    53,
+    54
+   ],
+   "qs": [
+    52,
+    53
+   ]
+  },
+  {
+   "idx": 31,
+   "num": "4.13",
+   "name": "Reconciliation of Physical Shipments vs. Data",
+   "label": "4.13 Reconciliation of Physical Shipments vs. Data",
+   "rows": [
+    55,
+    56
+   ],
+   "qs": [
+    54,
+    55
+   ]
+  },
+  {
+   "idx": 32,
+   "num": "4.14",
+   "name": "Regular Customs Declaration Quality Reviews",
+   "label": "4.14 Regular Customs Declaration Quality Reviews",
+   "rows": [
+    57,
+    58
+   ],
+   "qs": [
+    56,
+    57
+   ]
+  },
+  {
+   "idx": 33,
+   "num": "5.1",
+   "name": "Importer/Exporter of Record (IOR/EOR)",
+   "label": "5.1 Importer/Exporter of Record (IOR/EOR)",
+   "rows": [
+    59,
+    59
+   ],
+   "qs": [
+    58
+   ]
+  },
+  {
+   "idx": 34,
+   "num": "5.2",
+   "name": "Power of Attorney (PoA)",
+   "label": "5.2 Power of Attorney (PoA)",
+   "rows": [
+    60,
+    60
+   ],
+   "qs": [
+    59
+   ]
+  },
+  {
+   "idx": 35,
+   "num": "6.",
+   "name": "Reporting & Investigation of Material Violations",
+   "label": "6. Reporting & Investigation of Material Violations",
+   "rows": [
+    61,
+    61
+   ],
+   "qs": [
+    60
+   ]
+  },
+  {
+   "idx": 36,
+   "num": "7.",
+   "name": "Escalations",
+   "label": "7. Escalations",
+   "rows": [
+    62,
+    62
+   ],
+   "qs": [
+    61
+   ]
+  }
+ ],
+ "reg": [
+  {
+   "sheet": "Venezuela",
+   "name": "Venezuela",
+   "ap": "Venezuela Action Plan",
+   "code": "VE",
+   "cluster": "CSA",
+   "rank2023": 114,
+   "cl": 7,
+   "ans": 5,
+   "ev": 6,
+   "gap": 8,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Evidence Uploaded to SharePoint",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Venezuela",
+   "matrix_col": "F"
+  },
+  {
+   "sheet": "Uruguay",
+   "name": "Uruguay",
+   "ap": "Uruguay Action Plan",
+   "code": "UY",
+   "cluster": "CSA",
+   "rank2023": 81,
+   "cl": 7,
+   "ans": 5,
+   "ev": 6,
+   "gap": 8,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Evidence Uploaded to SharePoint",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Uruguay",
+   "matrix_col": "I"
+  },
+  {
+   "sheet": "Trinidad",
+   "name": "Trinidad and Tobago",
+   "ap": "Trinidad & T Action Plan",
+   "code": "TT",
+   "cluster": "Caribbean",
+   "rank2023": 94,
+   "cl": 7,
+   "ans": 5,
+   "ev": 6,
+   "gap": 8,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Test Question",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Trinidad and Tobago",
+   "matrix_col": "L"
+  },
+  {
+   "sheet": "USA",
+   "name": "USA",
+   "ap": "US Action Plan",
+   "code": "US",
+   "cluster": "US",
+   "rank2023": 1,
+   "cl": 7,
+   "ans": 5,
+   "ev": 6,
+   "gap": 8,
+   "header": [
+    "Question Number",
+    "Policy v2.0 Section",
+    "Question",
+    "(MINIMUM) Expected Evidence",
+    "Test questions",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level ",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "USA",
+   "matrix_col": "O"
+  },
+  {
+   "sheet": "Argentina",
+   "name": "Argentina",
+   "ap": "AR Action Plan",
+   "code": "AR",
+   "cluster": "CSA",
+   "rank2023": 44,
+   "cl": 7,
+   "ans": 5,
+   "ev": 6,
+   "gap": 8,
+   "header": [
+    "Question Number",
+    "Policy v2.0 Section",
+    "Question",
+    "(MINIMUM) Expected Evidence",
+    "Test questions",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level ",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Argentina",
+   "matrix_col": "R"
+  },
+  {
+   "sheet": "Bolivia",
+   "name": "Bolivia",
+   "ap": "Bolivia Action Plan",
+   "code": "BO",
+   "cluster": "CSA",
+   "rank2023": 92,
+   "cl": 7,
+   "ans": 5,
+   "ev": 6,
+   "gap": 8,
+   "header": [
+    "Question Number",
+    "Policy v2.0 Section",
+    "Question",
+    "(MINIMUM) Expected Evidence",
+    "Test questions",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level ",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Bolivia",
+   "matrix_col": "U"
+  },
+  {
+   "sheet": "Chile",
+   "name": "Chile",
+   "ap": "Chile Action Plan",
+   "code": "CL",
+   "cluster": "CSA",
+   "rank2023": 43,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question Number",
+    "Policy v2.0 Section",
+    "Question",
+    "(MINIMUM) Expected Evidence",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level ",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Chile",
+   "matrix_col": "X"
+  },
+  {
+   "sheet": "Colombia",
+   "name": "Colombia",
+   "ap": "Colombia Action Plan",
+   "code": "CO",
+   "cluster": "CO",
+   "rank2023": 40,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Evidence Uploaded to SharePoint",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": false,
+   "name26": "Colombia",
+   "matrix_col": "AA"
+  },
+  {
+   "sheet": "Costa Rica",
+   "name": "Costa Rica",
+   "ap": "Costa Rica Action Plan",
+   "code": "CR",
+   "cluster": "CSA",
+   "rank2023": 61,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Evidence Uploaded to SharePoint",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": false,
+   "name26": "Costa Rica",
+   "matrix_col": "AD"
+  },
+  {
+   "sheet": "El Salvador",
+   "name": "El Salvador",
+   "ap": "El Salvador Action Plan",
+   "code": "SV",
+   "cluster": "CSA",
+   "rank2023": 82,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Salvador",
+   "matrix_col": "AG"
+  },
+  {
+   "sheet": "Paraguay",
+   "name": "Paraguay",
+   "ap": "Paraguay Action Plan",
+   "code": "PY",
+   "cluster": "CSA",
+   "rank2023": 67,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Paraguay",
+   "matrix_col": "AJ"
+  },
+  {
+   "sheet": "Peru",
+   "name": "Peru",
+   "ap": "Peru Action Plan",
+   "code": "PE",
+   "cluster": "CSA",
+   "rank2023": 54,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Peru",
+   "matrix_col": "AM"
+  },
+  {
+   "sheet": "Panama",
+   "name": "Panama",
+   "ap": "Panama Action Plan",
+   "code": "PA",
+   "cluster": "CSA",
+   "rank2023": 57,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Panam\u00e1",
+   "matrix_col": "AP"
+  },
+  {
+   "sheet": "Nicaragua",
+   "name": "Nicaragua",
+   "ap": "Nicaragua Action Plan",
+   "code": "NI",
+   "cluster": "CSA",
+   "rank2023": 102,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Pregunta\nN\u00famero",
+    "Secci\u00f3n de la\nPol\u00edtica v2.0",
+    "Pregunta",
+    "(MINIMO) Evidencia Esperada\nNota: la evidencia debe ser de los \u00fatimos 12 meses",
+    "Respuesta del Pa\u00eds",
+    "Evidencia subida en el SharePoint",
+    "Nivel de Control",
+    "GAPs / \u00c1reas de mejora identificadas / Otros comentarios",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Nicaragua",
+   "matrix_col": "AS"
+  },
+  {
+   "sheet": "Mexico",
+   "name": "Mexico",
+   "ap": "Mexico Action Plan",
+   "code": "MX",
+   "cluster": "MX",
+   "rank2023": 9,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Pregunta\nN\u00famero",
+    "Secci\u00f3n de la\nPol\u00edtica v2.0",
+    "Pregunta",
+    "(MINIMO) Evidencia Esperada\nNota: la evidencia debe ser de los \u00fatimos 12 meses",
+    "Respuesta del Pa\u00eds",
+    "Evidencia subida en el SharePoint",
+    "Nivel de Control",
+    "GAPs / \u00c1reas de mejora identificadas / Otros comentarios",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Mexico",
+   "matrix_col": "AV"
+  },
+  {
+   "sheet": "Martinique",
+   "name": "Martinique",
+   "ap": "Martinique Action Plan",
+   "code": "MQ",
+   "cluster": "Caribbean",
+   "rank2023": 125,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Martinique",
+   "matrix_col": "AY"
+  },
+  {
+   "sheet": "Jamaica",
+   "name": "Jamaica",
+   "ap": "Jamaica Action Plan",
+   "code": "JM",
+   "cluster": "Caribbean",
+   "rank2023": 89,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Jamaica",
+   "matrix_col": "BB"
+  },
+  {
+   "sheet": "Honduras",
+   "name": "Honduras",
+   "ap": "Honduras Action Plan",
+   "code": "HN",
+   "cluster": "CSA",
+   "rank2023": 93,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Honduras",
+   "matrix_col": "BE"
+  },
+  {
+   "sheet": "Haiti",
+   "name": "Haiti",
+   "ap": "Haiti Action Plan",
+   "code": "HT",
+   "cluster": "Caribbean",
+   "rank2023": 112,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Haiti",
+   "matrix_col": "BH"
+  },
+  {
+   "sheet": "Guatemala",
+   "name": "Guatemala",
+   "ap": "Guatemala Action Plan",
+   "code": "GT",
+   "cluster": "CSA",
+   "rank2023": 64,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Guatemala",
+   "matrix_col": "BK"
+  },
+  {
+   "sheet": "Guadeloupe",
+   "name": "Guadeloupe",
+   "ap": "Guadeloupe Action Plan",
+   "code": "GP",
+   "cluster": "Caribbean",
+   "rank2023": 110,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Guadeloupe",
+   "matrix_col": "BN"
+  },
+  {
+   "sheet": "French Guiana",
+   "name": "French Guiana",
+   "ap": "French Guiana Action Plan",
+   "code": "GF",
+   "cluster": "Caribbean",
+   "rank2023": 130,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "French Guyana",
+   "matrix_col": "BQ"
+  },
+  {
+   "sheet": "Ecuador",
+   "name": "Ecuador",
+   "ap": "Ecuador Action Plan",
+   "code": "EC",
+   "cluster": "CSA",
+   "rank2023": 62,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Ecuador",
+   "matrix_col": "BT"
+  },
+  {
+   "sheet": "Bahamas",
+   "name": "Bahamas",
+   "ap": "Bahamas Action Plan",
+   "code": "BS",
+   "cluster": "Caribbean",
+   "rank2023": 132,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Bahamas",
+   "matrix_col": "BW"
+  },
+  {
+   "sheet": "Barbados",
+   "name": "Barbados",
+   "ap": "Barbados Action Plan",
+   "code": "BB",
+   "cluster": "Caribbean",
+   "rank2023": 111,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Barbados",
+   "matrix_col": "BZ"
+  },
+  {
+   "sheet": "Bermuda",
+   "name": "Bermuda",
+   "ap": "Bermuda Action Plan",
+   "code": "BM",
+   "cluster": "Caribbean",
+   "rank2023": 124,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Bermuda",
+   "matrix_col": "CC"
+  },
+  {
+   "sheet": "Cayman Islands",
+   "name": "Cayman Islands",
+   "ap": "Cayman Islands Action Plan",
+   "code": "KY",
+   "cluster": "Caribbean",
+   "rank2023": 126,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Cayman Island",
+   "matrix_col": "CF"
+  },
+  {
+   "sheet": "Canada",
+   "name": "Canada",
+   "ap": "Canada Action Plan",
+   "code": "CA",
+   "cluster": "CA",
+   "rank2023": 15,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Canada",
+   "matrix_col": "CI"
+  },
+  {
+   "sheet": "Brazil",
+   "name": "Brazil",
+   "ap": "Brazil Action Plan",
+   "code": "BR",
+   "cluster": "BR",
+   "rank2023": 32,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Brazil",
+   "matrix_col": "CL"
+  },
+  {
+   "sheet": "British Virgin Islands",
+   "name": "British Virgin Islands",
+   "ap": "BVI Action Plan",
+   "code": "VG",
+   "cluster": "Caribbean",
+   "rank2023": 157,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Virgin Islands (British)",
+   "matrix_col": "CO"
+  },
+  {
+   "sheet": "Curacao",
+   "name": "Curacao",
+   "ap": "Curacao Action Plan",
+   "code": "XC",
+   "cluster": "Caribbean",
+   "rank2023": 133,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Curacao",
+   "matrix_col": "CR"
+  },
+  {
+   "sheet": "Dominican Republic",
+   "name": "Dominican Republic",
+   "ap": "Dom Republic Action Plan",
+   "code": "DO",
+   "cluster": "Caribbean",
+   "rank2023": 80,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
+   "header": [
+    "Question\nNumber",
+    "Policy v2.0\nSection",
+    "Question",
+    "(MINIMUM) Expected Evidence\nNote: evidence must be from the past 12 months",
+    "Country Answer",
+    "Evidence Uploaded to SharePoint",
+    "Control Level",
+    "GAPs / Improvement Areas Identified / Other Comments",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "header_ok": true,
+   "name26": "Rep Dominicana",
+   "matrix_col": "CU"
+  }
+ ],
+ "apinfo": {
+  "Venezuela Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ]
+   ],
+   "last": 5,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Uruguay Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ]
+   ],
+   "last": 2,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Trinidad & T Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ]
+   ],
+   "last": 4,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "US Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ]
+   ],
+   "last": 5,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "AR Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ]
+   ],
+   "last": 5,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Bolivia Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ]
+   ],
+   "last": 4,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Chile Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     7,
+     8
+    ]
+   ],
+   "last": 8,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Colombia Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     7,
+     7
+    ],
+    [
+     8,
+     8
+    ],
+    [
+     9,
+     9
+    ]
+   ],
+   "last": 9,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Costa Rica Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ]
+   ],
+   "last": 2,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "El Salvador Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     6,
+     6
+    ]
+   ],
+   "last": 6,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Paraguay Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     7,
+     7
+    ],
+    [
+     8,
+     8
+    ],
+    [
+     9,
+     9
+    ],
+    [
+     10,
+     10
+    ],
+    [
+     11,
+     11
+    ]
+   ],
+   "last": 11,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Peru Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     7,
+     7
+    ],
+    [
+     8,
+     8
+    ]
+   ],
+   "last": 8,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Panama Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     8,
+     8
+    ]
+   ],
+   "last": 8,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Nicaragua Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": null,
+    "action": "E",
+    "who": "F",
+    "when": "G",
+    "status": "H",
+    "comments": [
+     "I",
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     7,
+     7
+    ],
+    [
+     8,
+     8
+    ],
+    [
+     9,
+     9
+    ],
+    [
+     10,
+     10
+    ],
+    [
+     11,
+     11
+    ]
+   ],
+   "last": 11,
+   "shifted": true,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Mexico Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ]
+   ],
+   "last": 5,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Martinique Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ]
+   ],
+   "last": 3,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Jamaica Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ]
+   ],
+   "last": 4,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Honduras Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ]
+   ],
+   "last": 2,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Haiti Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ]
+   ],
+   "last": 4,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Guatemala Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     7,
+     7
+    ],
+    [
+     8,
+     8
+    ],
+    [
+     9,
+     9
+    ]
+   ],
+   "last": 9,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Guadeloupe Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ]
+   ],
+   "last": 3,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "French Guiana Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ]
+   ],
+   "last": 3,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Ecuador Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": null,
+    "action": "E",
+    "who": "F",
+    "when": "G",
+    "status": "H",
+    "comments": [
+     "I",
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     4
+    ],
+    [
+     5,
+     7
+    ],
+    [
+     8,
+     10
+    ],
+    [
+     11,
+     13
+    ],
+    [
+     14,
+     16
+    ]
+   ],
+   "last": 16,
+   "shifted": true,
+   "header": [
+    "Acci\u00f3n N\u00famero",
+    "No. De Punto en la\nAuto Evaluaci\u00f3n",
+    "Secci\u00f3n de la Pol\u00edtica",
+    "Area de Mejora / Descripci\u00f3n del Problema",
+    "Descripci\u00f3n de la Acci\u00f3n",
+    "Qui\u00e9n?\n (Nombre y Apellido de Responsable)",
+    "Cu\u00e1ndo?",
+    "Status",
+    "Comentarios"
+   ]
+  },
+  "Bahamas Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     7,
+     7
+    ]
+   ],
+   "last": 7,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Barbados Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     7,
+     7
+    ]
+   ],
+   "last": 7,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Bermuda Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     7,
+     7
+    ],
+    [
+     8,
+     8
+    ]
+   ],
+   "last": 8,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Cayman Islands Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ]
+   ],
+   "last": 4,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Canada Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     7,
+     7
+    ],
+    [
+     8,
+     8
+    ],
+    [
+     9,
+     9
+    ],
+    [
+     10,
+     10
+    ]
+   ],
+   "last": 10,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Brazil Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     6
+    ],
+    [
+     7,
+     9
+    ],
+    [
+     10,
+     13
+    ]
+   ],
+   "last": 13,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "BVI Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ]
+   ],
+   "last": 4,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Curacao Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ]
+   ],
+   "last": 4,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  },
+  "Dom Republic Action Plan": {
+   "cols": {
+    "num": "A",
+    "q": "B",
+    "sec": "C",
+    "issue": "D",
+    "cat": "E",
+    "action": "F",
+    "who": "G",
+    "when": "H",
+    "status": "I",
+    "comments": [
+     "J"
+    ]
+   },
+   "spans": [
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     6,
+     6
+    ]
+   ],
+   "last": 6,
+   "shifted": false,
+   "header": [
+    "Action Number",
+    "Self-Assessment /Question Number",
+    "Policy Section",
+    "Area of Improvement / Issue Description",
+    "Issue Category",
+    "Action Description",
+    "Who",
+    "by When",
+    "Status",
+    "Comments"
+   ]
+  }
+ },
+ "names": [
+  "2. SelfAssessmentPerQuestio (2)",
+  "Regional Actions Draft",
+  "Assessments bkp",
+  "Summary",
+  "DetailsScope",
+  "1.RawPivot-ByScope",
+  "2.Formula-Details by Scope",
+  "Final-ByScope",
+  "Annex 1",
+  "7. Escalations ",
+  "6. Reporting & Investigation of",
+  "5. Customs Representation",
+  "4. Customs Process Controls",
+  "PIVOT TABLAS",
+  "Sheet10",
+  "Sheet7",
+  "3. Regulatory Supervision",
+  "2. Customs Awareness & Risk Man",
+  "1. About the DHL Express Global",
+  "SelfAssessment",
+  "Details",
+  "A",
+  "Scopes ",
+  "Countries",
+  "Countries 2",
+  "Countries 3",
+  "matrix 1",
+  "Matrix 2",
+  "B",
+  "Quality",
+  "Regional Action",
+  "Draft Regional Action Plan",
+  "SelfAssessmentPerQuestions bkp",
+  "bySection bkp",
+  "3.Final-DetailsControlCountries",
+  "SelfAssessment 2026",
+  "Config - Structure",
+  "Config - Configuracion",
+  "5.Policy Tracker 2026",
+  "5.Compliance 2026",
+  "4.Final-AM Risk Assessment",
+  "Sheet6",
+  "3.FinalPiv-KeyCountriesControl",
+  "3.Final-SAPerControlAreas",
+  "Sheet3",
+  "3.Final-SAPerControl",
+  "3.RawPivot-TopControl",
+  "Sheet2",
+  "Sheet5",
+  "Sheet33",
+  "3. Data-Assessments control",
+  "2. Final-TopQuestions",
+  "2. RawPivot-TopQuestions",
+  "2. RawPivot-CountriesByPolSec",
+  "2.Final-byScope",
+  "2. SelfAssessmentPerQuestions",
+  "1. Data-All Assessments TOP20",
+  "No-DetailsPerQuestionsCountries",
+  "Sheet32",
+  "1. Data-All Assessments 2026",
+  "1. Data-Control Country Matrix",
+  "Self Assessment Results",
+  "Countries 2026",
+  "Venezuela",
+  "Venezuela Action Plan",
+  "Uruguay",
+  "Uruguay Action Plan",
+  "Trinidad",
+  "Trinidad & T Action Plan",
+  "USA",
+  "US Action Plan",
+  "Argentina",
+  "AR Action Plan",
+  "Bolivia",
+  "Bolivia Action Plan",
+  "Chile",
+  "Chile Action Plan",
+  "Colombia",
+  "Colombia Action Plan",
+  "Costa Rica",
+  "Costa Rica Action Plan",
+  "El Salvador",
+  "El Salvador Action Plan",
+  "Paraguay",
+  "Paraguay Action Plan",
+  "Peru",
+  "Peru Action Plan",
+  "Panama",
+  "Panama Action Plan",
+  "Nicaragua",
+  "Nicaragua Action Plan",
+  "Mexico",
+  "Mexico Action Plan",
+  "Martinique",
+  "Martinique Action Plan",
+  "Jamaica",
+  "Jamaica Action Plan",
+  "Honduras",
+  "Honduras Action Plan",
+  "Haiti",
+  "Haiti Action Plan",
+  "Guatemala",
+  "Guatemala Action Plan",
+  "Guadeloupe",
+  "Guadeloupe Action Plan",
+  "French Guiana",
+  "French Guiana Action Plan",
+  "Ecuador",
+  "Ecuador Action Plan",
+  "Bahamas",
+  "Bahamas Action Plan",
+  "Barbados",
+  "Barbados Action Plan",
+  "Bermuda",
+  "Bermuda Action Plan",
+  "Cayman Islands",
+  "Cayman Islands Action Plan",
+  "Canada",
+  "Canada Action Plan",
+  "Brazil",
+  "Brazil Action Plan",
+  "British Virgin Islands",
+  "BVI Action Plan",
+  "Curacao",
+  "Curacao Action Plan",
+  "Dominican Republic",
+  "Dom Republic Action Plan",
+  "Mapping",
+  "Sheet4"
+ ],
+ "tracker": [
+  [
+   "AM",
+   "US",
+   "United States",
+   "US",
+   "1",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.98",
+   null
+  ],
+  [
+   "AM",
+   "MX",
+   "Mexico",
+   "MX",
+   "9",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.96",
+   "From 99 to 96"
+  ],
+  [
+   "AM",
+   "CA",
+   "Canada",
+   "CA",
+   "15",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.94",
+   "From 95 to 94"
+  ],
+  [
+   "AM",
+   "BR",
+   "Brazil",
+   "BR",
+   "32",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.99",
+   null
+  ],
+  [
+   "AM",
+   "CO",
+   "Colombia",
+   "CO",
+   "40",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.98",
+   null
+  ],
+  [
+   "AM",
+   "CSA",
+   "Chile",
+   "CL",
+   "43",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.97",
+   null
+  ],
+  [
+   "AM",
+   "CSA",
+   "Argentina",
+   "AR",
+   "44",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.99",
+   null
+  ],
+  [
+   "AM",
+   "CSA",
+   "Peru",
+   "PE",
+   "54",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.99",
+   "Early review is needed "
+  ],
+  [
+   "AM",
+   "CSA",
+   "Panama",
+   "PA",
+   "57",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.95",
+   null
+  ],
+  [
+   "AM",
+   "CSA",
+   "Costa Rica",
+   "CR",
+   "61",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.99",
+   null
+  ],
+  [
+   "AM",
+   "CSA",
+   "Ecuador",
+   "EC",
+   "62",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.97",
+   "Communicated by email"
+  ],
+  [
+   "AM",
+   "CSA",
+   "Guatemala",
+   "GT",
+   "64",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.95",
+   "Early review is needed /incomplete"
+  ],
+  [
+   "AM",
+   "CSA",
+   "Paraguay",
+   "PY",
+   "67",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.94",
+   "Early review is needed /incomplete"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Dominican Republic",
+   "DO",
+   "80",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.98",
+   null
+  ],
+  [
+   "AM",
+   "CSA",
+   "Uruguay",
+   "UY",
+   "81",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.96",
+   null
+  ],
+  [
+   "AM",
+   "CSA",
+   "El Salvador",
+   "SV",
+   "82",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.98",
+   null
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Jamaica",
+   "JM",
+   "89",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.96",
+   null
+  ],
+  [
+   "AM",
+   "CSA",
+   "Bolivia",
+   "BO",
+   "92",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.99",
+   "Early review is needed "
+  ],
+  [
+   "AM",
+   "CSA",
+   "Honduras",
+   "HN",
+   "93",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.99",
+   null
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Trinidad and Tobago",
+   "TT",
+   "94",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.96",
+   null
+  ],
+  [
+   "AM",
+   "CSA",
+   "Nicaragua",
+   "NI",
+   "102",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.94",
+   "Early review is needed"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Guadeloupe",
+   "GP",
+   "110",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.99",
+   null
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Barbados",
+   "BB",
+   "111",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.85",
+   null
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Haiti",
+   "HT",
+   "112",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.94",
+   null
+  ],
+  [
+   "AM",
+   "CSA",
+   "Venezuela",
+   "VE",
+   "114",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.98",
+   null
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Bermuda",
+   "BM",
+   "124",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.81",
+   null
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Martinique",
+   "MQ",
+   "125",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.99",
+   null
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Cayman Islands",
+   "KY",
+   "126",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.97",
+   "Communicated by email"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "French Guiana",
+   "GF",
+   "130",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.99",
+   null
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Bahamas",
+   "BS",
+   "132",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.88",
+   null
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Curacao",
+   "XC",
+   "133",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.96",
+   null
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Guyana",
+   "GY",
+   "137",
+   "YES",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "N/A",
+   null,
+   "Agent"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "St. Maarten",
+   "XM",
+   "155",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   null,
+   "N/A",
+   null,
+   "No Customs Process - "
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "British Virgin Islands",
+   "VG",
+   "157",
+   "NO",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "COMPLETED",
+   "0.96",
+   " "
+  ],
+  [
+   "AM",
+   "CSA",
+   "Belize",
+   "BZ",
+   "159",
+   "YES",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "N/A",
+   null,
+   "Agent"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Aruba",
+   "AW",
+   "161",
+   "YES",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "N/A",
+   null,
+   "Agent"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "St. Lucia",
+   "LC",
+   "166",
+   "YES",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "N/A",
+   null,
+   "Agent"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "St. Barthelemy",
+   "XY",
+   "169",
+   "YES",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "N/A",
+   null,
+   "Agent"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Antigua",
+   "AG",
+   "171",
+   "YES",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "N/A",
+   null,
+   "Agent"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Suriname",
+   "SR",
+   "174",
+   "YES",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "N/A",
+   null,
+   "Agent"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Dominica",
+   "DM",
+   "178",
+   "YES",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "N/A",
+   null,
+   "Agent"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "St. Kitts",
+   "KN",
+   "180",
+   "YES",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "N/A",
+   null,
+   "Agent"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "St. Vincent & Grenadines",
+   "VC",
+   "184",
+   "YES",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "N/A",
+   null,
+   "Agent"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Grenada",
+   "GD",
+   "185",
+   "YES",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "N/A",
+   null,
+   "Agent"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Anguilla",
+   "AI",
+   "186",
+   "YES",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "N/A",
+   null,
+   "Agent"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Nevis",
+   "XN",
+   "196",
+   "YES",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "N/A",
+   null,
+   "Agent"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Bonaire",
+   "XB",
+   "201",
+   "YES",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "N/A",
+   null,
+   "Agent"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Montserrat",
+   "MS",
+   "203",
+   "YES",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "N/A",
+   null,
+   "Agent"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "St. Eustatius",
+   "XE",
+   "207",
+   "YES",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "N/A",
+   null,
+   "Agent"
+  ],
+  [
+   "AM",
+   "Caribbean",
+   "Turks and Caicos Islands",
+   "TC",
+   "-",
+   "YES",
+   "TBD",
+   "COMPLETED",
+   "Communicated by email",
+   "N/A",
+   null,
+   "Agent"
+  ]
+ ]
+}
