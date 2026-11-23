@@ -81,6 +81,12 @@
   "cluster_block": [
    18
   ],
+  "ctrl_chart": [
+   185
+  ],
+  "area_labels": [
+   9
+  ],
   "names_removed": [
    "name=\"_xlnm._FilterDatabase\" localSheetId=\"20\" hidden=\"1\""
   ]

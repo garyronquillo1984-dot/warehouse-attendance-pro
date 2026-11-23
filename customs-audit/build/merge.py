@@ -345,6 +345,46 @@ for r in range(121, 127):
         repl[f'{col}{r}'] = fxml(f'{col}{r}', a_, f'IFERROR(SUMIFS(${src}$39:${src}$70,$D$39:$D$70,$B{r})/(' + tot.format(r=r) + '),0)')
 wr(SP['Self Assessment Results'], apply(x, repl)); LOG['cluster_block'].append(len(repl))
 
+
+# F27 '4. Customs Process Controls' per-control chart (A79:E109): hand-pasted 29 "areas" with shifted labels
+#     -> 36 controls by formula from 13 – Calc Engine (weakest first); chart range extended; area labels fixed
+LAYJ = json.load(open('layout.json')); X0, X1, TOTJ = LAYJ['X0'], LAYJ['X1'], LAYJ['TOT']
+CEQ = "'13 – Calc Engine'"
+cx_ = lambda c: f"{CEQ}!${c}${X0}:${c}${X1}"
+def txml(ref, attrs, text):
+    s_ = re.search(r' s="\d+"', attrs)
+    return f'<c r="{ref}"{s_.group(0) if s_ else ""} t="inlineStr"><is><t>{html.escape(text, quote=False)}</t></is></c>'
+x = unshare(rd(SP['4. Customs Process Controls'])); cs = cells(x); repl = {}
+sty = {c_: (cs[f'{c_}108'].group(3) if f'{c_}108' in cs else '') for c_ in 'ABCDE'}
+for k in range(1, 37):
+    r = 79 + k; mt = f'MATCH({k},{cx_("U")},0)'
+    a_ = lambda c_: cs[f'{c_}{r}'].group(3) if f'{c_}{r}' in cs else sty[c_]
+    den = f'(INDEX({cx_("C")},{mt})+INDEX({cx_("G")},{mt}))'
+    repl[f'A{r}'] = fxml(f'A{r}', a_('A'), f'INDEX({cx_("A")},{mt})')
+    for c_, src in zip('BCDE', 'FEDG'):
+        repl[f'{c_}{r}'] = fxml(f'{c_}{r}', a_(c_), f'IFERROR(INDEX({cx_(src)},{mt})/{den},0)')
+r = 116
+repl['A116'] = txml('A116', cs['A109'].group(3) if 'A109' in cs else '', 'Grand Total')
+for c_, src in zip('BCDE', 'GFEH'):
+    repl[f'{c_}116'] = fxml(f'{c_}116', cs[f'{c_}109'].group(3) if f'{c_}109' in cs else '', f'IFERROR({CEQ}!${src}${TOTJ}/{CEQ}!$D${TOTJ},0)')
+wr(SP['4. Customs Process Controls'], apply(x, repl)); LOG['ctrl_chart'].append(len(repl))
+cp = f'{O}/xl/charts/chart6.xml'; cxml = rd(cp)
+cxml = re.sub(r"(\$[A-E]\$80:\$[A-E]\$)108", r"\g<1>115", cxml)
+cxml = re.sub(r'<c:(?:num|str)Cache>.*?</c:(?:num|str)Cache>', '', cxml, flags=re.S)
+wr(cp, cxml)
+# shifted "Control Area" labels in 3.Final-SAPerControl (2.x block)
+AREA = {'Customs Compliance Culture': 'Customs Awerness & Communication', 'Customs Regulatory Changes': 'Customs Awerness & Communication',
+        'Country Self-Assessment & Action Plan': 'Risk Management - Self-Assessment', 'Personnel Training': 'Personal Training',
+        'Fines & Penalties': 'F&P and Voluntary Disclosures', 'Voluntary Disclosures': 'F&P and Voluntary Disclosures',
+        'Interaction with Authorities (Communications)': 'Cooperation with Authorities', 'Trusted Trader Programs': 'Trusted Trader Programs',
+        'Customs Contract Clauses': 'Customs Contract Clauses'}
+x = rd(SP['3.Final-SAPerControl']); cs = cells(x); repl = {}
+for r in range(2, 38):
+    nm = (cached(cs[f'A{r}']) or '').strip()
+    if nm in AREA and f'C{r}' in cs:
+        repl[f'C{r}'] = txml(f'C{r}', cs[f'C{r}'].group(3), AREA[nm])
+wr(SP['3.Final-SAPerControl'], apply(x, repl)); LOG['area_labels'].append(len(repl))
+
 # Data validation on country forms and action plans
 DV_ORDER = ['<hyperlinks', '<printOptions', '<pageMargins', '<pageSetup', '<headerFooter', '<rowBreaks', '<colBreaks', '<customProperties',
             '<cellWatches', '<ignoredErrors', '<smartTags', '<drawing', '<legacyDrawing', '<picture', '<oleObjects', '<controls',

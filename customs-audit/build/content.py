@@ -352,6 +352,11 @@ FINDINGS = [
      'Inconsistent formulas; 183 #REF! after the manual deletion in Bolivia.',
      'Column E deleted in the six forms (cells, widths, filters, CF, comments, defined names shifted); all lookups re-pointed to A:G with column 7 (answer 5, evidence 6); test answers preserved in "15 – Test Questions Archive" and the TEST blocks count from there.', 'Yes',
      'Recalculated: no #REF!; all 32 countries use VLOOKUP(..., A:G, 7, FALSE); results unchanged.'],
+    ['F27', '4. Customs Process Controls (chart rows 79-109, source of presentation slide 10) and 3.Final-SAPerControl column C', 'A80:E109; chart6; 3.Final-SAPerControl C2:C37',
+     'The per-control chart used 29 "control areas" pasted by hand from an old pivot; the "Control Area" labels of the 2.x block were shifted one row (e.g. the bar "Personal Training" actually showed 2.3 Self-Assessment; 2.5 Personnel Training sat inside "F&P and Voluntary Disclosures"); one bar summed 112.5%.',
+     'Slide 10 hid the weakest control of the region (2.5 Personnel Training, 9 countries Insufficient) and showed stale figures.',
+     'Table rebuilt as the 36 controls by formula from 13 – Calc Engine (weakest first, shares of all answers incl. N/A), Grand Total from the regional totals, chart extended to the 36 rows; area labels in 3.Final-SAPerControl column C realigned.', 'Yes',
+     'Recalculated: each row sums to 100%; values equal 03 – Policy Section Analysis counts.'],
     ['F14', 'Workbook defined names', '_FilterDatabase (sheet "Details")', 'Name refers to #REF!.', 'Broken reference.', 'Removed.', 'Yes', '—'],
     ['F15', 'Legacy PivotTables (20)', 'All pivot caches', 'Caches not refreshed after source corrections.', 'Pivots would display stale values.', 'refreshOnLoad set on all 11 caches (Excel refreshes when the file is opened).', 'Yes', 'Pivots refresh in Excel; not refreshable in the validation engine (see limitations).'],
     ['F16', '1. Data-All Assessments 2026', 'J1957', 'Unexplained arithmetic "=49/64".', 'Hardcoded figure of unknown meaning.', 'Left unchanged, documented.', 'No – flagged', '—'],
@@ -433,6 +438,7 @@ CHANGES = [
     ('2.Final-byScope (chart data B17:E26)', 'Values pasted by hand from an old pivot.', 'Charts did not change after refreshing the pivot.', 'Replaced by SUMIFS formulas over TableQuestions.', 'Charts show the corrected per-scope figures.'),
     ('Self Assessment Results (cluster table C121:E126)', 'Percentages typed by hand.', 'Cluster chart did not follow the corrected data.', 'SUMIFS formulas over the country block (rows 39-70).', 'Cluster chart shows corrected values.'),
     ('Venezuela, Uruguay, Trinidad, USA, Argentina, Bolivia', 'Hidden "Test questions" column E (9-column layout); lookups with column 8; Bolivia column deleted by hand → #REF!.', 'Two layouts, inconsistent formulas, broken references.', 'Column E deleted and every reference re-pointed; lookups use column 7 like all other countries; test answers kept in 15 – Test Questions Archive.', 'One layout for all 32 forms; no #REF!.'),
+    ('4. Customs Process Controls (per-control chart) + 3.Final-SAPerControl col. C', '29 hand-pasted "areas" with shifted labels; one bar = 112.5%.', 'Slide 10 mislabelled controls and showed stale figures.', '36 controls by formula (weakest first), chart extended; area labels realigned.', 'Chart shows the real controls and updates automatically.'),
     ('Workbook calculation', 'calcChain present; manual expectation of recalculation.', 'Cached values could be stale after edits.', 'calcChain removed (Excel rebuilds it); full recalculation on load enabled.', 'Values recalculated on open.'),
 ]
 
