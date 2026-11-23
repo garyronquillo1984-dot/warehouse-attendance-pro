@@ -2,7 +2,16 @@ import openpyxl,json,collections,pickle
 cfg=json.load(open('build/config.json'))
 F=openpyxl.load_workbook('Self-Assessment Matrix 2026 – FINAL IMPROVED.xlsx',read_only=True,data_only=True)
 O=openpyxl.load_workbook('Self-Assessment_Matrix_2026___v1__DRAFT.xlsx',read_only=True,data_only=True)
-d=pickle.load(open('/tmp/claude-0/cmp.pkl','rb')); MF,Q,cl=d['MF'],d['Q'],d['cl']
+d=pickle.load(open('/tmp/claude-0/cmp.pkl','rb')); cl=d['cl']
+# read answers and corrected matrix from the LATEST improved workbook (country forms now all 8 columns)
+Q={}
+for c in cfg['reg']:
+    Q[c['name']]={r[0]:str(r[c['cl']]).strip().upper() for r in F[c['sheet']].iter_rows(min_row=2,max_row=62,values_only=True)}
+mv={}
+for row in F['1. Data-Control Country Matrix'].iter_rows(min_row=1,max_row=62):
+    for c_ in row:
+        if hasattr(c_,'coordinate') and c_.value is not None: mv[c_.coordinate]=c_.value
+MF={c['name']:{ct['label']:str(mv.get(f"{c['matrix_col']}{ct['rows'][0]}",'')).strip() for ct in cfg['controls']} for c in cfg['reg']}
 L=['INSUFFICIENT CONTROL','MODERATE CONTROL','UNDER CONTROL','N/A']
 def share(v):
     c=collections.Counter(v); n=len(v); return [round(c[l]/n,4) for l in L]
@@ -16,7 +25,8 @@ out['s4']=[[s]+share([Q[c][q] for c in Q for q in qscope if qscope[q]==s]) for s
 out['s5']=sorted([[c]+share(list(MF[c].values())) for c in MF],key=lambda r:(-r[1],-r[2],-r[3]))
 out['matrix']={c:[MF[c][l] for l in labels] for c in MF}
 out['labels']=labels
-out['s10']=[[l]+share([Q[c][q] for c in Q for q in qctrl if qctrl[q]==l]) for l in labels]
+out['matrix_orig']={c:[d['MO'][c][l] for l in labels] for c in d['MO']}
+out['s10']=[[str(r[0])]+[float(x or 0) for x in r[1:5]] for r in F['4. Customs Process Controls'].iter_rows(min_row=80,max_row=115,max_col=5,values_only=True)]
 am=[]
 for r in F['4.Final-AM Risk Assessment'].iter_rows(min_row=3,max_row=38,max_col=13,values_only=True):
     am.append([' '.join(str(r[0]).split()),r[1],r[3],r[5],r[7],r[8],r[9],r[11],r[12]])
