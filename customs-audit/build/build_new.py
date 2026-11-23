@@ -1000,6 +1000,7 @@ for i in range(NC):
 # ======================================================================= text sheets
 content.build_text_sheets(WS, LAY, globals())
 content.build_ppt_sheet(WS, LAY, globals())
+content.build_test_archive(WS)
 
 for w in WS.values():
     w.page_setup.orientation = 'landscape'; w.page_setup.fitToWidth = 1; w.page_setup.fitToHeight = 0
@@ -1009,7 +1010,7 @@ for n, ref in NAMES.items():
     wb.defined_names[n] = DefinedName(n, attr_text=ref)
 for w in WS.values():
     w.sheet_properties.tabColor = {D: 'C00000', R: '1F3864', P: '1F3864', CD: '1F3864', RK: '1F3864', AP: '1F3864',
-                                   SD: '548235', CF: '7F7F7F', AR: 'A6A6A6', AU: 'BF8F00', CL: 'BF8F00', KF: 'BF8F00', CE: '7F7F7F', PR: 'C00000'}[w.title]
+                                   SD: '548235', CF: '7F7F7F', AR: 'A6A6A6', AU: 'BF8F00', CL: 'BF8F00', KF: 'BF8F00', CE: '7F7F7F', PR: 'C00000', TA: 'A6A6A6'}[w.title]
 out = sys.argv[1] if len(sys.argv) > 1 else 'new_sheets.xlsx'
 wb.save(out)
 import json

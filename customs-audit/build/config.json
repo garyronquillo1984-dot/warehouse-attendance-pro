@@ -992,10 +992,10 @@
    "code": "VE",
    "cluster": "CSA",
    "rank2023": 114,
-   "cl": 7,
-   "ans": 5,
-   "ev": 6,
-   "gap": 8,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
    "header": [
     "Question\nNumber",
     "Policy v2.0\nSection",
@@ -1021,7 +1021,8 @@
    ],
    "header_ok": true,
    "name26": "Venezuela",
-   "matrix_col": "F"
+   "matrix_col": "F",
+   "test_col_removed": true
   },
   {
    "sheet": "Uruguay",
@@ -1030,10 +1031,10 @@
    "code": "UY",
    "cluster": "CSA",
    "rank2023": 81,
-   "cl": 7,
-   "ans": 5,
-   "ev": 6,
-   "gap": 8,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
    "header": [
     "Question\nNumber",
     "Policy v2.0\nSection",
@@ -1059,7 +1060,8 @@
    ],
    "header_ok": true,
    "name26": "Uruguay",
-   "matrix_col": "I"
+   "matrix_col": "I",
+   "test_col_removed": true
   },
   {
    "sheet": "Trinidad",
@@ -1068,10 +1070,10 @@
    "code": "TT",
    "cluster": "Caribbean",
    "rank2023": 94,
-   "cl": 7,
-   "ans": 5,
-   "ev": 6,
-   "gap": 8,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
    "header": [
     "Question\nNumber",
     "Policy v2.0\nSection",
@@ -1097,7 +1099,8 @@
    ],
    "header_ok": true,
    "name26": "Trinidad and Tobago",
-   "matrix_col": "L"
+   "matrix_col": "L",
+   "test_col_removed": true
   },
   {
    "sheet": "USA",
@@ -1106,10 +1109,10 @@
    "code": "US",
    "cluster": "US",
    "rank2023": 1,
-   "cl": 7,
-   "ans": 5,
-   "ev": 6,
-   "gap": 8,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
    "header": [
     "Question Number",
     "Policy v2.0 Section",
@@ -1135,7 +1138,8 @@
    ],
    "header_ok": true,
    "name26": "USA",
-   "matrix_col": "O"
+   "matrix_col": "O",
+   "test_col_removed": true
   },
   {
    "sheet": "Argentina",
@@ -1144,10 +1148,10 @@
    "code": "AR",
    "cluster": "CSA",
    "rank2023": 44,
-   "cl": 7,
-   "ans": 5,
-   "ev": 6,
-   "gap": 8,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
    "header": [
     "Question Number",
     "Policy v2.0 Section",
@@ -1173,7 +1177,8 @@
    ],
    "header_ok": true,
    "name26": "Argentina",
-   "matrix_col": "R"
+   "matrix_col": "R",
+   "test_col_removed": true
   },
   {
    "sheet": "Bolivia",
@@ -1182,10 +1187,10 @@
    "code": "BO",
    "cluster": "CSA",
    "rank2023": 92,
-   "cl": 7,
-   "ans": 5,
-   "ev": 6,
-   "gap": 8,
+   "cl": 6,
+   "ans": 4,
+   "ev": 5,
+   "gap": 7,
    "header": [
     "Question Number",
     "Policy v2.0 Section",
@@ -1211,7 +1216,8 @@
    ],
    "header_ok": true,
    "name26": "Bolivia",
-   "matrix_col": "U"
+   "matrix_col": "U",
+   "test_col_removed": true
   },
   {
    "sheet": "Chile",

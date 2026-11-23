@@ -122,6 +122,31 @@ def unshare(xml):
     return CELL.sub(sub, xml)
 
 
+# ================================================================== F26 DELETE 'Test questions' COLUMN (E) IN 6 FORMS
+import delcol
+for s_ in delcol.SHEETS:
+    x = delcol.delete_column(rd(SP[s_]))
+    r0 = 77 if s_ == 'USA' else 74          # TEST block rows (Yes / No / N/A), counts now in column F
+    def _tb(m_, s_=s_, r0=r0):
+        r_ = int(m_.group(2))
+        if m_.group(1) == 'F' and r0 <= r_ <= r0 + 2:
+            lab = ['Yes', 'No', 'N/A'][r_ - r0]
+            return fxml(f'F{r_}', m_.group(3), delcol.archive_formula(s_, lab))
+        return m_.group(0)
+    x = CELL.sub(_tb, x)
+    wr(SP[s_], x); LOG['test_col_deleted'].append(s_)
+for s_ in sheets:
+    if s_['name'] in delcol.SHEETS: continue
+    x = rd(s_['path'])
+    if any(n + '!' in x for n in delcol.SHEETS):
+        x2 = re.sub(r'(<f(?:\s[^>]*)?(?<!/)>)(.*?)(</f>)', lambda k: k.group(1) + html.escape(delcol.shift_external(html.unescape(k.group(2))), quote=False) + k.group(3), x, flags=re.S)
+        if x2 != x: wr(s_['path'], x2); LOG['ext_refs_shifted'].append(s_['name'])
+for n_ in (3, 4):   # comments on Venezuela / Uruguay G63 -> F63
+    cp = f'{O}/xl/comments{n_}.xml'; vp = f'{O}/xl/drawings/vmlDrawing{n_}.vml'
+    wr(cp, rd(cp).replace('<comment ref="G63"', '<comment ref="F63"'))
+    wr(vp, rd(vp).replace('<x:Column>6</x:Column>', '<x:Column>5</x:Column>'))
+wbx = re.sub(r'(<definedName [^>]*>)([^<]*)(</definedName>)', lambda k: k.group(1) + delcol.shift_external(k.group(2)) + k.group(3), wbx)
+
 # ================================================================== LEGACY FIXES
 # F01-F03 AssessmentsTable / AssessmentsTable13
 VL = re.compile(r'VLOOKUP\((AssessmentsTable\d*\[\[#This Row\],\[Question\s*Number\]\]),(.+?),(\d+),\)', re.S)
@@ -133,6 +158,9 @@ for sname in ['1. Data-All Assessments 2026', '1. Data-All Assessments TOP20']:
         if not fm: continue
         f = html.unescape(fm.group(1))
         col = re.match(r'[A-Z]+', ref).group(0)
+        if "'Costa Rica'!$A$2:$H$62" in f:
+            f = f.replace("'Costa Rica'!$A$2:$H$62", "'Costa Rica'!$A$2:$G$62")
+            if col != 'J': repl[ref] = fxml(ref, m.group(3), f); continue
         if 'Canada!$A$2:$G$60' in f:
             f = f.replace('Canada!$A$2:$G$60', 'Canada!$A$2:$G$62'); ncan += 1
             if col != 'J': repl[ref] = fxml(ref, m.group(3), f); continue
@@ -256,15 +284,15 @@ for c in CFG['reg']:
     for ref, m in cs.items():
         if int(m.group(2)) < 63 or not m.group(4) or '<f>' not in m.group(4): continue
         f = html.unescape(re.search(r'<f>(.*?)</f>', m.group(4), re.S).group(1))
-        col_override = 'E' if (c['sheet'] == 'USA' and int(m.group(2)) in (77, 78, 79)) else None
+        col_override = None
         my = YESF.match(f); mo = OTHF.match(f)
         if my:
             col = col_override or my.group(1); rg = f'${col}$2:${col}$62'
             nf = f'COUNTIF({rg},"Yes")+COUNTIF({rg},"Si")+COUNTIF({rg},"Sí")'
         elif mo:
             col = col_override or mo.group(1); nf = f'COUNTIF(${col}$2:${col}$62,"{mo.group(2)}")'
-        elif c['sheet'] == 'USA' and ref == 'G73':
-            nf = '61-G72'
+        elif c['sheet'] == 'USA' and ref == 'F73':
+            nf = '61-F72'
         else:
             continue
         if nf != f:

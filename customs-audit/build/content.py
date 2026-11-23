@@ -347,6 +347,11 @@ FINDINGS = [
     ['F23', '3. Data-Assessments control (column E) and all new country-list formulas', 'E3:E1154; lists in 01, 03, 12, 13, 14', 'Formulas used CONCAT(), which does not exist in Excel 2016 (the version used to open the file: #NAME? in column E and empty lists after the pivots were refreshed).', 'Control names showed #NAME? in the pivots built on AssessmentControlTable; country lists showed "None".', 'E = C&" "&D; country lists rebuilt with cumulative & concatenation (works in Excel 2007 and later).', 'Yes', 'Recalculated; no CONCAT/TEXTJOIN left in the workbook.'],
     ['F24', '2.Final-byScope – data behind the two charts (source of presentation slide 4)', 'B17:E26', 'The charts do not read the pivot table (A3:E13) but a block of values pasted by hand from an old version of the pivot.', 'Refreshing the pivot did not update the charts – they kept showing 28% N/A from the defective data.', 'B17:E26 = SUMIFS over TableQuestions (counts per scope / answers per scope); row 26 = regional total.', 'Yes', 'Charts now follow the corrected data automatically.'],
     ['F25', 'Self Assessment Results – cluster table behind the cluster chart (source of presentation slide 15)', 'C121:E126', 'Cluster percentages typed by hand from an old calculation (e.g. CAR 68.8% Under Control).', 'Cluster chart and slide 15 understated control levels (CAR, Canada).', 'C:E = SUMIFS of the country control counts (rows 39-70) by cluster / total controls of the cluster.', 'Yes', 'Recalculated: CAR 75.2%, CSA 76.3%, Canada 83.3% Under Control (= 14 – PPT Reconciliation table F).'],
+    ['F26', 'Venezuela, Uruguay, Trinidad, USA, Argentina, Bolivia (hidden column E "Test questions") and every sheet that reads them', 'Column E of the six forms; lookups in 1. Data-All Assessments 2026 / TOP20, 1. Data-Control Country Matrix, Self Assessment Results, 07 – Source Data',
+     'Six forms had an extra hidden column, so their lookups used A:H with column 8 (others A:G with 7). Deleting the column by hand (done for Bolivia) breaks the lookups (#REF!) because Excel adjusts the range but not the column number.',
+     'Inconsistent formulas; 183 #REF! after the manual deletion in Bolivia.',
+     'Column E deleted in the six forms (cells, widths, filters, CF, comments, defined names shifted); all lookups re-pointed to A:G with column 7 (answer 5, evidence 6); test answers preserved in "15 – Test Questions Archive" and the TEST blocks count from there.', 'Yes',
+     'Recalculated: no #REF!; all 32 countries use VLOOKUP(..., A:G, 7, FALSE); results unchanged.'],
     ['F14', 'Workbook defined names', '_FilterDatabase (sheet "Details")', 'Name refers to #REF!.', 'Broken reference.', 'Removed.', 'Yes', '—'],
     ['F15', 'Legacy PivotTables (20)', 'All pivot caches', 'Caches not refreshed after source corrections.', 'Pivots would display stale values.', 'refreshOnLoad set on all 11 caches (Excel refreshes when the file is opened).', 'Yes', 'Pivots refresh in Excel; not refreshable in the validation engine (see limitations).'],
     ['F16', '1. Data-All Assessments 2026', 'J1957', 'Unexplained arithmetic "=49/64".', 'Hardcoded figure of unknown meaning.', 'Left unchanged, documented.', 'No – flagged', '—'],
@@ -362,7 +367,7 @@ FINDINGS = [
 DQ = [
     ['D01', 'Country names', 'Inconsistent names across legacy sheets: "Cayman Island", "French Guyana", "Panamá", "Rep Dominicana", "Salvador", "Virgin Islands (British)", "Trinidad" vs "Trinidad and Tobago".', 'Canonical country register in 08 (section E) with legacy name mapping.'],
     ['D02', 'Colombia, Costa Rica forms', 'Header row has one more column than the data: the header "Control Level" sits over the gap-comment column; Control Level data are in column G.', 'Column layout detected from the data, not the header (08 section E). Headers left as submitted.'],
-    ['D03', 'Country form layouts', 'Two layouts: 9 columns (Venezuela, Uruguay, Trinidad, USA, Argentina, Bolivia – Control Level in H) and 8 columns (others – Control Level in G).', 'Handled by the country register.'],
+    ['D03', 'Country form layouts', 'Two layouts: 9 columns (Venezuela, Uruguay, Trinidad, USA, Argentina, Bolivia – hidden "Test questions" column E, Control Level in H) and 8 columns (others – Control Level in G). A manual deletion of that column in Bolivia (Excel, 23-Nov-2026) left 122 #REF! in the matrix and 61 in TOP20.', 'Column E removed from the six forms with every reference re-pointed (F26); all 32 forms now have Control Level in column G and every lookup uses column 7.'],
     ['D04', 'Evidence column', 'Values: Yes 764, N/A 675, Si 334, No 117, blank 30, YES 22, si 4, SI 3, NO 3.', 'Standardized mapping (08 section C).'],
     ['D05', 'Nicaragua Action Plan', 'Header has "Issue Category" but data are shifted one column left (status values sit under "by When").', 'Column mapping corrected in 06 (no data changed).'],
     ['D06', 'Ecuador / Brazil / Chile / Panama action plans', 'Merged cells across several rows per action (sub-steps).', 'One consolidated row per action; sub-step texts concatenated with " | ".'],
@@ -427,6 +432,7 @@ CHANGES = [
     ('3. Data-Assessments control + new analysis sheets', 'CONCAT() function (Excel 2019/365 only).', '#NAME? and empty country lists when opened in Excel 2016.', 'Replaced by & concatenation (cumulative helper cells for lists).', 'Works in Excel 2016 and later.'),
     ('2.Final-byScope (chart data B17:E26)', 'Values pasted by hand from an old pivot.', 'Charts did not change after refreshing the pivot.', 'Replaced by SUMIFS formulas over TableQuestions.', 'Charts show the corrected per-scope figures.'),
     ('Self Assessment Results (cluster table C121:E126)', 'Percentages typed by hand.', 'Cluster chart did not follow the corrected data.', 'SUMIFS formulas over the country block (rows 39-70).', 'Cluster chart shows corrected values.'),
+    ('Venezuela, Uruguay, Trinidad, USA, Argentina, Bolivia', 'Hidden "Test questions" column E (9-column layout); lookups with column 8; Bolivia column deleted by hand → #REF!.', 'Two layouts, inconsistent formulas, broken references.', 'Column E deleted and every reference re-pointed; lookups use column 7 like all other countries; test answers kept in 15 – Test Questions Archive.', 'One layout for all 32 forms; no #REF!.'),
     ('Workbook calculation', 'calcChain present; manual expectation of recalculation.', 'Cached values could be stale after edits.', 'calcChain removed (Excel rebuilds it); full recalculation on load enabled.', 'Values recalculated on open.'),
 ]
 
@@ -637,3 +643,21 @@ def _status_cf(ws, rng):
     from openpyxl.styles import Font as _F
     for t, colr in [('Matches', GREEN), ('Update slide', RED), ('Result changes', RED), ('Counts change', ORANGE)]:
         ws.conditional_formatting.add(rng, CellIsRule(operator='equal', formula=[f'"{t}"'], fill=fill(colr[0]), font=_F(color=colr[1], bold=True)))
+
+
+def build_test_archive(WS):
+    import delcol
+    ws = WS[TA]
+    arch = json.load(open(os.path.join(HERE, 'test_archive.json')))
+    title(ws, 'Test Questions Archive – answers moved out of the country forms',
+          'The hidden "Test questions" column (E) was removed from the Venezuela, Uruguay, Trinidad, USA, Argentina and Bolivia forms so that all 32 forms share the same layout (Control Level in column G). The original answers are kept here unchanged; the TEST summary block at the bottom of each of those forms now counts from this sheet.')
+    nav(ws)
+    header_row(ws, 4, 1, ['Q#'] + [f'{s} – {arch[s]["header"]}' for s in delcol.SHEETS], height=45)
+    for q_ in range(1, 62):
+        r = 4 + q_
+        cell_style(ws.cell(r, 1, q_), size=9, align='center')
+        for j, s in enumerate(delcol.SHEETS):
+            v = arch[s]['vals'].get(str(q_))
+            cell_style(ws.cell(r, 2 + j, v), size=9, align='center')
+    widths(ws, {'A': 6, 'B': 22, 'C': 22, 'D': 22, 'E': 22, 'F': 22, 'G': 22})
+    ws.freeze_panes = 'B5'

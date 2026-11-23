@@ -1,5 +1,19 @@
 {
  "log": {
+  "test_col_deleted": [
+   "Venezuela",
+   "Uruguay",
+   "Trinidad",
+   "USA",
+   "Argentina",
+   "Bolivia"
+  ],
+  "ext_refs_shifted": [
+   "1. Data-All Assessments TOP20",
+   "1. Data-All Assessments 2026",
+   "1. Data-Control Country Matrix",
+   "Self Assessment Results"
+  ],
   "assess": [
    [
     "1. Data-All Assessments 2026",
@@ -13,25 +27,13 @@
    ]
   ],
   "summary_fix": [
-   "Venezuela!G67: COUNTIF($G$2:$G$62,\"Si\") -> COUNTIF($G$2:$G$62,\"Yes\")+COUNTIF($G$2:$G$62,\"Si\")+COUNTIF($G$2:$G$62,\"S\u00ed\")",
-   "Venezuela!G74: COUNTIF($E$2:$E$62,\"Si\") -> COUNTIF($E$2:$E$62,\"Yes\")+COUNTIF($E$2:$E$62,\"Si\")+COUNTIF($E$2:$E$62,\"S\u00ed\")",
-   "Uruguay!G67: COUNTIF($G$2:$G$62,\"Yes\") -> COUNTIF($G$2:$G$62,\"Yes\")+COUNTIF($G$2:$G$62,\"Si\")+COUNTIF($G$2:$G$62,\"S\u00ed\")",
-   "Uruguay!G74: COUNTIF($E$2:$E$63,\"YES\") -> COUNTIF($E$2:$E$62,\"Yes\")+COUNTIF($E$2:$E$62,\"Si\")+COUNTIF($E$2:$E$62,\"S\u00ed\")",
-   "Uruguay!G75: COUNTIF($E$2:$E$63,\"No\") -> COUNTIF($E$2:$E$62,\"No\")",
-   "Uruguay!G76: COUNTIF($E$2:$E$63,\"N/A\") -> COUNTIF($E$2:$E$62,\"N/A\")",
-   "Trinidad!G67: COUNTIF($G$2:$G$62,\"Yes\") -> COUNTIF($G$2:$G$62,\"Yes\")+COUNTIF($G$2:$G$62,\"Si\")+COUNTIF($G$2:$G$62,\"S\u00ed\")",
-   "Trinidad!G74: COUNTIF($E$2:$E$63,\"YES\") -> COUNTIF($E$2:$E$62,\"Yes\")+COUNTIF($E$2:$E$62,\"Si\")+COUNTIF($E$2:$E$62,\"S\u00ed\")",
-   "Trinidad!G75: COUNTIF($E$2:$E$63,\"No\") -> COUNTIF($E$2:$E$62,\"No\")",
-   "Trinidad!G76: COUNTIF($E$2:$E$63,\"N/A\") -> COUNTIF($E$2:$E$62,\"N/A\")",
-   "USA!G70: COUNTIF($G$2:$G$62,\"Yes\") -> COUNTIF($G$2:$G$62,\"Yes\")+COUNTIF($G$2:$G$62,\"Si\")+COUNTIF($G$2:$G$62,\"S\u00ed\")",
-   "USA!G73: 61-COUNTIF(G3:G70,\"N/A\") -> 61-G72",
-   "USA!G77: COUNTIF($G$2:$G$63,\"YES\") -> COUNTIF($E$2:$E$62,\"Yes\")+COUNTIF($E$2:$E$62,\"Si\")+COUNTIF($E$2:$E$62,\"S\u00ed\")",
-   "USA!G78: COUNTIF($G$2:$G$63,\"No\") -> COUNTIF($E$2:$E$62,\"No\")",
-   "USA!G79: COUNTIF($G$2:$G$63,\"N/A\") -> COUNTIF($E$2:$E$62,\"N/A\")",
-   "Argentina!G67: COUNTIF($G$2:$G$62,\"Yes\") -> COUNTIF($G$2:$G$62,\"Yes\")+COUNTIF($G$2:$G$62,\"Si\")+COUNTIF($G$2:$G$62,\"S\u00ed\")",
-   "Argentina!G74: COUNTIF($E$2:$E$62,\"YES\") -> COUNTIF($E$2:$E$62,\"Yes\")+COUNTIF($E$2:$E$62,\"Si\")+COUNTIF($E$2:$E$62,\"S\u00ed\")",
-   "Bolivia!G67: COUNTIF($G$2:$G$62,\"Si\") -> COUNTIF($G$2:$G$62,\"Yes\")+COUNTIF($G$2:$G$62,\"Si\")+COUNTIF($G$2:$G$62,\"S\u00ed\")",
-   "Bolivia!G74: COUNTIF($E$2:$E$62,\"Si\") -> COUNTIF($E$2:$E$62,\"Yes\")+COUNTIF($E$2:$E$62,\"Si\")+COUNTIF($E$2:$E$62,\"S\u00ed\")",
+   "Venezuela!F67: COUNTIF($F$2:$F$62,\"Si\") -> COUNTIF($F$2:$F$62,\"Yes\")+COUNTIF($F$2:$F$62,\"Si\")+COUNTIF($F$2:$F$62,\"S\u00ed\")",
+   "Uruguay!F67: COUNTIF($F$2:$F$62,\"Yes\") -> COUNTIF($F$2:$F$62,\"Yes\")+COUNTIF($F$2:$F$62,\"Si\")+COUNTIF($F$2:$F$62,\"S\u00ed\")",
+   "Trinidad!F67: COUNTIF($F$2:$F$62,\"Yes\") -> COUNTIF($F$2:$F$62,\"Yes\")+COUNTIF($F$2:$F$62,\"Si\")+COUNTIF($F$2:$F$62,\"S\u00ed\")",
+   "USA!F70: COUNTIF($F$2:$F$62,\"Yes\") -> COUNTIF($F$2:$F$62,\"Yes\")+COUNTIF($F$2:$F$62,\"Si\")+COUNTIF($F$2:$F$62,\"S\u00ed\")",
+   "USA!F73: 61-COUNTIF(F3:F70,\"N/A\") -> 61-F72",
+   "Argentina!F67: COUNTIF($F$2:$F$62,\"Yes\") -> COUNTIF($F$2:$F$62,\"Yes\")+COUNTIF($F$2:$F$62,\"Si\")+COUNTIF($F$2:$F$62,\"S\u00ed\")",
+   "Bolivia!F67: COUNTIF($F$2:$F$62,\"Si\") -> COUNTIF($F$2:$F$62,\"Yes\")+COUNTIF($F$2:$F$62,\"Si\")+COUNTIF($F$2:$F$62,\"S\u00ed\")",
    "Chile!F67: COUNTIF($F$2:$F$62,\"Si\") -> COUNTIF($F$2:$F$62,\"Yes\")+COUNTIF($F$2:$F$62,\"Si\")+COUNTIF($F$2:$F$62,\"S\u00ed\")",
    "Colombia!F67: COUNTIF($F$2:$F$62,\"Yes\") -> COUNTIF($F$2:$F$62,\"Yes\")+COUNTIF($F$2:$F$62,\"Si\")+COUNTIF($F$2:$F$62,\"S\u00ed\")",
    "Costa Rica!F67: COUNTIF($F$2:$F$62,\"Si\") -> COUNTIF($F$2:$F$62,\"Yes\")+COUNTIF($F$2:$F$62,\"Si\")+COUNTIF($F$2:$F$62,\"S\u00ed\")",
@@ -179,6 +181,7 @@
   "12 \u2013 Key Regional Findings",
   "13 \u2013 Calc Engine",
   "14 \u2013 PPT Reconciliation",
+  "15 \u2013 Test Questions Archive",
   "Quality",
   "Regional Actions Draft",
   "Regional Action",
