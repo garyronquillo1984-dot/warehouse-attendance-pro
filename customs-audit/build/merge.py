@@ -4,7 +4,7 @@ import sys, os, re, zipfile, shutil, json, html, collections
 from lxml import etree
 from openpyxl.formula.translate import Translator
 from openpyxl.utils import column_index_from_string as ci, get_column_letter as gl
-from common import CFG, NEW_SHEETS, D, CE, q
+from common import CFG, NEW_SHEETS, D, CE, q, SLIDE_SHEETS, TA
 import content
 
 ORIG, NEW, OUT = sys.argv[1:4]
@@ -372,16 +372,14 @@ cp = f'{O}/xl/charts/chart6.xml'; cxml = rd(cp)
 cxml = re.sub(r"(\$[A-E]\$80:\$[A-E]\$)108", r"\g<1>115", cxml)
 cxml = re.sub(r'<c:(?:num|str)Cache>.*?</c:(?:num|str)Cache>', '', cxml, flags=re.S)
 wr(cp, cxml)
-# F28 scope sheets (slides 17-21): hand-typed slide tables / chart data -> ranked formula tables from 13 – Calc Engine
-SCB = LAYJ['SCB']
-PPTD = json.load(open('../ppt/data.json'))
-SECS = [('1. About the DHL Express Global', '1. About the DHL Express Global Customs Compliance Policy', 9, ['I9:N41'], 'chart9.xml'),
-        ('2. Customs Awareness & Risk Man', '2. Customs Awareness & Risk Management', 9, ['G9:L56'], 'chart8.xml'),
-        ('3. Regulatory Supervision', '3. Regulatory Supervision', 8, ['I8:M43'], 'chart7.xml'),
-        ('4. Customs Process Controls', '4. Customs Process Controls', 8, ['G25:K38'], 'chart5.xml'),
-        ('5. Customs Representation', '5. Customs Representation', 8, ['H8:L44'], 'chart4.xml')]
+# F28/F29 legacy scope sheets (slides 17-24), Self Assessment Results cluster tables (slide 15) and the per-control chart (slide 10):
+#   hand-typed values -> LINKS to the P-sheets (one worksheet per slide holds the formulas, see 16 – Slide Data Index)
+LAYP = LAYJ['P']
 NROWS = 32
-FILL = {'B': 'FF0000', 'C': 'FFFF00', 'D': '00B050', 'E': 'BFBFBF'}
+FILL = {'B': 'FF0000', 'C': 'FFFF00', 'D': '00B050', 'E': 'BFBFBF', 'F': 'BFBFBF'}
+ALIAS = {'Cayman Island': 'Cayman Islands', 'French Guyana': 'French Guiana', 'Panamá': 'Panama', 'Rep Dominicana': 'Dominican Republic',
+         'Salvador': 'El Salvador', 'Virgin Islands (British)': 'British Virgin Islands', 'Trinidad': 'Trinidad and Tobago', 'Trinidad and Tobag': 'Trinidad and Tobago'}
+CANON = {c['name'] for c in CFG['reg']}
 
 
 def inrng(ref, rg):
@@ -394,68 +392,108 @@ def overlaps(r1, r2):
     return any(inrng(x, r2) for x in (a, b)) or any(inrng(x, r1) for x in r2.split(':'))
 
 
+SECS = {'1. About the DHL Express Global': (9, ['I9:N41'], 'chart9.xml'), '2. Customs Awareness & Risk Man': (9, ['G9:L56'], 'chart8.xml'),
+        '3. Regulatory Supervision': (8, ['I8:M43'], 'chart7.xml'), '4. Customs Process Controls': (8, ['G25:K38'], 'chart5.xml'),
+        '5. Customs Representation': (8, ['H8:L44'], 'chart4.xml'), '6. Reporting & Investigation of': (8, ['A7:BZ90'], 'chart3.xml'),
+        '7. Escalations ': (8, ['A7:BZ90'], 'chart2.xml'), 'Annex 1': (8, ['A7:BZ90'], 'chart1.xml')}
 SECN = {}
-for sh, scope, H, clear, chart in SECS:
-    b = SCB[scope]; r0, r1 = b['r0'], b['r1']
-    rgc = lambda c_: f"{CEQ}!${c_}${r0}:${c_}${r1}"
+for psh, lp in LAYP.items():
+    if 'legacy' not in lp: continue
+    sh = lp['legacy']; H, clear, chart = SECS[sh]; t0 = lp['t0']; c0, c1 = lp['c0'], lp['c1']; n = lp['n']
+    PQ = q(psh)
     x = unshare(rd(SP[sh])); cs = cells(x); repl = {}
     for ref in cs:
         if any(inrng(ref, rg) for rg in clear): repl[ref] = ''
-    # column default styles from the existing chart table
     dsty = {}
     for c_ in 'ABCDEF':
         for rr in range(H + 1, H + NROWS + 1):
-            if f'{c_}{rr}' in cs: dsty[c_] = cs[f'{c_}{rr}'].group(3); break
-    dsty.setdefault('F', dsty.get('A', ''))
-    hsty = {c_: (cs[f'{c_}{H}'].group(3) if f'{c_}{H}' in cs else '') for c_ in 'ABCDE'}; hsty['F'] = hsty['A']
+            if f'{c_}{rr}' in cs and not any(inrng(f'{c_}{rr}', rg) for rg in clear): dsty[c_] = cs[f'{c_}{rr}'].group(3); break
+    hsty = {c_: (cs[f'{c_}{H}'].group(3) if f'{c_}{H}' in cs else '') for c_ in 'ABCDEF'}
     for c_, t in zip('ABCDEF', ['COUNTRY', 'INSUFFICIENT CONTROL', 'MODERATE CONTROL', 'UNDER CONTROL', 'N/A', 'CLUSTER']):
-        repl[f'{c_}{H}'] = txml(f'{c_}{H}', hsty[c_], t)
-    for k in range(1, NROWS + 1):
-        r = H + k; mt = f'MATCH({k},{rgc("O")},0)'
-        for c_, src in zip('ABCDEF', 'AIJKLB'):
-            st = cs[f'{c_}{r}'].group(3) if f'{c_}{r}' in cs else dsty.get(c_, '')
-            repl[f'{c_}{r}'] = fxml(f'{c_}{r}', st, f'IFERROR(INDEX({rgc(src)},{mt}),"")')
-    n = len(PPTD['scope_tables'][scope]['rows']); SECN[sh] = n
-    tl = clear[0].split(':')[0]; tc, tr = re.match(r'([A-Z]+)(\d+)', tl).groups(); tr = int(tr)
-    repl[tl] = txml(tl, '', f'Slide table = A{H}:F{H+NROWS} (formula, F28): countries with Insufficient or Moderate Control in this scope, '
-                        'sorted by cluster (CAR, CSA, Canada, Mexico, USA, Brazil), then IC % and MC %. Source: 13 – Calc Engine (control matrix). '
-                        'Previous hand-typed tables: 09 – Historical Archive.')
+        repl[f'{c_}{H}'] = txml(f'{c_}{H}', hsty[c_] or hsty['A'], t)
+    for k in range(NROWS):
+        r = H + 1 + k; pr = t0 + k
+        for c_, src in zip('ABCDEF', 'BDEFGC'):
+            st = cs[f'{c_}{r}'].group(3) if (f'{c_}{r}' in cs and not any(inrng(f'{c_}{r}', rg) for rg in clear)) else dsty.get(c_, dsty.get('B', ''))
+            repl[f'{c_}{r}'] = fxml(f'{c_}{r}', st, f'IF({PQ}!{src}{pr}="","",{PQ}!{src}{pr})')
+    # rows 2-5: share of the scope's controls per country (was typed by hand)
+    hdr_names = {}
+    for ref, m in cs.items():
+        if m.group(2) == '1' and ref != 'A1':
+            v = (cached(m) or '').strip(); v = ALIAS.get(v, v)
+            if v in CANON: hdr_names[m.group(1)] = v
+    lvcol = {'INSUF': 'I', 'MODER': 'J', 'UNDER': 'K', 'N/A': 'L'}
+    for r in range(2, 6):
+        lab = (cached(cs[f'A{r}']) if f'A{r}' in cs else '') or ''
+        key = next((k for k in lvcol if lab.strip().upper().startswith(k)), None)
+        if not key: continue
+        for col, nm in hdr_names.items():
+            ref = f'{col}{r}'
+            st = cs[ref].group(3) if ref in cs else ''
+            repl[ref] = fxml(ref, st, f'IFERROR(INDEX({PQ}!${lvcol[key]}${c0}:${lvcol[key]}${c1},MATCH("{nm}",{PQ}!$A${c0}:$A${c1},0)),0)')
+    tl = clear[0].split(':')[0] if clear[0] != 'A7:BZ90' else 'H8'
+    tc, tr = re.match(r'([A-Z]+)(\d+)', tl).groups(); tr = int(tr)
+    repl[f'{tc}{tr}'] = txml(f'{tc}{tr}', '', f"Data of this sheet = links to '{psh}' (one sheet per slide: slide table, calculation for all countries and formula guide). "
+                                             f"Table A{H}:F{H+NROWS} = slide {lp['slide']}; rows 2-5 = share of this scope's controls per country. Old typed values: 09 – Historical Archive.")
     repl[f'{tc}{tr+1}'] = fxml(f'{tc}{tr+1}', '', f'"Countries with gaps: "&COUNT(B{H+1}:B{H+NROWS})&"  |  chart rows: {n}"&IF(COUNT(B{H+1}:B{H+NROWS})>{n},"  -> extend the chart data range","  (OK)")')
     x = apply(x, repl)
-    # drop merges inside the cleared ranges
     def mfix(m):
-        ref = m.group(1)
-        return '' if any(overlaps(ref, rg) for rg in clear) else m.group(0)
+        return '' if any(overlaps(m.group(1), rg) for rg in clear) else m.group(0)
     x = re.sub(r'<mergeCell ref="([^"]+)"/>', mfix, x)
     cnt = len(re.findall(r'<mergeCell ref=', x))
     x = re.sub(r'<mergeCells count="\d+">', f'<mergeCells count="{cnt}">', x)
-    x = re.sub(r'<mergeCells count="0"></mergeCells>|<mergeCells count="0"/>', '', x)
-    wr(SP[sh], x); LOG['scope_tables'].append((sh, len(repl)))
-    # chart: re-point, names, colours, no caches
+    x = re.sub(r'<mergeCells count="0">\s*</mergeCells>|<mergeCells count="0"/>', '', x)
+    wr(SP[sh], x); LOG['scope_sheets_linked'].append((sh, psh, len(repl))); SECN[sh] = n
     cp = f'{O}/xl/charts/{chart}'; cx = rd(cp)
     shq = re.escape(html.escape(sh, quote=False))
-    cx = re.sub(rf"('{shq}'!)\$([A-E])\$\d+:\$[A-E]\$\d+", lambda m: f'{m.group(1)}${m.group(2)}${H+1}:${m.group(2)}${H+n}', cx)
-    cx = re.sub(rf"('{shq}'!)\$([B-E])\$\d+(?=</c:f>)", lambda m: f'{m.group(1)}${m.group(2)}${H}', cx)
-    cx = re.sub(r'<c:(?:num|str)Cache>.*?</c:(?:num|str)Cache>', '', cx, flags=re.S)
     def ser(m):
         s_ = m.group(0)
         col = re.search(r'<c:val><c:numRef><c:f>[^<]*!\$([A-E])\$', s_).group(1)
+        # value / category ranges must cover data rows; title refs point to header row
+        s_ = re.sub(r'(<c:cat><c:(?:str|num)Ref><c:f>[^<]*!)\$A\$\d+(?::\$A\$\d+)?', lambda k: f'{k.group(1)}$A${H+1}:$A${H+n}', s_)
+        s_ = re.sub(r'(<c:val><c:numRef><c:f>[^<]*!)\$([B-E])\$\d+(?::\$[B-E]\$\d+)?', lambda k: f'{k.group(1)}${k.group(2)}${H+1}:${k.group(2)}${H+n}', s_)
+        s_ = re.sub(r'(<c:tx><c:strRef><c:f>[^<]*!)\$([B-E])\$\d+', lambda k: f'{k.group(1)}${k.group(2)}${H}', s_)
         if 'filteredSeriesTitle' in s_:
             s_ = re.sub(r'(</c:val>)<c:extLst>.*$', r'\1</c:ser>', s_, flags=re.S)
         if '<c:tx>' not in s_:
             s_ = re.sub(r'(<c:order val="\d+"/>)', lambda k: k.group(1) + f"<c:tx><c:strRef><c:f>'{html.escape(sh, quote=False)}'!${col}${H}</c:f></c:strRef></c:tx>", s_, count=1)
         s_ = re.sub(r'(<c:spPr>)<a:solidFill>.*?</a:solidFill>', lambda k: k.group(1) + f'<a:solidFill><a:srgbClr val="{FILL[col]}"/></a:solidFill>', s_, count=1, flags=re.S)
         return s_
+    cx = re.sub(r'<c:(?:num|str)Cache>.*?</c:(?:num|str)Cache>', '', cx, flags=re.S)
     cx = re.sub(r'<c:ser>.*?</c:ser>', ser, cx, flags=re.S)
     wr(cp, cx)
 json.dump(SECN, open('scope_chart_rows.json', 'w'))
-# F28b Self Assessment Results – slide 15 table B132:E138 (hand-typed) -> same SUMIFS as F25
+
+# Self Assessment Results – cluster chart data C121:F126 and slide-15 table C133:F138 -> links to P15 (+ N/A column F and chart series)
+P15Q = "'P15 – Results per Cluster'"; p15 = LAYP['P15']
 x = unshare(rd(SP['Self Assessment Results'])); cs = cells(x); repl = {}
-for r in range(133, 139):
-    for col, src in zip('CDE', 'GFE'):
-        a_ = cs[f'{col}{r}'].group(3) if f'{col}{r}' in cs else (cs[f'D{r}'].group(3) if f'D{r}' in cs else '')
-        repl[f'{col}{r}'] = fxml(f'{col}{r}', a_, f'IFERROR(SUMIFS(${src}$39:${src}$70,$D$39:$D$70,$B{r})/(' + tot.format(r=r) + '),0)')
-wr(SP['Self Assessment Results'], apply(x, repl)); LOG['cluster_table'].append(len(repl))
+for hr, r0_ in [(120, 121), (132, 133)]:
+    repl[f'F{hr}'] = txml(f'F{hr}', cs[f'E{hr}'].group(3) if f'E{hr}' in cs else '', 'N/A')
+    for r in range(r0_, r0_ + 6):
+        for col, src in zip('CDEF', 'BCDE'):
+            a_ = cs[f'{col}{r}'].group(3) if f'{col}{r}' in cs else (cs[f'E{r}'].group(3) if f'E{r}' in cs else '')
+            repl[f'{col}{r}'] = fxml(f'{col}{r}', a_, f'IFERROR(INDEX({P15Q}!${src}${p15["t0"]}:${src}${p15["t1"]},MATCH($B{r},{P15Q}!$A${p15["t0"]}:$A${p15["t1"]},0)),0)')
+wr(SP['Self Assessment Results'], apply(x, repl)); LOG['cluster_linked'].append(len(repl))
+cp = f'{O}/xl/charts/chart21.xml'; cx = rd(cp)
+cx = re.sub(r'<c:(?:num|str)Cache>.*?</c:(?:num|str)Cache>', '', cx, flags=re.S)
+sers = re.findall(r'<c:ser>.*?</c:ser>', cx, re.S)
+if not any("$F$121" in s_ for s_ in sers):
+    last = sers[-1]
+    na = last.replace('$E$120', '$F$120').replace('$E$121:$E$126', '$F$121:$F$126')
+    na = re.sub(r'<c:idx val="\d+"/>', f'<c:idx val="{len(sers)}"/>', na, count=1); na = re.sub(r'<c:order val="\d+"/>', f'<c:order val="{len(sers)}"/>', na, count=1)
+    na = re.sub(r'(<c:spPr>)<a:solidFill>.*?</a:solidFill>', r'\1<a:solidFill><a:srgbClr val="D9D9D9"/></a:solidFill>', na, count=1, flags=re.S)
+    na = re.sub(r'<c16:uniqueId val="\{[^}]*\}"/>', '<c16:uniqueId val="{00000003-0000-4000-8000-00000000F0A1}"/>', na)
+    cx = cx.replace(last, last + na)
+wr(cp, cx)
+
+# 4. Customs Process Controls A80:E115 (slide 10 chart) -> links to P10
+P10Q = "'P10 – Results per Control'"; p10 = LAYP['P10']
+x = unshare(rd(SP['4. Customs Process Controls'])); cs = cells(x); repl = {}
+for k in range(36):
+    r = 80 + k; pr = p10['t0'] + k
+    for col, src in zip('ABCDE', 'BCDEF'):
+        repl[f'{col}{r}'] = fxml(f'{col}{r}', cs[f'{col}{r}'].group(3) if f'{col}{r}' in cs else '', f'{P10Q}!{src}{pr}')
+wr(SP['4. Customs Process Controls'], apply(x, repl)); LOG['ctrl_chart_linked'].append(len(repl))
 
 # shifted "Control Area" labels in 3.Final-SAPerControl (2.x block)
 AREA = {'Customs Compliance Culture': 'Customs Awerness & Communication', 'Customs Regulatory Changes': 'Customs Awerness & Communication',
@@ -634,11 +672,11 @@ for s in list(sheets):
 # ================================================================== ORDER
 oldnames = [s['name'] for s in sheets]
 byname = {s['name']: s for s in sheets + added}
-order = NEW_SHEETS[:7]
+order = NEW_SHEETS[:7] + SLIDE_SHEETS
 ctry_block = [n for n in oldnames if n in {c['sheet'] for c in CFG['reg']} | {c['ap'] for c in CFG['reg']}]
 order += ctry_block
 order += [NEW_SHEETS[7], 'Config - Structure', 'Config - Configuracion', 'Mapping']
-order += NEW_SHEETS[8:]
+order += [n for n in NEW_SHEETS[8:] if n not in order]
 retain_front = ['Quality', 'Regional Actions Draft', 'Regional Action', '5.Policy Tracker 2026', '5.Compliance 2026']
 order += retain_front
 order += [n for n in oldnames if n not in order]
@@ -665,7 +703,7 @@ wbx = re.sub(r'firstSheet="\d+"', 'firstSheet="0"', wbx); wbx = re.sub(r'activeT
 wbx = re.sub(r'<calcPr[^>]*/>', '<calcPr calcId="191028" fullCalcOnLoad="1"/>', wbx)
 wr(f'{O}/xl/workbook.xml', wbx)
 # tabSelected only on dashboard; tab colours on legacy sheets
-LEG_GREY = set(order[order.index(NEW_SHEETS[-1]) + 1 + len(retain_front):])
+LEG_GREY = set(order[order.index(TA) + 1 + len(retain_front):])
 for s in sheets:
     x = rd(s['path'])
     x = re.sub(r' tabSelected="1"', '', x)

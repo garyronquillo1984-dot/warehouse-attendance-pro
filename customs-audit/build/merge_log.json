@@ -84,30 +84,53 @@
   "ctrl_chart": [
    185
   ],
-  "scope_tables": [
+  "scope_sheets_linked": [
    [
     "1. About the DHL Express Global",
-    309
+    "P17 \u2013 Scope 1 Policy",
+    565
    ],
    [
     "2. Customs Awareness & Risk Man",
-    375
+    "P18 \u2013 Scope 2 Awareness-Risk",
+    631
    ],
    [
     "3. Regulatory Supervision",
-    352
+    "P19 \u2013 Scope 3 Reg. Supervision",
+    608
    ],
    [
     "4. Customs Process Controls",
-    234
+    "P20 \u2013 Scope 4 Process Controls",
+    490
    ],
    [
     "5. Customs Representation",
-    334
+    "P21 \u2013 Scope 5 Representation",
+    590
+   ],
+   [
+    "6. Reporting & Investigation of",
+    "P22 \u2013 Scope 6 Reporting",
+    712
+   ],
+   [
+    "7. Escalations ",
+    "P23 \u2013 Scope 7 Escalations",
+    388
+   ],
+   [
+    "Annex 1",
+    "P24 \u2013 Annex 1 Procedures",
+    440
    ]
   ],
-  "cluster_table": [
-   18
+  "cluster_linked": [
+   50
+  ],
+  "ctrl_chart_linked": [
+   180
   ],
   "area_labels": [
    9
@@ -138,6 +161,23 @@
   "05 \u2013 Regional Risk Assessment",
   "06 \u2013 Regional Action Plan",
   "07 \u2013 Source Data",
+  "16 \u2013 Slide Data Index",
+  "P04 \u2013 Results by Scope",
+  "P05 \u2013 Control per Country",
+  "P09 \u2013 Key Countries IC-MC",
+  "P10 \u2013 Results per Control",
+  "P11 \u2013 Control Risk (AM)",
+  "P13 \u2013 Compliance % Country",
+  "P15 \u2013 Results per Cluster",
+  "P17 \u2013 Scope 1 Policy",
+  "P18 \u2013 Scope 2 Awareness-Risk",
+  "P19 \u2013 Scope 3 Reg. Supervision",
+  "P20 \u2013 Scope 4 Process Controls",
+  "P21 \u2013 Scope 5 Representation",
+  "P22 \u2013 Scope 6 Reporting",
+  "P23 \u2013 Scope 7 Escalations",
+  "P24 \u2013 Annex 1 Procedures",
+  "P26 \u2013 Key Countries Boxes",
   "Venezuela",
   "Venezuela Action Plan",
   "Uruguay",

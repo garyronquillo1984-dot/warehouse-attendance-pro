@@ -21,7 +21,12 @@ KF = '12 – Key Regional Findings'
 CE = '13 – Calc Engine'
 PR = '14 – PPT Reconciliation'
 TA = '15 – Test Questions Archive'
-NEW_SHEETS = [D, R, P, CD, RK, AP, SD, CF, AR, AU, CL, KF, CE, PR, TA]
+SI = '16 – Slide Data Index'
+SLIDE_SHEETS = [SI, 'P04 – Results by Scope', 'P05 – Control per Country', 'P09 – Key Countries IC-MC', 'P10 – Results per Control',
+                'P11 – Control Risk (AM)', 'P13 – Compliance % Country', 'P15 – Results per Cluster', 'P17 – Scope 1 Policy',
+                'P18 – Scope 2 Awareness-Risk', 'P19 – Scope 3 Reg. Supervision', 'P20 – Scope 4 Process Controls', 'P21 – Scope 5 Representation',
+                'P22 – Scope 6 Reporting', 'P23 – Scope 7 Escalations', 'P24 – Annex 1 Procedures', 'P26 – Key Countries Boxes']
+NEW_SHEETS = [D, R, P, CD, RK, AP, SD, CF, AR, AU, CL, KF, CE, PR, TA] + SLIDE_SHEETS
 
 
 def q(name):
@@ -90,7 +95,7 @@ def nav(ws, row=3, col=1):
     """Navigation links (HYPERLINK formulas, no relationship parts needed)."""
     links = [(D, 'Dashboard'), (R, 'Ranking'), (P, 'Policy Sections'), (CD, 'Country Details'),
              (RK, 'Risk'), (AP, 'Action Plan'), (SD, 'Source Data'), (CF, 'Methodology'),
-             (AR, 'Archive'), (AU, 'Audit Report'), (CL, 'Change Log'), (KF, 'Key Findings'), (PR, 'PPT Check')]
+             (AR, 'Archive'), (AU, 'Audit Report'), (CL, 'Change Log'), (KF, 'Key Findings'), (PR, 'PPT Check'), (SI, 'Slide Data')]
     for j, (s, lab) in enumerate(links):
         c = ws.cell(row=row, column=col + j)
         c.value = f'=HYPERLINK("#{q(s)}!A1","{lab}")'

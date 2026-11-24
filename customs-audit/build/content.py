@@ -288,6 +288,11 @@ def reconciliation_checks(LAY, g):
         ('Status distribution total = number of actions', f'=SUM({CE_}!B{LAY["A0"]}:B{LAY["A0"]+6})', '=SUM(ap_IsAction)'),
         ('Sum of country actions (13) = actions in 06', f'={CE_}!{CEC["Actions"]}{TOT}', '=SUM(ap_IsAction)'),
         ('Scope × country block (F28): IC controls = IC cells in the control matrix', '=' + '+'.join(f"SUM({CE_}!D{v['r0']}:D{v['r1']})" for v in LAY['SCB'].values()), '=' + '+'.join(f"COUNTIF('1. Data-Control Country Matrix'!${c['matrix_col']}$2:${c['matrix_col']}$62,\"INSUFFICIENT CONTROL\")" for c in CFG['reg'])),
+        ('P05 control counts (all countries) = 32 × 36 controls', "=SUM('P05 – Control per Country'!H{0}:H{1})".format(LAY['P']['P05']['c0'], LAY['P']['P05']['c1']), '=32*36'),
+        ('P15 cluster controls = P05 controls', "=SUM('P15 – Results per Cluster'!G{0}:G{1})".format(LAY['P']['P15']['c0'], LAY['P']['P15']['c1']), "=SUM('P05 – Control per Country'!H{0}:H{1})".format(LAY['P']['P05']['c0'], LAY['P']['P05']['c1'])),
+        ('P10 Under Control answers = regional Under Control (Calc Engine)', "=SUM('P10 – Results per Control'!E{0}:E{1})".format(LAY['P']['P10']['c0'], LAY['P']['P10']['c1']), f'={CE_}!E{TOT}'),
+        ('P04 answers = all answers in Source Data', "=SUM('P04 – Results by Scope'!F{0}:F{1})".format(LAY['P']['P04']['t1'] + 6, LAY['P']['P04']['t1'] + 5 + 8), f'={CE_}!D{TOT}'),
+        ('Scope sheets P17-P24: controls counted = 32 × 36', '=' + '+'.join("SUM('{0}'!H{1}:H{2})".format(k, v['c0'], v['c1']) for k, v in LAY['P'].items() if 'legacy' in v), '=32*36'),
         ('No formula errors in Source Data standardized level (MISSING/INVALID count)', f'=COUNTIF(src_Std,"MISSING")+COUNTIF(src_Std,"INVALID")', '=0'),
     ]
 
@@ -364,6 +369,12 @@ FINDINGS = [
      'Slides 15 and 17-21 did not match the corrected assessments.',
      "New block in 13 – Calc Engine (scope × country counts from 1. Data-Control Country Matrix, rank of countries with IC or MC: cluster order CAR, CSA, Canada, Mexico, USA, Brazil, then IC % and MC % descending). Each section sheet: A:F = ranked list by INDEX/MATCH (country, IC, MC, UC, N/A, cluster); old hand-typed slide tables removed (values kept in 09 – Historical Archive); charts re-pointed with series names and standard colours. C133:E138 = same SUMIFS as F25.", 'Yes',
      'Recalculated: values equal the control matrix; chart range check cell next to each table.'],
+    ['F29', 'Presentation data spread over many legacy sheets, partly typed by hand (cluster table without N/A, scope sheets 6., 7., Annex 1, rows 2-5 of every scope sheet, per-control chart)',
+     'New sheets 16 – Slide Data Index and P04 … P26; links in the 8 scope sheets (rows 2-5, table A8/A9:F40/41, charts 1-5, 7-9), Self Assessment Results C121:F126 / C133:F138 + chart 21, 4. Customs Process Controls A80:E115',
+     'The numbers of one slide were calculated in different places (pivots, pasted copies, technical sheets); several were typed by hand; the cluster chart had no N/A series, so the 100%-stacked bars overstated Under Control (CAR ~87% instead of 75%).',
+     'Hard to know where a slide figure comes from; hand-typed copies diverged from the answers.',
+     'One worksheet per slide (P-sheet): A = slide table + chart, B = calculation for every country / control directly from 07 – Source Data or 1. Data-Control Country Matrix, C = formula guide (formula of each column as text). 16 – Slide Data Index lists slide → sheet → ranges → source. Legacy sheets now LINK to the P-sheets; old typed values archived in 09.', 'Yes',
+     'Recalculated; reconciliation checks 22-26 (P-sheets = Calc Engine / matrix totals).'],
     ['F14', 'Workbook defined names', '_FilterDatabase (sheet "Details")', 'Name refers to #REF!.', 'Broken reference.', 'Removed.', 'Yes', '—'],
     ['F15', 'Legacy PivotTables (20)', 'All pivot caches', 'Caches not refreshed after source corrections.', 'Pivots would display stale values.', 'refreshOnLoad set on all 11 caches (Excel refreshes when the file is opened).', 'Yes', 'Pivots refresh in Excel; not refreshable in the validation engine (see limitations).'],
     ['F16', '1. Data-All Assessments 2026', 'J1957', 'Unexplained arithmetic "=49/64".', 'Hardcoded figure of unknown meaning.', 'Left unchanged, documented.', 'No – flagged', '—'],
@@ -447,6 +458,7 @@ CHANGES = [
     ('Venezuela, Uruguay, Trinidad, USA, Argentina, Bolivia', 'Hidden "Test questions" column E (9-column layout); lookups with column 8; Bolivia column deleted by hand → #REF!.', 'Two layouts, inconsistent formulas, broken references.', 'Column E deleted and every reference re-pointed; lookups use column 7 like all other countries; test answers kept in 15 – Test Questions Archive.', 'One layout for all 32 forms; no #REF!.'),
     ('4. Customs Process Controls (per-control chart) + 3.Final-SAPerControl col. C', '29 hand-pasted "areas" with shifted labels; one bar = 112.5%.', 'Slide 10 mislabelled controls and showed stale figures.', '36 controls by formula (weakest first), chart extended; area labels realigned.', 'Chart shows the real controls and updates automatically.'),
     ('Scope sheets 1.–5. (slides 17-21) + Self Assessment Results B132:E138 (slide 15 table)', 'Slide tables and chart data typed by hand from the old matrix; slide 17 showed overall results; chart legend Series1-4.', 'Slides 15 and 17-21 showed wrong / incomplete country lists.', 'Formula tables ranked from a new scope × country block in 13 – Calc Engine; charts re-pointed; old values archived in 09.', 'Section tables, charts and slides update automatically.'),
+    ('16 – Slide Data Index + P04 … P26 (new) and the legacy sheets behind the slides', 'Slide figures calculated in several places, partly typed by hand; cluster chart without N/A.', 'Not traceable; risk of stale copies.', 'One formula sheet per slide (table, chart, calculation, formula guide); legacy blocks link to it; N/A added to the cluster table and chart.', 'Each slide has one documented source sheet.'),
     ('Workbook calculation', 'calcChain present; manual expectation of recalculation.', 'Cached values could be stale after edits.', 'calcChain removed (Excel rebuilds it); full recalculation on load enabled.', 'Values recalculated on open.'),
 ]
 

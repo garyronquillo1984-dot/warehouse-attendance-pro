@@ -68,5 +68,33 @@ out['s9_ic']=sorted([[c,qc[c]['INSUFFICIENT CONTROL']] for c in Q if qc[c]['INSU
 out['s9_mc']=sorted([[c,qc[c]['MODERATE CONTROL']] for c in Q if qc[c]['MODERATE CONTROL']>=5],key=lambda x:-x[1])
 ra=[[r[0],r[1],r[2]] for r in O['Regional Actions Draft'].iter_rows(min_row=1,max_row=8,max_col=3,values_only=True)]
 out['rad']=ra
+# ---- F29: every slide table is read from its P-sheet in the workbook (one sheet per slide); python values above only cross-check
+def rows(sh,a,b,mc):
+    return [list(r) for r in F[sh].iter_rows(min_row=a,max_row=b,max_col=mc,values_only=True)]
+rnd=lambda v: round(float(v),4) if isinstance(v,(int,float)) else v
+chk={}
+X={}
+X['s4']=[[r[0]]+[rnd(v) for v in r[1:5]] for r in rows('P04 – Results by Scope',7,14,5)]
+X['s5']=[[r[1]]+[rnd(v) for v in r[3:7]] for r in rows('P05 – Control per Country',7,38,7)]
+X['s10']=[[r[1]]+[float(v or 0) for v in r[2:6]] for r in rows('P10 – Results per Control',7,42,6)]
+X['s11']=[[r[1]]+r[2:10] for r in rows('P11 – Control Risk (AM)',7,42,10)]
+X['s13']=[[r[1],r[2],r[3]] for r in rows('P13 – Compliance % Country',7,38,4)]
+X['s15']=[[r[0]]+[rnd(v) for v in r[1:5]] for r in rows('P15 – Results per Cluster',7,12,5)]
+X['s9_ic']=[[r[1],r[2]] for r in rows('P09 – Key Countries IC-MC',7,38,7) if r[1]]
+X['s9_mc']=[[r[5],r[6]] for r in rows('P09 – Key Countries IC-MC',7,38,7) if r[5]]
+PS={'1. About the DHL Express Global Customs Compliance Policy':'P17 – Scope 1 Policy','2. Customs Awareness & Risk Management':'P18 – Scope 2 Awareness-Risk',
+    '3. Regulatory Supervision':'P19 – Scope 3 Reg. Supervision','4. Customs Process Controls':'P20 – Scope 4 Process Controls','5. Customs Representation':'P21 – Scope 5 Representation',
+    '6. Reporting & Investigation of Material Violations':'P22 – Scope 6 Reporting','7. Escalations':'P23 – Scope 7 Escalations','Annex 1':'P24 – Annex 1 Procedures'}
+for s_,sh in PS.items():
+    xr=[[r[1],r[2]]+[rnd(v) for v in r[3:7]] for r in rows(sh,7,38,7) if r[1]]
+    chk['scope '+s_[:12]]=sorted(map(str,xr))==sorted(map(str,sc_rows[s_]['rows']))
+    sc_rows[s_]['rows']=xr; sc_rows[s_]['excel']=f"'{sh}'!A6:G38"
+X['scope_tables']=sc_rows
+X['keybox']={str(r[0]):dict(ic=[] if r[3]=='None' else r[3].split(', '),mc=[] if r[4]=='None' else r[4].split(', ')) for r in rows('P26 – Key Countries Boxes',7,15,5)}
+for k in ['s4','s15','s13']:
+    chk[k]=str(X[k])==str(out[k]) if k!='s13' else [r[0] for r in X[k]]==[r[0] for r in out[k]]
+chk['s5 set']=sorted(map(str,X['s5']))==sorted(map(str,out['s5'])); chk['s9']=(X['s9_ic'],X['s9_mc'])==(out['s9_ic'],out['s9_mc']) or 'order differs'
+print('cross-check python vs Excel:',chk)
+out.update(X)
 json.dump(out,open('ppt/data.json','w'),indent=1,ensure_ascii=False,default=str)
 print(out['s4'][:2], out['s9_ic'], out['s9_mc'], out['s13'][:4], out['s15'])

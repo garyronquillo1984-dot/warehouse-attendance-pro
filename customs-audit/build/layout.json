@@ -132,5 +132,125 @@
    "r1": 699,
    "n": 1
   }
+ },
+ "P": {
+  "P05": {
+   "t0": 7,
+   "t1": 38,
+   "c0": 44,
+   "c1": 75
+  },
+  "P15": {
+   "t0": 7,
+   "t1": 12,
+   "c0": 18,
+   "c1": 23
+  },
+  "P04": {
+   "t0": 7,
+   "t1": 14
+  },
+  "P09": {
+   "t0": 7,
+   "t1": 38
+  },
+  "P10": {
+   "t0": 7,
+   "t1": 42,
+   "c0": 48,
+   "c1": 83
+  },
+  "P11": {
+   "t0": 7,
+   "t1": 42
+  },
+  "P13": {
+   "t0": 7,
+   "t1": 38
+  },
+  "P17 \u2013 Scope 1 Policy": {
+   "t0": 7,
+   "t1": 38,
+   "c0": 44,
+   "c1": 75,
+   "n": 2,
+   "scope": "1. About the DHL Express Global Customs Compliance Policy",
+   "legacy": "1. About the DHL Express Global",
+   "slide": 17
+  },
+  "P18 \u2013 Scope 2 Awareness-Risk": {
+   "t0": 7,
+   "t1": 38,
+   "c0": 44,
+   "c1": 75,
+   "n": 22,
+   "scope": "2. Customs Awareness & Risk Management",
+   "legacy": "2. Customs Awareness & Risk Man",
+   "slide": 18
+  },
+  "P19 \u2013 Scope 3 Reg. Supervision": {
+   "t0": 7,
+   "t1": 38,
+   "c0": 44,
+   "c1": 75,
+   "n": 11,
+   "scope": "3. Regulatory Supervision",
+   "legacy": "3. Regulatory Supervision",
+   "slide": 19
+  },
+  "P20 \u2013 Scope 4 Process Controls": {
+   "t0": 7,
+   "t1": 38,
+   "c0": 44,
+   "c1": 75,
+   "n": 22,
+   "scope": "4. Customs Process Controls",
+   "legacy": "4. Customs Process Controls",
+   "slide": 20
+  },
+  "P21 \u2013 Scope 5 Representation": {
+   "t0": 7,
+   "t1": 38,
+   "c0": 44,
+   "c1": 75,
+   "n": 3,
+   "scope": "5. Customs Representation",
+   "legacy": "5. Customs Representation",
+   "slide": 21
+  },
+  "P22 \u2013 Scope 6 Reporting": {
+   "t0": 7,
+   "t1": 38,
+   "c0": 44,
+   "c1": 75,
+   "n": 2,
+   "scope": "6. Reporting & Investigation of Material Violations",
+   "legacy": "6. Reporting & Investigation of",
+   "slide": 22
+  },
+  "P23 \u2013 Scope 7 Escalations": {
+   "t0": 7,
+   "t1": 38,
+   "c0": 44,
+   "c1": 75,
+   "n": 1,
+   "scope": "7. Escalations",
+   "legacy": "7. Escalations ",
+   "slide": 23
+  },
+  "P24 \u2013 Annex 1 Procedures": {
+   "t0": 7,
+   "t1": 38,
+   "c0": 44,
+   "c1": 75,
+   "n": 17,
+   "scope": "Annex 1",
+   "legacy": "Annex 1",
+   "slide": 24
+  },
+  "P26": {
+   "t0": 7,
+   "t1": 15
+  }
  }
 }

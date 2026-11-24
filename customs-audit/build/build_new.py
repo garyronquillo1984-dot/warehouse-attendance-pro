@@ -1025,6 +1025,10 @@ for i in range(NC):
     r = C0 + i
     wsce[f'BG{r}'] = (f'=BG{r-1}&IF(AK{r}="High",A{r}&", ","")' if i > 0 else f'=IF(AK{r}="High",A{r}&", ","")')
 
+# ======================================================================= F29 slide data sheets
+import slides
+LAY['P'] = slides.build(WS, globals())
+
 # ======================================================================= text sheets
 content.build_text_sheets(WS, LAY, globals())
 content.build_ppt_sheet(WS, LAY, globals())
@@ -1032,15 +1036,17 @@ content.build_test_archive(WS)
 
 # F28 archive of the hand-typed slide tables replaced by formulas (values as cached in the ORIGINAL workbook)
 import openpyxl as _ox, re
-ARCH28 = [('1. About the DHL Express Global', ['A9:E41', 'I9:N39']), ('2. Customs Awareness & Risk Man', ['A9:E41', 'H9:L56']),
-          ('3. Regulatory Supervision', ['A8:E40', 'I8:M43']), ('4. Customs Process Controls', ['A8:E40', 'G25:K38']),
-          ('5. Customs Representation', ['A8:E40', 'H8:L44']), ('Self Assessment Results', ['B132:E138'])]
+ARCH28 = [('1. About the DHL Express Global', ['A1:BP5', 'A9:E41', 'I9:N39']), ('2. Customs Awareness & Risk Man', ['A1:BP5', 'A9:E41', 'H9:L56']),
+          ('3. Regulatory Supervision', ['A1:BQ5', 'A8:E40', 'I8:M43']), ('4. Customs Process Controls', ['A1:BO5', 'A8:E40', 'G25:K38', 'A80:E109']),
+          ('5. Customs Representation', ['A1:BO5', 'A8:E40', 'H8:L44']), ('6. Reporting & Investigation of', ['A1:BP5', 'A7:T60']),
+          ('7. Escalations ', ['A1:BP5', 'A7:T60']), ('Annex 1', ['A1:BP5', 'A7:T60']),
+          ('Self Assessment Results', ['B120:E126', 'B132:E138'])]
 _ow = _ox.load_workbook('../Self-Assessment_Matrix_2026___v1__DRAFT.xlsx', read_only=True, data_only=True)
 ws = WS[AR]
 r = ws.max_row + 3
-put(ws, f'A{r}', "F28 – hand-typed slide tables replaced by formulas (original values, as stored in the DRAFT workbook)", bold=True, color=NAVY, size=11); r += 1
+put(ws, f'A{r}', "F28/F29 – hand-typed slide data replaced by formulas / links to the P-sheets (original values, as stored in the DRAFT workbook)", bold=True, color=NAVY, size=11); r += 1
 put(ws, f'A{r}', 'Kept for traceability only. Current values: the formula tables in the same sheets (sorted from 13 – Calc Engine).', italic=True, size=9); r += 1
-header_row(ws, r, 1, ['Sheet', 'Range', 'Row', 'Col 1', 'Col 2', 'Col 3', 'Col 4', 'Col 5', 'Col 6']); r += 1
+header_row(ws, r, 1, ['Sheet', 'Range', 'Row', 'Values (first column of the range, then right) →']); r += 1
 for sh, rngs in ARCH28:
     for rg in rngs:
         _r0 = int(re.match(r'[A-Z]+(\d+)', rg).group(1))
@@ -1063,7 +1069,7 @@ for n, ref in NAMES.items():
     wb.defined_names[n] = DefinedName(n, attr_text=ref)
 for w in WS.values():
     w.sheet_properties.tabColor = {D: 'C00000', R: '1F3864', P: '1F3864', CD: '1F3864', RK: '1F3864', AP: '1F3864',
-                                   SD: '548235', CF: '7F7F7F', AR: 'A6A6A6', AU: 'BF8F00', CL: 'BF8F00', KF: 'BF8F00', CE: '7F7F7F', PR: 'C00000', TA: 'A6A6A6'}[w.title]
+                                   SD: '548235', CF: '7F7F7F', AR: 'A6A6A6', AU: 'BF8F00', CL: 'BF8F00', KF: 'BF8F00', CE: '7F7F7F', PR: 'C00000', TA: 'A6A6A6'}.get(w.title, '7030A0')
 out = sys.argv[1] if len(sys.argv) > 1 else 'new_sheets.xlsx'
 wb.save(out)
 import json

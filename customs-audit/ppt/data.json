@@ -108,14 +108,14 @@
    0.1111
   ],
   [
-   "Jamaica",
+   "British Virgin Islands",
    0.0556,
    0.0278,
    0.7778,
    0.1389
   ],
   [
-   "British Virgin Islands",
+   "Jamaica",
    0.0556,
    0.0278,
    0.7778,
@@ -143,14 +143,14 @@
    0.1389
   ],
   [
-   "Paraguay",
+   "Guatemala",
    0.0278,
    0.1389,
    0.6667,
    0.1667
   ],
   [
-   "Guatemala",
+   "Paraguay",
    0.0278,
    0.1389,
    0.6667,
@@ -206,14 +206,14 @@
    0.0833
   ],
   [
-   "Venezuela",
+   "El Salvador",
    0.0,
    0.0833,
    0.75,
    0.1667
   ],
   [
-   "El Salvador",
+   "Venezuela",
    0.0,
    0.0833,
    0.75,
@@ -241,14 +241,7 @@
    0.1111
   ],
   [
-   "Martinique",
-   0.0,
-   0.0556,
-   0.8056,
-   0.1389
-  ],
-  [
-   "Guadeloupe",
+   "Ecuador",
    0.0,
    0.0556,
    0.8056,
@@ -262,7 +255,14 @@
    0.1389
   ],
   [
-   "Ecuador",
+   "Guadeloupe",
+   0.0,
+   0.0556,
+   0.8056,
+   0.1389
+  ],
+  [
+   "Martinique",
    0.0,
    0.0556,
    0.8056,
@@ -3119,7 +3119,7 @@
    1,
    28.5,
    31,
-   0.9193548387096774,
+   0.919354838709677,
    "UNDER CONTROL"
   ],
   [
@@ -3130,7 +3130,7 @@
    5,
    25,
    27,
-   0.9259259259259259,
+   0.925925925925926,
    "UNDER CONTROL"
   ],
   [
@@ -3310,7 +3310,7 @@
    "UNDER CONTROL"
   ],
   [
-   "4.6 Transit / Bonded Movements",
+   "3.4 Customs Agent License & Qualification",
    22,
    1,
    0,
@@ -3321,14 +3321,14 @@
    "UNDER CONTROL"
   ],
   [
-   "3.4 Customs Agent License & Qualification",
+   "4.6 Transit / Bonded Movements",
    22,
    1,
    0,
    9,
    22.5,
    23,
-   0.9782608695652174,
+   0.978260869565217,
    "UNDER CONTROL"
   ],
   [
@@ -3376,7 +3376,7 @@
    "UNDER CONTROL"
   ],
   [
-   "2.8 Interaction with Authorities (Communications)",
+   "2.8 Interaction with Authorities",
    32,
    0,
    0,
@@ -3471,12 +3471,12 @@
    "2. Moderate Control Environment"
   ],
   [
-   "Jamaica",
+   "British Virgin Islands",
    0.959090909090909,
    "2. Moderate Control Environment"
   ],
   [
-   "British Virgin Islands",
+   "Jamaica",
    0.959090909090909,
    "2. Moderate Control Environment"
   ],
@@ -3521,12 +3521,12 @@
    "1. Strong Control Environment"
   ],
   [
-   "USA",
+   "Colombia",
    0.983606557377049,
    "1. Strong Control Environment"
   ],
   [
-   "Colombia",
+   "USA",
    0.983606557377049,
    "1. Strong Control Environment"
   ],
@@ -3546,7 +3546,7 @@
    "1. Strong Control Environment"
   ],
   [
-   "Martinique",
+   "French Guiana",
    0.990909090909091,
    "1. Strong Control Environment"
   ],
@@ -3556,7 +3556,7 @@
    "1. Strong Control Environment"
   ],
   [
-   "French Guiana",
+   "Martinique",
    0.990909090909091,
    "1. Strong Control Environment"
   ],
@@ -3673,7 +3673,7 @@
      0.0
     ]
    ],
-   "excel": "'1. About the DHL Express Global'!A9:F41"
+   "excel": "'P17 – Scope 1 Policy'!A6:G38"
   },
   "Annex 1": {
    "controls": [
@@ -3816,7 +3816,8 @@
      0.0,
      0.0
     ]
-   ]
+   ],
+   "excel": "'P24 – Annex 1 Procedures'!A6:G38"
   },
   "2. Customs Awareness & Risk Management": {
    "controls": [
@@ -4008,7 +4009,7 @@
      0.0
     ]
    ],
-   "excel": "'2. Customs Awareness & Risk Man'!A9:F41"
+   "excel": "'P18 – Scope 2 Awareness-Risk'!A6:G38"
   },
   "3. Regulatory Supervision": {
    "controls": [
@@ -4109,7 +4110,7 @@
      0.0
     ]
    ],
-   "excel": "'3. Regulatory Supervision'!A8:F40"
+   "excel": "'P19 – Scope 3 Reg. Supervision'!A6:G38"
   },
   "4. Customs Process Controls": {
    "controls": [
@@ -4306,7 +4307,7 @@
      0.0714
     ]
    ],
-   "excel": "'4. Customs Process Controls'!A8:F40"
+   "excel": "'P20 – Scope 4 Process Controls'!A6:G38"
   },
   "5. Customs Representation": {
    "controls": [
@@ -4339,7 +4340,7 @@
      0.0
     ]
    ],
-   "excel": "'5. Customs Representation'!A8:F40"
+   "excel": "'P21 – Scope 5 Representation'!A6:G38"
   },
   "6. Reporting & Investigation of Material Violations": {
    "controls": [
@@ -4362,7 +4363,8 @@
      0.0,
      0.0
     ]
-   ]
+   ],
+   "excel": "'P22 – Scope 6 Reporting'!A6:G38"
   },
   "7. Escalations": {
    "controls": [
@@ -4377,7 +4379,8 @@
      0.0,
      0.0
     ]
-   ]
+   ],
+   "excel": "'P23 – Scope 7 Escalations'!A6:G38"
   }
  },
  "keyc": {
@@ -4710,21 +4713,21 @@
    5
   ],
   [
-   "Cayman Islands",
+   "Canada",
    3
   ],
   [
-   "Canada",
+   "Cayman Islands",
    3
   ]
  ],
  "s9_mc": [
   [
-   "Paraguay",
+   "Nicaragua",
    9
   ],
   [
-   "Nicaragua",
+   "Paraguay",
    9
   ],
   [
@@ -4736,11 +4739,11 @@
    6
   ],
   [
-   "Venezuela",
+   "Panama",
    5
   ],
   [
-   "Panama",
+   "Venezuela",
    5
   ]
  ],
@@ -4785,5 +4788,120 @@
    "4.14 Regular Customs Declaration Quality Reviews",
    null
   ]
- ]
+ ],
+ "keybox": {
+  "26": {
+   "ic": [
+    "Barbados",
+    "Bermuda",
+    "Cayman Islands",
+    "Curacao"
+   ],
+   "mc": [
+    "Trinidad and Tobago",
+    "Chile",
+    "Colombia",
+    "Panama",
+    "Nicaragua",
+    "Martinique",
+    "Jamaica",
+    "Haiti",
+    "Guadeloupe",
+    "French Guiana",
+    "Bahamas",
+    "British Virgin Islands",
+    "Dominican Republic"
+   ]
+  },
+  "27": {
+   "ic": [
+    "Trinidad and Tobago",
+    "Jamaica",
+    "Haiti",
+    "Bahamas",
+    "Barbados",
+    "Bermuda",
+    "Cayman Islands",
+    "British Virgin Islands",
+    "Curacao"
+   ],
+   "mc": [
+    "Venezuela",
+    "Argentina",
+    "Bolivia",
+    "Chile",
+    "Costa Rica",
+    "Brazil"
+   ]
+  },
+  "28": {
+   "ic": [
+    "Cayman Islands"
+   ],
+   "mc": [
+    "Guatemala"
+   ]
+  },
+  "29": {
+   "ic": [
+    "Trinidad and Tobago",
+    "Haiti"
+   ],
+   "mc": [
+    "Mexico"
+   ]
+  },
+  "30": {
+   "ic": [
+    "Bermuda"
+   ],
+   "mc": [
+    "Colombia",
+    "Guatemala"
+   ]
+  },
+  "31": {
+   "ic": [],
+   "mc": [
+    "Ecuador"
+   ]
+  },
+  "32": {
+   "ic": [
+    "Guatemala"
+   ],
+   "mc": [
+    "Chile",
+    "Colombia",
+    "El Salvador",
+    "Paraguay",
+    "Peru",
+    "Nicaragua",
+    "Canada",
+    "Brazil"
+   ]
+  },
+  "33": {
+   "ic": [
+    "Barbados"
+   ],
+   "mc": []
+  },
+  "37": {
+   "ic": [
+    "Mexico",
+    "Jamaica",
+    "Bahamas",
+    "British Virgin Islands"
+   ],
+   "mc": [
+    "USA",
+    "Chile",
+    "El Salvador",
+    "Paraguay",
+    "Haiti",
+    "Guatemala"
+   ]
+  }
+ }
 }
