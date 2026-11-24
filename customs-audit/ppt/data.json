@@ -2759,116 +2759,11 @@
  },
  "s10": [
   [
-   "2.5 Personnel Training",
-   0.28125,
-   0.1875,
-   0.53125,
-   0.0
-  ],
-  [
-   "4.14 Regular Customs Declaration Quality Reviews",
-   0.09375,
-   0.109375,
-   0.703125,
-   0.09375
-  ],
-  [
-   "Annex 1 Documentation of Local Procedures",
-   0.125,
-   0.40625,
-   0.46875,
-   0.0
-  ],
-  [
-   "4.3 Import Clearance",
-   0.03125,
-   0.0390625,
-   0.859375,
-   0.0703125
-  ],
-  [
-   "2.3 Country Self-Assessment & Action Plan",
-   0.0625,
-   0.1875,
-   0.75,
-   0.0
-  ],
-  [
-   "4.13 Reconciliation of Physical Shipments vs. Data",
-   0.03125,
-   0.078125,
-   0.828125,
-   0.0625
-  ],
-  [
-   "2.6 Fines & Penalties",
-   0.015625,
-   0.03125,
-   0.8984375,
-   0.0546875
-  ],
-  [
-   "3.5 Third Party Brokers Controls",
-   0.03125,
-   0.015625,
-   0.578125,
-   0.375
-  ],
-  [
-   "4.11 Unauthorized Release (URL)",
-   0.015625,
-   0.15625,
-   0.75,
-   0.078125
-  ],
-  [
-   "4.2 Manifest",
-   0.015625,
-   0.0625,
-   0.875,
-   0.046875
-  ],
-  [
-   "4.12 Export Clearance",
-   0.015625,
-   0.0625,
-   0.828125,
-   0.09375
-  ],
-  [
-   "4.5 Prohibited & Restricted Goods",
-   0.0104166666666667,
-   0.03125,
-   0.875,
-   0.0833333333333333
-  ],
-  [
-   "3.2 Customs Bonded Facility",
-   0.015625,
-   0.03125,
-   0.78125,
-   0.171875
-  ],
-  [
-   "1.7 Independence",
-   0.03125,
-   0.03125,
-   0.9375,
-   0.0
-  ],
-  [
-   "4.4 Broker Handover",
-   0.03125,
-   0.03125,
-   0.8125,
-   0.125
-  ],
-  [
-   "2.1 Customs Compliance Culture",
-   0.03125,
+   "5.1 Importer/Exporter of Record (IOR/EOR)",
    0.0,
-   0.96875,
-   0.0
+   0.03125,
+   0.34375,
+   0.625
   ],
   [
    "2.9 Trusted Trader Programs",
@@ -2878,24 +2773,192 @@
    0.578125
   ],
   [
-   "3.1 Licenses & Permits to Operate",
-   0.03125,
+   "5.2 Power of Attorney (PoA)",
    0.0,
-   0.9375,
-   0.03125
+   0.0625,
+   0.40625,
+   0.53125
   ],
   [
-   "7. Escalations",
-   0.03125,
-   0.0,
-   0.96875,
+   "Annex 1 Documentation of Local Procedures",
+   0.125,
+   0.40625,
+   0.46875,
    0.0
+  ],
+  [
+   "2.5 Personnel Training",
+   0.28125,
+   0.1875,
+   0.53125,
+   0.0
+  ],
+  [
+   "3.5 Third Party Brokers Controls",
+   0.03125,
+   0.015625,
+   0.578125,
+   0.375
+  ],
+  [
+   "2.10 Customs Contract Clauses",
+   0.0,
+   0.03125,
+   0.59375,
+   0.375
+  ],
+  [
+   "4.6 Transit / Bonded Movements",
+   0.0,
+   0.015625,
+   0.671875,
+   0.3125
+  ],
+  [
+   "3.4 Customs Agent License & Qualification",
+   0.0,
+   0.03125,
+   0.6875,
+   0.28125
+  ],
+  [
+   "4.1 Pre-Arrival Processing",
+   0.0,
+   0.0,
+   0.6875,
+   0.3125
+  ],
+  [
+   "4.14 Regular Customs Declaration Quality Reviews",
+   0.09375,
+   0.109375,
+   0.703125,
+   0.09375
+  ],
+  [
+   "2.3 Country Self-Assessment & Action Plan",
+   0.0625,
+   0.1875,
+   0.75,
+   0.0
+  ],
+  [
+   "4.11 Unauthorized Release (URL)",
+   0.015625,
+   0.15625,
+   0.75,
+   0.078125
+  ],
+  [
+   "3.2 Customs Bonded Facility",
+   0.015625,
+   0.03125,
+   0.78125,
+   0.171875
+  ],
+  [
+   "6. Reporting & Investigation of Material Violations",
+   0.0,
+   0.0625,
+   0.78125,
+   0.15625
+  ],
+  [
+   "2.7 Voluntary Disclosures",
+   0.0,
+   0.0,
+   0.796875,
+   0.203125
+  ],
+  [
+   "4.4 Broker Handover",
+   0.03125,
+   0.03125,
+   0.8125,
+   0.125
+  ],
+  [
+   "4.7 Temporary Imports & Temporary Exports",
+   0.0,
+   0.0,
+   0.8125,
+   0.1875
+  ],
+  [
+   "4.13 Reconciliation of Physical Shipments vs. Data",
+   0.03125,
+   0.078125,
+   0.828125,
+   0.0625
+  ],
+  [
+   "4.12 Export Clearance",
+   0.015625,
+   0.0625,
+   0.828125,
+   0.09375
+  ],
+  [
+   "4.3 Import Clearance",
+   0.03125,
+   0.0390625,
+   0.859375,
+   0.0703125
+  ],
+  [
+   "4.2 Manifest",
+   0.015625,
+   0.0625,
+   0.875,
+   0.046875
+  ],
+  [
+   "4.5 Prohibited & Restricted Goods",
+   0.0104166666666667,
+   0.03125,
+   0.875,
+   0.0833333333333333
+  ],
+  [
+   "4.8 Post Clearance Modifications (PCM)",
+   0.0,
+   0.015625,
+   0.875,
+   0.109375
+  ],
+  [
+   "2.6 Fines & Penalties",
+   0.015625,
+   0.03125,
+   0.8984375,
+   0.0546875
+  ],
+  [
+   "4.10 Duties & Taxes Process Accounting",
+   0.0,
+   0.0625,
+   0.90625,
+   0.03125
   ],
   [
    "3.3 DHL Express Customs Systems & Applications",
    0.0,
    0.0520833333333333,
    0.916666666666667,
+   0.03125
+  ],
+  [
+   "1.7 Independence",
+   0.03125,
+   0.03125,
+   0.9375,
+   0.0
+  ],
+  [
+   "3.1 Licenses & Permits to Operate",
+   0.03125,
+   0.0,
+   0.9375,
    0.03125
   ],
   [
@@ -2913,25 +2976,18 @@
    0.0
   ],
   [
-   "4.10 Duties & Taxes Process Accounting",
+   "2.1 Customs Compliance Culture",
+   0.03125,
    0.0,
-   0.0625,
-   0.90625,
-   0.03125
+   0.96875,
+   0.0
   ],
   [
-   "5.2 Power of Attorney (PoA)",
+   "7. Escalations",
+   0.03125,
    0.0,
-   0.0625,
-   0.40625,
-   0.53125
-  ],
-  [
-   "6. Reporting & Investigation of Material Violations",
-   0.0,
-   0.0625,
-   0.78125,
-   0.15625
+   0.96875,
+   0.0
   ],
   [
    "1.6 Definitions",
@@ -2941,41 +2997,6 @@
    0.0
   ],
   [
-   "2.10 Customs Contract Clauses",
-   0.0,
-   0.03125,
-   0.59375,
-   0.375
-  ],
-  [
-   "3.4 Customs Agent License & Qualification",
-   0.0,
-   0.03125,
-   0.6875,
-   0.28125
-  ],
-  [
-   "4.6 Transit / Bonded Movements",
-   0.0,
-   0.015625,
-   0.671875,
-   0.3125
-  ],
-  [
-   "4.8 Post Clearance Modifications (PCM)",
-   0.0,
-   0.015625,
-   0.875,
-   0.109375
-  ],
-  [
-   "5.1 Importer/Exporter of Record (IOR/EOR)",
-   0.0,
-   0.03125,
-   0.34375,
-   0.625
-  ],
-  [
    "2.2 Customs Regulatory Changes",
    0.0,
    0.0,
@@ -2983,32 +3004,11 @@
    0.0
   ],
   [
-   "2.7 Voluntary Disclosures",
-   0.0,
-   0.0,
-   0.796875,
-   0.203125
-  ],
-  [
    "2.8 Interaction with Authorities",
    0.0,
    0.0,
    1.0,
    0.0
-  ],
-  [
-   "4.1 Pre-Arrival Processing",
-   0.0,
-   0.0,
-   0.6875,
-   0.3125
-  ],
-  [
-   "4.7 Temporary Imports & Temporary Exports",
-   0.0,
-   0.0,
-   0.8125,
-   0.1875
   ]
  ],
  "s11": [

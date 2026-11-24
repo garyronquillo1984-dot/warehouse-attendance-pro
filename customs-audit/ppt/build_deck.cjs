@@ -77,7 +77,7 @@ kt(1.0, 'Insufficient Control', D.s9_ic, IC); kt(5.2, 'Moderate Control', D.s9_m
 s.addText('Insufficient: countries with ≥ 3 Insufficient answers. Moderate: countries with ≥ 5 Moderate answers. Source: 02 – Country Ranking.', { x: 1.0, y: 5.6, w: 8, h: 0.4, fontSize: 9, italic: true, color: GREY, margin: 0, isTextBox: true });
 // ---------- slide 10
 s = fp('Overview results', 'Overview Results per Control', 10, 'Rebuilt for the 36 Policy Sections of the questionnaire (share of answers incl. N/A).', 'P10 – Results per Control');
-const s10 = D.s10;  // same order and values as '4. Customs Process Controls' A80:E115 (weakest first)
+const s10 = D.s10;  // same order and values as P10 (Under Control % ascending)
 s.addChart(pres.charts.BAR, series(s10), chartBase({ x: 0.2, y: 1.35, w: 9.6, h: 5.6, barDir: 'bar', catAxisOrientation: 'maxMin', catAxisLabelFontSize: 6.5, dataLabelFontSize: 6 }));
 // ---------- slide 11
 pres.addSection({ title: 'Risk assessment' });

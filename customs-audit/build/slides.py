@@ -241,16 +241,16 @@ def build(WS, g):
     # ------------------------------------------------------------------ P10 per control (answer level, weakest first)
     ws = WS[P10]
     _intro(ws, 10, 'Results per Policy Section (36 controls)', '07 – Source Data (answers; named ranges src_Section / src_Std).',
-           'answers of the control at each level / all answers of the control (incl. N/A).  Sorted weakest first: most Insufficient, then most Moderate.')
-    _sec(ws, H - 1, 'A. SLIDE TABLE (sorted, weakest first)')
+           'answers of the control at each level / all answers of the control (incl. N/A).  Sorted by Under Control % from lowest to highest (ties: more Insufficient first, then more Moderate).')
+    _sec(ws, H - 1, 'A. SLIDE TABLE (sorted by Under Control %, lowest to highest)')
     _hdr(ws, H, 1, ['#', 'Policy Section (control)'] + LV)
     cb = H + NCT + 5; c0 = cb + 1; c1 = cb + NCT
     _sec(ws, cb - 1, 'B. CALCULATION – answers per control')
-    _hdr(ws, cb, 1, ['Policy Section (control)', 'Scope'] + [f'{s} (n)' for s in SHORT] + ['Answers'] + [f'{s} %' for s in SHORT] + ['Weakness key', 'Rank'])
+    _hdr(ws, cb, 1, ['Policy Section (control)', 'Scope'] + [f'{s} (n)' for s in SHORT] + ['Answers'] + [f'{s} %' for s in SHORT] + ['Sort key (UC % ascending)', 'Rank'])
     for i, ct in enumerate(CTRL):
         r = c0 + i
         vals = [ct['label'], M[ct['qs'][0] - 1]['scope']] + [f'=COUNTIFS(src_Section,$A{r},src_Std,"{lv}")' for lv in LV] + [f'=SUM(C{r}:F{r})'] + \
-               [f'=IF($G{r}=0,0,{x}{r}/$G{r})' for x in 'CDEF'] + [f'=-(C{r}*1000+D{r})+ROW()/1000000', f'=RANK(L{r},$L${c0}:$L${c1},1)']
+               [f'=IF($G{r}=0,0,{x}{r}/$G{r})' for x in 'CDEF'] + [f'=J{r}-C{r}/100000-D{r}/10000000+ROW()/1000000000', f'=RANK(L{r},$L${c0}:$L${c1},1)']
         for j, v in enumerate(vals):
             _cell(ws, f'{gl(j+1)}{r}', v, fmt=PCT if 8 <= j + 1 <= 11 else None)
     for k in range(1, NCT + 1):
@@ -258,8 +258,8 @@ def build(WS, g):
         _cell(ws, f'A{r}', k); _cell(ws, f'B{r}', f'=INDEX($A${c0}:$A${c1},{mt})', bold=True)
         for j, src in enumerate('HIJK'):
             _cell(ws, f'{gl(3+j)}{r}', f'=INDEX(${src}${c0}:${src}${c1},{mt})', fmt=PCT)
-    _chart(ws, 'H6', 2, [3, 4, 5, 6], H, H + 1, H + NCT, 'Results per control (weakest first)', w=20, h=24)
-    _guide(ws, c1 + 3, [('B. Insufficient (n)', ws[f'C{c0}'].value), ('B. Insufficient %', ws[f'H{c0}'].value), ('B. Weakness key', ws[f'L{c0}'].value),
+    _chart(ws, 'H6', 2, [3, 4, 5, 6], H, H + 1, H + NCT, 'Results per control (Under Control: lowest to highest)', w=20, h=24)
+    _guide(ws, c1 + 3, [('B. Insufficient (n)', ws[f'C{c0}'].value), ('B. Insufficient %', ws[f'H{c0}'].value), ('B. Sort key (UC % ascending)', ws[f'L{c0}'].value),
                         ('B. Rank', ws[f'M{c0}'].value), ('A. Control', ws[f'B{H+1}'].value)])
     widths(ws, {'A': 44, 'B': 44, 'C': 12, 'D': 12, 'E': 12, 'F': 10})
     LAYP['P10'] = dict(t0=H + 1, t1=H + NCT, c0=c0, c1=c1)
