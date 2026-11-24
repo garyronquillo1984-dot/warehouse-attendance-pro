@@ -6,7 +6,21 @@ const THEME = { name: 'Self Assessment 2026', headFontFace: 'Calibri', bodyFontF
 const RED = 'D40511', IC = 'FF0000', MC = 'FFFF00', UC = '00B050', NA = 'D9D9D9', GREY = '595959';
 const pres = new pptxgen(); pres.layout = 'LAYOUT_4x3';
 pres.theme = { headFontFace: 'Calibri', bodyFontFace: 'Calibri' };
-pres.title = 'Country Customs Self-Assessment Program 2026 – corrected slides';
+pres.title = 'Country Customs Self-Assessment Program 2026';
+const OUTFILE = 'Country Customs Self-Assessment Program - 2026.pptx';
+const ORIG_PAGES = [1, 2, 3, 14, 16, 25, 34, 35, 36, 38, 40];
+let nextOrig = 1, lastSection = null;
+const _addSection = pres.addSection.bind(pres);
+pres.addSection = (o) => { lastSection = o.title; return _addSection(o); };
+const origUpTo = (n) => {   // insert unchanged original pages (as images from the 2026 PDF) that come before slide n
+  for (; nextOrig < n; nextOrig++) {
+    if (!ORIG_PAGES.includes(nextOrig)) continue;
+    const o = lastSection ? { sectionTitle: lastSection } : {};
+    const sl = pres.addSlide(o);
+    sl.addImage({ path: `orig_pages/p${String(nextOrig).padStart(2, '0')}.png`, x: 0, y: 0, w: 10, h: 7.5 });
+    sl.addNotes('Slide ' + nextOrig + ' unchanged from "Country Customs Self-Assessment Program - 2026 UPDATED" (image of the original page).');
+  }
+};
 pres.defineSlideMaster({ title: 'CONTENT', background: { color: 'FFFFFF' },
   objects: [
     { placeholder: { options: { name: 'title', type: 'title', x: 0.35, y: 0.7, w: 9.3, h: 0.55, fontSize: 20, bold: true, color: RED, align: 'left', valign: 'middle', margin: 0 }, text: '' } },
@@ -14,14 +28,12 @@ pres.defineSlideMaster({ title: 'CONTENT', background: { color: 'FFFFFF' },
   ] });
 const pct = v => Math.round(v * 100) + '%';
 const fp = (s, t, orig, change, src) => {
+  if (orig) { origUpTo(Number(orig)); nextOrig = Math.max(nextOrig, Number(orig) + 1); }
   const sl = pres.addSlide({ masterName: 'CONTENT', sectionTitle: s });
   sl.addText(t, { placeholder: 'title' });
-  if (orig) {
-    sl.addText(String(orig), { x: 9.0, y: 7.05, w: 0.65, h: 0.25, fontSize: 9, align: 'right', margin: 0, isTextBox: true });
-    sl.addText('CORRECTED – replaces slide ' + orig, { x: 7.0, y: 0.25, w: 2.65, h: 0.3, fontSize: 9, bold: true, color: 'FFFFFF', fill: { color: RED }, align: 'center', valign: 'middle', margin: 0, isTextBox: true });
-  }
+  if (orig) sl.addText(String(orig), { x: 9.0, y: 7.05, w: 0.65, h: 0.25, fontSize: 9, align: 'right', margin: 0, isTextBox: true });
   if (src) sl.addText('Excel source: ' + src, { x: 4.6, y: 0.58, w: 5.05, h: 0.22, fontSize: 7.5, italic: true, color: '595959', align: 'right', margin: 0, isTextBox: true });
-  if (change) sl.addNotes('Change vs. original slide ' + orig + ': ' + change + (src ? ' Excel source: ' + src + '.' : ''));
+  if (change) sl.addNotes('Updated from the corrected workbook. Change vs. original slide ' + orig + ': ' + change + (src ? ' Excel source: ' + src + '.' : ''));
   return sl;
 };
 const chartBase = (o) => Object.assign({ barGrouping: 'percentStacked', chartColors: [IC, MC, UC, NA], showValue: true, dataLabelPosition: 'ctr', dataLabelFormatCode: '0%;;;',
@@ -33,20 +45,9 @@ const hdr = (arr, size = 8) => arr.map(t => ({ text: t, options: { bold: true, c
 const lvlCell = (v, size, bold) => { const m = { 'UNDER CONTROL': ['Under', 'C6EFCE', '006100'], 'MODERATE CONTROL': ['Moderate', 'FFEB9C', '7F6000'], 'INSUFFICIENT CONTROL': ['Insufficient', 'FFC7CE', '9C0006'], 'N/A': ['N/A', 'EDEDED', '595959'] }[v] || [v, 'FFFFFF', '000000'];
   return { text: m[0], options: { fill: { color: m[1] }, color: m[2], fontSize: size, align: 'center', bold: !!bold } }; };
 
-// ---------- cover / index
-pres.addSection({ title: 'Index' });
-let s = pres.addSlide({ masterName: 'CONTENT', sectionTitle: 'Index' });
-s.addText('Corrected slides – 2026 Self-Assessment presentation', { placeholder: 'title' });
-s.addText('These slides replace the slides with the same number in "Country Customs Self-Assessment Program - 2026 UPDATED". All figures come from the corrected workbook "Self-Assessment Matrix 2026 – FINAL IMPROVED.xlsx" (sheet 14 – PPT Reconciliation shows every change). Text of opportunities and recommendations is kept as in the original; only data, country lists and labels were corrected.',
-  { x: 0.35, y: 1.4, w: 9.3, h: 0.8, fontSize: 11, color: '000000', margin: 0, valign: 'top', isTextBox: true });
-const idx = [['4', 'Overview per Section/Scope', 'Rebuilt from 2026 answers (9 countries were wrongly counted as N/A)'], ['5', 'Control per Country', '17 countries corrected (stale N/A in the matrix)'],
-  ['6-8', 'Detailed results per country', '45 control results corrected (bold)'], ['9', 'Key Countries', 'Counts on one basis (questions); Bermuda 6, Paraguay added'],
-  ['10', 'Results per Control', 'Rebuilt for the 36 Policy Sections'], ['11-12', 'Risk Assessment by Control', '25 of 36 rows corrected; 4 results change'],
-  ['13', 'Self-Assessment Compliance', '6 countries corrected (Bermuda, Barbados, Cayman, Venezuela, Peru, Panama)'], ['15', 'Per Cluster', 'CAR, CSA, Canada corrected; N/A shown'],
-  ['17-24', 'Results per Section/Scope', 'Rebuilt; slide 17 title/content fixed; countries with gaps complete'], ['26-33, 37', 'Key Countries boxes', 'Lists updated to 2026 answers'],
-  ['39', 'Regional Action Plan 2026', '4.11 label corrected (Unauthorized Release); country list updated']];
-s.addTable([hdr(['Slide', 'Topic', 'Correction'], 10)].concat(idx.map(r => r.map((t, j) => ({ text: t, options: { fontSize: 10, bold: j === 0, align: j === 0 ? 'center' : 'left' } })))),
-  { x: 0.35, y: 2.35, w: 9.3, colW: [0.9, 2.8, 5.6], border: { type: 'solid', pt: 0.5, color: 'BFBFBF' }, rowH: 0.36, valign: 'middle' });
+// ---------- slides in original order (index slide removed)
+pres.addSection({ title: 'Introduction' });
+let s;
 
 // ---------- slide 4
 pres.addSection({ title: 'Overview results' });
@@ -62,9 +63,8 @@ const groups = [countries.slice(0, 10), countries.slice(10, 21), countries.slice
 groups.forEach((g, gi) => {
   s = fp('Overview results', 'Detailed Results Per Country: Control', 6 + gi, 'Bold cells = corrected vs. the original matrix.', '1. Data-Control Country Matrix');
   const rows = [hdr(['Control'].concat(g), 6.5)];
-  D.labels.forEach((l, i) => rows.push([{ text: l, options: { fontSize: 6, align: 'left' } }].concat(g.map(c => lvlCell(D.matrix[c][i], 6, D.matrix[c][i] !== D.matrix_orig[c][i])))));
+  D.labels.forEach((l, i) => rows.push([{ text: l, options: { fontSize: 6, align: 'left' } }].concat(g.map(c => lvlCell(D.matrix[c][i], 6, false)))));
   s.addTable(rows, { x: 0.2, y: 1.35, w: 9.6, colW: [2.3].concat(g.map(() => 7.3 / g.length)), rowH: 0.145, border: { type: 'solid', pt: 0.3, color: 'BFBFBF' }, margin: 0.01, valign: 'middle' });
-  s.addText('Bold = value corrected compared with the previous version (hardcoded N/A replaced by the country\'s actual answer).', { x: 0.2, y: 6.75, w: 9.6, h: 0.22, fontSize: 8, italic: true, color: GREY, margin: 0, isTextBox: true });
 });
 // ---------- slide 9
 s = fp('Overview results', 'Key Countries', 9, 'Question-level counts for both lists; Bermuda 6 (not 3); Paraguay added.', 'P09 – Key Countries IC-MC');
@@ -147,4 +147,5 @@ s.addTable(t39, { x: 0.35, y: 1.4, w: 9.3, colW: [2.6, 2.6, 4.1], border: { type
 const low = D.s13.slice(0, 5).map(r => `${r[0]} (${(r[1] * 100).toFixed(1)}%)`).join(', ');
 s.addText([{ text: 'Countries with more opportunities identified (% Compliance, lowest first):', options: { fontSize: 11, bold: true, breakLine: true } }, { text: low, options: { fontSize: 11 } }],
   { x: 0.35, y: 6.0, w: 9.3, h: 0.7, margin: 0, valign: 'top', isTextBox: true });
-(async () => { await pres.writeFile({ fileName: 'Country Customs Self-Assessment Program - 2026 CORRECTED SLIDES.pptx' }); await applyTheme('Country Customs Self-Assessment Program - 2026 CORRECTED SLIDES.pptx', THEME); console.log('ok'); })();
+origUpTo(41);
+(async () => { await pres.writeFile({ fileName: OUTFILE }); await applyTheme(OUTFILE, THEME); console.log('ok'); })();
