@@ -107,7 +107,7 @@ const scopeSlides = [['1. About the DHL Express Global Customs Compliance Policy
   ['6. Reporting & Investigation of Material Violations', 22, 'Reporting & Investigation of Material Violations'], ['7. Escalations', 23, 'Escalations'], ['Annex 1', 24, 'Annex 1 – Documentation of Local Procedures']];
 scopeSlides.forEach(([key, n, ttl]) => {
   const st = D.scope_tables[key];
-  s = fp('Results by cluster and section', ttl, n, 'Countries with at least one Moderate/Insufficient control in this section, corrected matrix.');
+  s = fp('Results by cluster and section', ttl, n, 'Countries with at least one Moderate/Insufficient control in this section, corrected matrix.' + (st.excel ? ' Excel: ' + st.excel + '.' : ''));
   const rows = [hdr(['COUNTRY', 'CLUSTER', 'INSUFF.', 'MODERATE', 'UNDER', 'N/A'], 8)].concat(st.rows.map(r => [{ text: r[0], options: { fontSize: 8 } }, { text: r[1], options: { fontSize: 8, align: 'center' } }].concat(r.slice(2).map((v, k) => ({ text: v ? pct(v) : '', options: { fontSize: 8, align: 'center', bold: k < 2 && v > 0, color: k === 0 && v > 0 ? 'C00000' : '000000' } })))));
   const rh = Math.min(0.24, 5.0 / rows.length);
   s.addTable(rows, { x: 0.3, y: 1.4, w: 4.6, colW: [1.55, 0.75, 0.6, 0.65, 0.55, 0.5], rowH: rh, border: { type: 'solid', pt: 0.4, color: 'BFBFBF' }, valign: 'middle', margin: 0.02 });

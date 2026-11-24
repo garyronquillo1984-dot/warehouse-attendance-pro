@@ -372,6 +372,91 @@ cp = f'{O}/xl/charts/chart6.xml'; cxml = rd(cp)
 cxml = re.sub(r"(\$[A-E]\$80:\$[A-E]\$)108", r"\g<1>115", cxml)
 cxml = re.sub(r'<c:(?:num|str)Cache>.*?</c:(?:num|str)Cache>', '', cxml, flags=re.S)
 wr(cp, cxml)
+# F28 scope sheets (slides 17-21): hand-typed slide tables / chart data -> ranked formula tables from 13 – Calc Engine
+SCB = LAYJ['SCB']
+PPTD = json.load(open('../ppt/data.json'))
+SECS = [('1. About the DHL Express Global', '1. About the DHL Express Global Customs Compliance Policy', 9, ['I9:N41'], 'chart9.xml'),
+        ('2. Customs Awareness & Risk Man', '2. Customs Awareness & Risk Management', 9, ['G9:L56'], 'chart8.xml'),
+        ('3. Regulatory Supervision', '3. Regulatory Supervision', 8, ['I8:M43'], 'chart7.xml'),
+        ('4. Customs Process Controls', '4. Customs Process Controls', 8, ['G25:K38'], 'chart5.xml'),
+        ('5. Customs Representation', '5. Customs Representation', 8, ['H8:L44'], 'chart4.xml')]
+NROWS = 32
+FILL = {'B': 'FF0000', 'C': 'FFFF00', 'D': '00B050', 'E': 'BFBFBF'}
+
+
+def inrng(ref, rg):
+    a, b = rg.split(':'); m = re.match(r'([A-Z]+)(\d+)', ref); ma = re.match(r'([A-Z]+)(\d+)', a); mb = re.match(r'([A-Z]+)(\d+)', b)
+    return ci(ma.group(1)) <= ci(m.group(1)) <= ci(mb.group(1)) and int(ma.group(2)) <= int(m.group(2)) <= int(mb.group(2))
+
+
+def overlaps(r1, r2):
+    a, b = r1.split(':') if ':' in r1 else (r1, r1)
+    return any(inrng(x, r2) for x in (a, b)) or any(inrng(x, r1) for x in r2.split(':'))
+
+
+SECN = {}
+for sh, scope, H, clear, chart in SECS:
+    b = SCB[scope]; r0, r1 = b['r0'], b['r1']
+    rgc = lambda c_: f"{CEQ}!${c_}${r0}:${c_}${r1}"
+    x = unshare(rd(SP[sh])); cs = cells(x); repl = {}
+    for ref in cs:
+        if any(inrng(ref, rg) for rg in clear): repl[ref] = ''
+    # column default styles from the existing chart table
+    dsty = {}
+    for c_ in 'ABCDEF':
+        for rr in range(H + 1, H + NROWS + 1):
+            if f'{c_}{rr}' in cs: dsty[c_] = cs[f'{c_}{rr}'].group(3); break
+    dsty.setdefault('F', dsty.get('A', ''))
+    hsty = {c_: (cs[f'{c_}{H}'].group(3) if f'{c_}{H}' in cs else '') for c_ in 'ABCDE'}; hsty['F'] = hsty['A']
+    for c_, t in zip('ABCDEF', ['COUNTRY', 'INSUFFICIENT CONTROL', 'MODERATE CONTROL', 'UNDER CONTROL', 'N/A', 'CLUSTER']):
+        repl[f'{c_}{H}'] = txml(f'{c_}{H}', hsty[c_], t)
+    for k in range(1, NROWS + 1):
+        r = H + k; mt = f'MATCH({k},{rgc("O")},0)'
+        for c_, src in zip('ABCDEF', 'AIJKLB'):
+            st = cs[f'{c_}{r}'].group(3) if f'{c_}{r}' in cs else dsty.get(c_, '')
+            repl[f'{c_}{r}'] = fxml(f'{c_}{r}', st, f'IFERROR(INDEX({rgc(src)},{mt}),"")')
+    n = len(PPTD['scope_tables'][scope]['rows']); SECN[sh] = n
+    tl = clear[0].split(':')[0]; tc, tr = re.match(r'([A-Z]+)(\d+)', tl).groups(); tr = int(tr)
+    repl[tl] = txml(tl, '', f'Slide table = A{H}:F{H+NROWS} (formula, F28): countries with Insufficient or Moderate Control in this scope, '
+                        'sorted by cluster (CAR, CSA, Canada, Mexico, USA, Brazil), then IC % and MC %. Source: 13 – Calc Engine (control matrix). '
+                        'Previous hand-typed tables: 09 – Historical Archive.')
+    repl[f'{tc}{tr+1}'] = fxml(f'{tc}{tr+1}', '', f'"Countries with gaps: "&COUNT(B{H+1}:B{H+NROWS})&"  |  chart rows: {n}"&IF(COUNT(B{H+1}:B{H+NROWS})>{n},"  -> extend the chart data range","  (OK)")')
+    x = apply(x, repl)
+    # drop merges inside the cleared ranges
+    def mfix(m):
+        ref = m.group(1)
+        return '' if any(overlaps(ref, rg) for rg in clear) else m.group(0)
+    x = re.sub(r'<mergeCell ref="([^"]+)"/>', mfix, x)
+    cnt = len(re.findall(r'<mergeCell ref=', x))
+    x = re.sub(r'<mergeCells count="\d+">', f'<mergeCells count="{cnt}">', x)
+    x = re.sub(r'<mergeCells count="0"></mergeCells>|<mergeCells count="0"/>', '', x)
+    wr(SP[sh], x); LOG['scope_tables'].append((sh, len(repl)))
+    # chart: re-point, names, colours, no caches
+    cp = f'{O}/xl/charts/{chart}'; cx = rd(cp)
+    shq = re.escape(html.escape(sh, quote=False))
+    cx = re.sub(rf"('{shq}'!)\$([A-E])\$\d+:\$[A-E]\$\d+", lambda m: f'{m.group(1)}${m.group(2)}${H+1}:${m.group(2)}${H+n}', cx)
+    cx = re.sub(rf"('{shq}'!)\$([B-E])\$\d+(?=</c:f>)", lambda m: f'{m.group(1)}${m.group(2)}${H}', cx)
+    cx = re.sub(r'<c:(?:num|str)Cache>.*?</c:(?:num|str)Cache>', '', cx, flags=re.S)
+    def ser(m):
+        s_ = m.group(0)
+        col = re.search(r'<c:val><c:numRef><c:f>[^<]*!\$([A-E])\$', s_).group(1)
+        if 'filteredSeriesTitle' in s_:
+            s_ = re.sub(r'(</c:val>)<c:extLst>.*$', r'\1</c:ser>', s_, flags=re.S)
+        if '<c:tx>' not in s_:
+            s_ = re.sub(r'(<c:order val="\d+"/>)', lambda k: k.group(1) + f"<c:tx><c:strRef><c:f>'{html.escape(sh, quote=False)}'!${col}${H}</c:f></c:strRef></c:tx>", s_, count=1)
+        s_ = re.sub(r'(<c:spPr>)<a:solidFill>.*?</a:solidFill>', lambda k: k.group(1) + f'<a:solidFill><a:srgbClr val="{FILL[col]}"/></a:solidFill>', s_, count=1, flags=re.S)
+        return s_
+    cx = re.sub(r'<c:ser>.*?</c:ser>', ser, cx, flags=re.S)
+    wr(cp, cx)
+json.dump(SECN, open('scope_chart_rows.json', 'w'))
+# F28b Self Assessment Results – slide 15 table B132:E138 (hand-typed) -> same SUMIFS as F25
+x = unshare(rd(SP['Self Assessment Results'])); cs = cells(x); repl = {}
+for r in range(133, 139):
+    for col, src in zip('CDE', 'GFE'):
+        a_ = cs[f'{col}{r}'].group(3) if f'{col}{r}' in cs else (cs[f'D{r}'].group(3) if f'D{r}' in cs else '')
+        repl[f'{col}{r}'] = fxml(f'{col}{r}', a_, f'IFERROR(SUMIFS(${src}$39:${src}$70,$D$39:$D$70,$B{r})/(' + tot.format(r=r) + '),0)')
+wr(SP['Self Assessment Results'], apply(x, repl)); LOG['cluster_table'].append(len(repl))
+
 # shifted "Control Area" labels in 3.Final-SAPerControl (2.x block)
 AREA = {'Customs Compliance Culture': 'Customs Awerness & Communication', 'Customs Regulatory Changes': 'Customs Awerness & Communication',
         'Country Self-Assessment & Action Plan': 'Risk Management - Self-Assessment', 'Personnel Training': 'Personal Training',

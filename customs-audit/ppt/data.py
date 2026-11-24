@@ -43,8 +43,18 @@ for s in scopes:
     for c in MF:
         v=[MF[c][l] for l in labs]; sh=share(v)
         if sh[0] or sh[1]: rows.append([c,cl[c]]+sh)
-    rows.sort(key=lambda r:(r[1]!='CAR',-r[2],-r[3],r[0]))
+    CO={'CAR':1,'CSA':2,'Canada':3,'Mexico':4,'USA':5,'Brazil':6}
+    rows.sort(key=lambda r:(CO.get(r[1],7),-r[2],-r[3],r[0]))
     sc_rows[s]=dict(controls=labs,rows=rows)
+# F28: slides 17-21 read the formula tables of the scope sheets (same order); cross-check with the matrix
+SEC={'1. About the DHL Express Global Customs Compliance Policy':('1. About the DHL Express Global',9),'2. Customs Awareness & Risk Management':('2. Customs Awareness & Risk Man',9),
+     '3. Regulatory Supervision':('3. Regulatory Supervision',8),'4. Customs Process Controls':('4. Customs Process Controls',8),'5. Customs Representation':('5. Customs Representation',8)}
+for s,(sh,H) in SEC.items():
+    xr=[]
+    for r in F[sh].iter_rows(min_row=H+1,max_row=H+32,max_col=6,values_only=True):
+        if r[0]: xr.append([r[0],r[5]]+[round(float(v or 0),4) for v in r[1:5]])
+    assert [[a[0]]+a[2:] for a in xr]==[[b[0]]+b[2:] for b in sc_rows[s]['rows']], (s,xr[:3],sc_rows[s]['rows'][:3])
+    sc_rows[s]['rows']=xr; sc_rows[s]['excel']=f"'{sh}'!A{H}:F{H+32}"
 out['scope_tables']=sc_rows
 # key countries question level per control
 kc={}

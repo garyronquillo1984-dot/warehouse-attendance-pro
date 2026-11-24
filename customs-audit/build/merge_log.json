@@ -84,6 +84,31 @@
   "ctrl_chart": [
    185
   ],
+  "scope_tables": [
+   [
+    "1. About the DHL Express Global",
+    309
+   ],
+   [
+    "2. Customs Awareness & Risk Man",
+    375
+   ],
+   [
+    "3. Regulatory Supervision",
+    352
+   ],
+   [
+    "4. Customs Process Controls",
+    234
+   ],
+   [
+    "5. Customs Representation",
+    334
+   ]
+  ],
+  "cluster_table": [
+   18
+  ],
   "area_labels": [
    9
   ],

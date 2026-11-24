@@ -3672,7 +3672,8 @@
      0.0,
      0.0
     ]
-   ]
+   ],
+   "excel": "'1. About the DHL Express Global'!A9:F41"
   },
   "Annex 1": {
    "controls": [
@@ -3927,14 +3928,6 @@
      0.0
     ],
     [
-     "Canada",
-     "Canada",
-     0.1111,
-     0.1111,
-     0.7778,
-     0.0
-    ],
-    [
      "Uruguay",
      "CSA",
      0.1111,
@@ -3957,14 +3950,6 @@
      0.1111,
      0.7778,
      0.1111
-    ],
-    [
-     "Brazil",
-     "Brazil",
-     0.0,
-     0.1111,
-     0.8889,
-     0.0
     ],
     [
      "Chile",
@@ -4005,8 +3990,25 @@
      0.1111,
      0.5556,
      0.3333
+    ],
+    [
+     "Canada",
+     "Canada",
+     0.1111,
+     0.1111,
+     0.7778,
+     0.0
+    ],
+    [
+     "Brazil",
+     "Brazil",
+     0.0,
+     0.1111,
+     0.8889,
+     0.0
     ]
-   ]
+   ],
+   "excel": "'2. Customs Awareness & Risk Man'!A9:F41"
   },
   "3. Regulatory Supervision": {
    "controls": [
@@ -4083,14 +4085,6 @@
      0.1667
     ],
     [
-     "Mexico",
-     "Mexico",
-     0.0,
-     0.1667,
-     0.8333,
-     0.0
-    ],
-    [
      "Panama",
      "CSA",
      0.0,
@@ -4105,8 +4099,17 @@
      0.1667,
      0.6667,
      0.1667
+    ],
+    [
+     "Mexico",
+     "Mexico",
+     0.0,
+     0.1667,
+     0.8333,
+     0.0
     ]
-   ]
+   ],
+   "excel": "'3. Regulatory Supervision'!A8:F40"
   },
   "4. Customs Process Controls": {
    "controls": [
@@ -4215,22 +4218,6 @@
      0.1429
     ],
     [
-     "Canada",
-     "Canada",
-     0.0714,
-     0.0714,
-     0.8571,
-     0.0
-    ],
-    [
-     "Mexico",
-     "Mexico",
-     0.0714,
-     0.0,
-     0.9286,
-     0.0
-    ],
-    [
      "Chile",
      "CSA",
      0.0,
@@ -4271,14 +4258,6 @@
      0.0714
     ],
     [
-     "USA",
-     "USA",
-     0.0,
-     0.1429,
-     0.8571,
-     0.0
-    ],
-    [
      "Argentina",
      "CSA",
      0.0,
@@ -4287,22 +4266,47 @@
      0.2143
     ],
     [
-     "Brazil",
-     "Brazil",
-     0.0,
-     0.0714,
-     0.8571,
-     0.0714
-    ],
-    [
      "Venezuela",
      "CSA",
      0.0,
      0.0714,
      0.7857,
      0.1429
+    ],
+    [
+     "Canada",
+     "Canada",
+     0.0714,
+     0.0714,
+     0.8571,
+     0.0
+    ],
+    [
+     "Mexico",
+     "Mexico",
+     0.0714,
+     0.0,
+     0.9286,
+     0.0
+    ],
+    [
+     "USA",
+     "USA",
+     0.0,
+     0.1429,
+     0.8571,
+     0.0
+    ],
+    [
+     "Brazil",
+     "Brazil",
+     0.0,
+     0.0714,
+     0.8571,
+     0.0714
     ]
-   ]
+   ],
+   "excel": "'4. Customs Process Controls'!A8:F40"
   },
   "5. Customs Representation": {
    "controls": [
@@ -4334,7 +4338,8 @@
      0.5,
      0.0
     ]
-   ]
+   ],
+   "excel": "'5. Customs Representation'!A8:F40"
   },
   "6. Reporting & Investigation of Material Violations": {
    "controls": [

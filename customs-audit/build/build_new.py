@@ -511,8 +511,36 @@ put(ws, f'A{A0+len(STAT)}', 'of which overdue (open & past due)', border=True, b
 put(ws, f'B{A0+len(STAT)}', '=SUM(ap_Overdue)', border=True, bold=True)
 widths(ws, {'A': 34, 'B': 10, 'C': 30})
 ws.freeze_panes = 'B5'
+# ---- F28 scope x country distribution from the CONTROL matrix (feeds the legacy section sheets / slides 17-24)
+MXQ = "'1. Data-Control Country Matrix'"
+CLORDER = '{"CAR","CSA","Canada","Mexico","USA","Brazil"}'
+SCB = {}
+base = A0 + len(STAT) + 5
+put(ws, f'A{base-2}', 'Scope × Country control-level distribution (from 1. Data-Control Country Matrix; feeds section sheets 1.–5. / slides 17-21)',
+    bold=True, color=NAVY, size=11)
+for s in SCOPES:
+    ctl = [c for c in CTRL if M[c['qs'][0] - 1]['scope'] == s]
+    ra, rb = min(c['rows'][0] for c in ctl), max(c['rows'][-1] for c in ctl)
+    h = base; r0, r1 = h + 1, h + NC
+    put(ws, f'A{h-1}', s, bold=True, color=BLUE)
+    put(ws, f'D{h-1}', f'Controls: {len(ctl)} (matrix rows {ra}-{rb})', size=9, italic=True)
+    put(ws, f'J{h-1}', 'Countries with IC or MC:', size=9, bold=True); put(ws, f'M{h-1}', f'=SUM(M{r0}:M{r1})', bold=True)
+    header_row(ws, h, 1, ['Country', 'Cluster', 'Cluster order', 'Insufficient', 'Moderate', 'Under Control', 'N/A', 'Controls',
+                          'IC %', 'MC %', 'UC %', 'N/A %', 'Gap (IC or MC)', 'Sort key', 'Rank (gap countries)'], height=30)
+    for i, c in enumerate(REG):
+        r = r0 + i; mc_ = c['matrix_col']; rg = f'{MXQ}!${mc_}${ra}:${mc_}${rb}'
+        vals = [f'=$A${C0+i}', f'=IFERROR(INDEX({{"CAR","Canada","Mexico","USA","Brazil","CSA","CSA"}},MATCH($C${C0+i},{{"Caribbean","CA","MX","US","BR","CO","CSA"}},0)),$C${C0+i})', f'=IFERROR(MATCH(B{r},{CLORDER},0),7)',
+                f'=COUNTIF({rg},"INSUFFICIENT CONTROL")', f'=COUNTIF({rg},"MODERATE CONTROL")', f'=COUNTIF({rg},"UNDER CONTROL")',
+                f'=COUNTIF({rg},"N/A")', len(ctl), f'=IF($H{r}=0,"",D{r}/$H{r})', f'=IF($H{r}=0,"",E{r}/$H{r})',
+                f'=IF($H{r}=0,"",F{r}/$H{r})', f'=IF($H{r}=0,"",G{r}/$H{r})', f'=IF(D{r}+E{r}>0,1,0)',
+                f'=IF(M{r}=1,C{r}*1000+(1-I{r})*100+(1-J{r})+COUNTIF($A${r0}:$A${r1},"<"&A{r})/1000,99999)',
+                f'=IF(M{r}=1,RANK(N{r},$N${r0}:$N${r1},1),"")']
+        for j, v in enumerate(vals):
+            cc = ws.cell(r, j + 1, v); cell_style(cc, size=9, fmt=PCT if 9 <= j + 1 <= 12 else None)
+    SCB[s] = dict(h=h, r0=r0, r1=r1, n=len(ctl))
+    base = r1 + 4
 LAY = dict(C0=C0, C1=C1, TOT=TOT, S0=S0, S1=S1, X0=X0, X1=X1, MAT=MAT, Q0=Q0, Q1=Q1, A0=A0, NS=NS, CEC=CEC, AP_H=AP_H, AP_LAST=AP_LAST,
-           SD_H=SD_H, SD_LAST=SD_LAST, REG_ROW0=REG_ROW0)
+           SD_H=SD_H, SD_LAST=SD_LAST, REG_ROW0=REG_ROW0, SCB=SCB)
 
 # ======================================================================= 02 COUNTRY RANKING
 ws = WS[R]
@@ -1001,6 +1029,31 @@ for i in range(NC):
 content.build_text_sheets(WS, LAY, globals())
 content.build_ppt_sheet(WS, LAY, globals())
 content.build_test_archive(WS)
+
+# F28 archive of the hand-typed slide tables replaced by formulas (values as cached in the ORIGINAL workbook)
+import openpyxl as _ox, re
+ARCH28 = [('1. About the DHL Express Global', ['A9:E41', 'I9:N39']), ('2. Customs Awareness & Risk Man', ['A9:E41', 'H9:L56']),
+          ('3. Regulatory Supervision', ['A8:E40', 'I8:M43']), ('4. Customs Process Controls', ['A8:E40', 'G25:K38']),
+          ('5. Customs Representation', ['A8:E40', 'H8:L44']), ('Self Assessment Results', ['B132:E138'])]
+_ow = _ox.load_workbook('../Self-Assessment_Matrix_2026___v1__DRAFT.xlsx', read_only=True, data_only=True)
+ws = WS[AR]
+r = ws.max_row + 3
+put(ws, f'A{r}', "F28 – hand-typed slide tables replaced by formulas (original values, as stored in the DRAFT workbook)", bold=True, color=NAVY, size=11); r += 1
+put(ws, f'A{r}', 'Kept for traceability only. Current values: the formula tables in the same sheets (sorted from 13 – Calc Engine).', italic=True, size=9); r += 1
+header_row(ws, r, 1, ['Sheet', 'Range', 'Row', 'Col 1', 'Col 2', 'Col 3', 'Col 4', 'Col 5', 'Col 6']); r += 1
+for sh, rngs in ARCH28:
+    for rg in rngs:
+        _r0 = int(re.match(r'[A-Z]+(\d+)', rg).group(1))
+        for _i, row in enumerate(_ow[sh][rg]):
+            vals = [getattr(c, 'value', None) for c in row]
+            if all(v is None for v in vals): continue
+            out = [sh, rg, _r0 + _i] + [(round(v, 4) if isinstance(v, float) else v) for v in vals]
+            for j, v in enumerate(out):
+                cc = ws.cell(r, j + 1, v)
+                if isinstance(v, str): cc.data_type = 's'
+                cell_style(cc, size=8)
+            r += 1
+_ow.close()
 
 for w in WS.values():
     w.page_setup.orientation = 'landscape'; w.page_setup.fitToWidth = 1; w.page_setup.fitToHeight = 0

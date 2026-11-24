@@ -82,5 +82,55 @@
  "AP_LAST": 315,
  "SD_H": 4,
  "SD_LAST": 1956,
- "REG_ROW0": 74
+ "REG_ROW0": 74,
+ "SCB": {
+  "1. About the DHL Express Global Customs Compliance Policy": {
+   "h": 415,
+   "r0": 416,
+   "r1": 447,
+   "n": 2
+  },
+  "Annex 1": {
+   "h": 451,
+   "r0": 452,
+   "r1": 483,
+   "n": 1
+  },
+  "2. Customs Awareness & Risk Management": {
+   "h": 487,
+   "r0": 488,
+   "r1": 519,
+   "n": 9
+  },
+  "3. Regulatory Supervision": {
+   "h": 523,
+   "r0": 524,
+   "r1": 555,
+   "n": 6
+  },
+  "4. Customs Process Controls": {
+   "h": 559,
+   "r0": 560,
+   "r1": 591,
+   "n": 14
+  },
+  "5. Customs Representation": {
+   "h": 595,
+   "r0": 596,
+   "r1": 627,
+   "n": 2
+  },
+  "6. Reporting & Investigation of Material Violations": {
+   "h": 631,
+   "r0": 632,
+   "r1": 663,
+   "n": 1
+  },
+  "7. Escalations": {
+   "h": 667,
+   "r0": 668,
+   "r1": 699,
+   "n": 1
+  }
+ }
 }
