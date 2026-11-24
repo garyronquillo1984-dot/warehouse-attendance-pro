@@ -37,8 +37,9 @@ const fp = (s, t, orig, change, src) => {
   return sl;
 };
 const chartBase = (o) => Object.assign({ barGrouping: 'percentStacked', chartColors: [IC, MC, UC, NA], showValue: true, dataLabelPosition: 'ctr', dataLabelFormatCode: '0%;;;',
-  dataLabelFontSize: 7, dataLabelColor: '000000', catAxisLabelFontSize: 7, valAxisLabelFontSize: 7, valAxisLabelFormatCode: '0%', showLegend: true, legendPos: 'b', legendFontSize: 8,
-  valGridLine: { color: 'E7E6E6', size: 0.5 }, catGridLine: { style: 'none' }, catAxisLabelFontFace: 'Calibri', valAxisLabelFontFace: 'Calibri', dataLabelFontFace: 'Calibri', legendFontFace: 'Calibri' }, o);
+  dataLabelFontSize: 7, dataLabelColor: '000000', catAxisLabelFontSize: 7, valAxisLabelFontSize: 7, valAxisLabelFormatCode: '0%', showLegend: true, legendPos: 'b', legendFontSize: 7,
+  valGridLine: { color: 'E7E6E6', size: 0.5 }, catGridLine: { style: 'none' }, catAxisLabelFontFace: 'Calibri', valAxisLabelFontFace: 'Calibri', dataLabelFontFace: 'Calibri', legendFontFace: 'Calibri', catAxisLabelFrequency: 1,
+  chartArea: { fill: { color: 'FFFFFF' }, border: { pt: 0.75, color: '8C8C8C' }, roundedCorners: false }, layout: { x: 0.03, y: 0.03, w: 0.94, h: 0.84 } }, o);
 const series = (rows, idx0 = 1) => ['INSUFFICIENT CONTROL', 'MODERATE CONTROL', 'UNDER CONTROL', 'N/A'].map((n, k) => ({ name: n, labels: rows.map(r => r[0]), values: rows.map(r => r[idx0 + k]) }));
 const short = s => s.replace('1. About the DHL Express Global Customs Compliance Policy', '1. About the DHL Policy').replace('6. Reporting & Investigation of Material Violations', '6. Reporting & Investigation').replace('2. Customs Awareness & Risk Management', '2. Customs Awareness & Risk Mgmt');
 const hdr = (arr, size = 8) => arr.map(t => ({ text: t, options: { bold: true, color: 'FFFFFF', fill: { color: '1F3864' }, fontSize: size, align: 'center', valign: 'middle' } }));
@@ -53,10 +54,10 @@ let s;
 pres.addSection({ title: 'Overview results' });
 s = fp('Overview results', 'Overview Results Per Section/Scope', 4, 'Original used the defective consolidated table (9 countries all N/A).', 'P04 – Results by Scope');
 const s4 = [...D.s4].sort((a, b) => (b[1] + b[2]) - (a[1] + a[2]));
-s.addChart(pres.charts.BAR, series(s4.map(r => [short(r[0])].concat(r.slice(1)))), chartBase({ x: 0.35, y: 1.4, w: 9.3, h: 5.4, barDir: 'col', catAxisLabelFontSize: 8, dataLabelFontSize: 8 }));
+s.addChart(pres.charts.BAR, series(s4.map(r => [short(r[0])].concat(r.slice(1)))), chartBase({ x: 0.3, y: 1.35, w: 9.4, h: 5.55, barDir: 'col', catAxisLabelFontSize: 8, dataLabelFontSize: 8, layout: { x: 0.05, y: 0.03, w: 0.93, h: 0.76 } }));
 // ---------- slide 5
 s = fp('Overview results', 'Overview Results: Control Per Country', 5, 'Corrected control matrix (36 controls; N/A shown).', 'P05 – Control per Country');
-s.addChart(pres.charts.BAR, series(D.s5), chartBase({ x: 0.2, y: 1.35, w: 9.6, h: 5.55, barDir: 'col', catAxisLabelRotate: 315, dataLabelFontSize: 6 }));
+s.addChart(pres.charts.BAR, series(D.s5), chartBase({ x: 0.3, y: 1.35, w: 9.4, h: 5.55, barDir: 'bar', catAxisOrientation: 'maxMin', catAxisLabelFontSize: 7, dataLabelFontSize: 6, layout: { x: 0.17, y: 0.02, w: 0.81, h: 0.88 } }));
 // ---------- slides 6-8
 const countries = Object.keys(D.matrix).sort();
 const groups = [countries.slice(0, 10), countries.slice(10, 21), countries.slice(21)];
@@ -74,11 +75,11 @@ const kt = (x, title, list, col) => {
     { x, y: 2.0, w: 3.6, colW: [2.8, 0.8], rowH: 0.42, border: { type: 'solid', pt: 1, color: col }, valign: 'middle' });
 };
 kt(1.0, 'Insufficient Control', D.s9_ic, IC); kt(5.2, 'Moderate Control', D.s9_mc, 'FFC000');
-s.addText('Insufficient: countries with ≥ 3 Insufficient answers. Moderate: countries with ≥ 5 Moderate answers. Source: 02 – Country Ranking.', { x: 1.0, y: 5.6, w: 8, h: 0.4, fontSize: 9, italic: true, color: GREY, margin: 0, isTextBox: true });
+s.addText('Insufficient: countries with ≥ 3 Insufficient answers. Moderate: countries with ≥ 5 Moderate answers. Counts of answers per country (07 – Source Data).', { x: 1.0, y: 5.6, w: 8, h: 0.4, fontSize: 9, italic: true, color: GREY, margin: 0, isTextBox: true });
 // ---------- slide 10
 s = fp('Overview results', 'Overview Results per Control', 10, 'Rebuilt for the 36 Policy Sections of the questionnaire (share of answers incl. N/A).', 'P10 – Results per Control');
 const s10 = D.s10;  // same order and values as P10 (Under Control % ascending)
-s.addChart(pres.charts.BAR, series(s10), chartBase({ x: 0.2, y: 1.35, w: 9.6, h: 5.6, barDir: 'bar', catAxisOrientation: 'maxMin', catAxisLabelFontSize: 6.5, dataLabelFontSize: 6 }));
+s.addChart(pres.charts.BAR, series(s10), chartBase({ x: 0.3, y: 1.35, w: 9.4, h: 5.55, barDir: 'bar', catAxisOrientation: 'maxMin', catAxisLabelFontSize: 6.5, dataLabelFontSize: 6, layout: { x: 0.33, y: 0.02, w: 0.65, h: 0.9 } }));
 // ---------- slide 11
 pres.addSection({ title: 'Risk assessment' });
 s = fp('Risk assessment', 'Risk Assessment by Control (Data)', 11, 'Counts recalculated from the corrected matrix; same weights and thresholds as the original sheet.', 'P11 – Control Risk (AM)');
@@ -91,17 +92,17 @@ s.addTable(t11, { x: 0.3, y: 1.35, w: 9.4, colW: [3.1, 0.85, 0.95, 1.05, 0.55, 0
 s = fp('Risk assessment', 'Risk Assessment by Control', 12, 'Chart of corrected slide 11.', 'P11 – Control Risk (AM)');
 const cls = ['INSUFFICIENT CONTROL', 'MODERATE CONTROL', 'UNDER CONTROL'];
 s.addChart(pres.charts.BAR, cls.map(c => ({ name: c, labels: D.s11.map(r => r[0]), values: D.s11.map(r => r[8] === c ? r[7] : 0) })),
-  chartBase({ x: 0.2, y: 1.35, w: 9.6, h: 5.6, barDir: 'col', barGrouping: 'stacked', chartColors: [IC, MC, UC], dataLabelFormatCode: '0%;;;', dataLabelPosition: 'inEnd', valAxisMinVal: 0, valAxisMaxVal: 1, catAxisLabelRotate: 315, catAxisLabelFontSize: 6, dataLabelFontSize: 6, showTitle: true, title: 'Key Controls', titleFontSize: 12, titleFontFace: 'Calibri' }));
+  chartBase({ x: 0.3, y: 1.35, w: 9.4, h: 5.55, barDir: 'bar', catAxisOrientation: 'maxMin', layout: { x: 0.33, y: 0.07, w: 0.64, h: 0.83 }, barGrouping: 'stacked', chartColors: [IC, MC, UC], dataLabelFormatCode: '0%;;;', dataLabelPosition: 'inEnd', valAxisMinVal: 0, valAxisMaxVal: 1, catAxisLabelFontSize: 6.5, dataLabelFontSize: 6, titleFontFace: 'Calibri' }));
 // ---------- slide 13
 s = fp('Risk assessment', 'Self-Assessment Compliance', 13, 'Corrected weighted score per country (Under 1, Moderate 0.75, Insufficient 0; N/A excluded).', 'P13 – Compliance % Country');
 s.addChart(pres.charts.BAR, [{ name: 'MODERATE CONTROL (< 91%)', labels: D.s13.map(r => r[0]), values: D.s13.map(r => r[1] < 0.91 ? r[1] : 0) }, { name: 'UNDER CONTROL (≥ 91%)', labels: D.s13.map(r => r[0]), values: D.s13.map(r => r[1] >= 0.91 ? r[1] : 0) }],
-  chartBase({ x: 0.2, y: 1.35, w: 9.6, h: 5.6, barDir: 'col', barGrouping: 'stacked', chartColors: [MC, UC], dataLabelPosition: 'inEnd', dataLabelFormatCode: '0%;;;', valAxisMinVal: 0, valAxisMaxVal: 1, catAxisLabelRotate: 315, dataLabelFontSize: 6.5 }));
+  chartBase({ x: 0.3, y: 1.35, w: 9.4, h: 5.55, barDir: 'bar', catAxisOrientation: 'maxMin', barGrouping: 'stacked', chartColors: [MC, UC], dataLabelPosition: 'inEnd', dataLabelFormatCode: '0.0%;;;', valAxisMinVal: 0, valAxisMaxVal: 1, catAxisLabelFontSize: 7, dataLabelFontSize: 6.5, layout: { x: 0.17, y: 0.02, w: 0.81, h: 0.88 } }));
 // ---------- slide 15
 pres.addSection({ title: 'Results by cluster and section' });
 s = fp('Results by cluster and section', 'Self-Assessment Per Cluster', 15, 'Corrected matrix; N/A column added.', 'P15 – Results per Cluster');
-s.addTable([hdr(['CLUSTER', 'INSUFFICIENT', 'MODERATE', 'UNDER', 'N/A'], 9)].concat(D.s15.map(r => [{ text: r[0], options: { fontSize: 10, bold: true } }].concat(r.slice(1).map(v => ({ text: v ? pct(v) : '', options: { fontSize: 10, align: 'center' } }))))),
-  { x: 0.3, y: 2.3, w: 4.2, colW: [1.0, 0.9, 0.8, 0.75, 0.75], rowH: 0.35, border: { type: 'solid', pt: 0.5, color: 'BFBFBF' }, valign: 'middle' });
-s.addChart(pres.charts.BAR, series(D.s15), chartBase({ x: 4.7, y: 1.35, w: 5.1, h: 5.5, barDir: 'col', dataLabelFontSize: 8 }));
+s.addTable([hdr(['CLUSTER', 'INSUFFICIENT CONTROL', 'MODERATE CONTROL', 'UNDER CONTROL', 'N/A'], 7.5)].concat(D.s15.map(r => [{ text: r[0], options: { fontSize: 10, bold: true } }].concat(r.slice(1).map(v => ({ text: v ? pct(v) : '', options: { fontSize: 10, align: 'center' } }))))),
+  { x: 0.3, y: 1.35, w: 4.25, colW: [0.85, 0.95, 0.85, 0.85, 0.75], rowH: 0.4, border: { type: 'solid', pt: 0.5, color: 'BFBFBF' }, valign: 'middle' });
+s.addChart(pres.charts.BAR, series(D.s15), chartBase({ x: 4.7, y: 1.35, w: 5.0, h: 5.55, barDir: 'col', dataLabelFontSize: 8, layout: { x: 0.08, y: 0.03, w: 0.9, h: 0.8 } }));
 // ---------- slides 17-24
 const scopeSlides = [['1. About the DHL Express Global Customs Compliance Policy', 17, 'About the DHL Express Global Customs Compliance Policy (1.6 / 1.7)'], ['2. Customs Awareness & Risk Management', 18, 'Customs Awareness & Risk Management'],
   ['3. Regulatory Supervision', 19, 'Regulatory Supervision'], ['4. Customs Process Controls', 20, 'Customs Process Controls'], ['5. Customs Representation', 21, 'Customs Representation'],
@@ -111,9 +112,10 @@ scopeSlides.forEach(([key, n, ttl]) => {
   s = fp('Results by cluster and section', ttl, n, 'Countries with at least one Moderate/Insufficient control in this section, corrected matrix.', st.excel ? st.excel.split('!')[0].replace(/'/g, '') : '');
   const rows = [hdr(['COUNTRY', 'CLUSTER', 'INSUFF.', 'MODERATE', 'UNDER', 'N/A'], 8)].concat(st.rows.map(r => [{ text: r[0], options: { fontSize: 8 } }, { text: r[1], options: { fontSize: 8, align: 'center' } }].concat(r.slice(2).map((v, k) => ({ text: v ? pct(v) : '', options: { fontSize: 8, align: 'center', bold: k < 2 && v > 0, color: k === 0 && v > 0 ? 'C00000' : '000000' } })))));
   const rh = Math.min(0.24, 5.0 / rows.length);
-  s.addTable(rows, { x: 0.3, y: 1.4, w: 4.6, colW: [1.55, 0.75, 0.6, 0.65, 0.55, 0.5], rowH: rh, border: { type: 'solid', pt: 0.4, color: 'BFBFBF' }, valign: 'middle', margin: 0.02 });
+  const th = Math.max(2.6, rh * rows.length + 0.75);
+  s.addTable(rows, { x: 0.3, y: 1.35, w: 4.6, colW: [1.55, 0.75, 0.6, 0.65, 0.55, 0.5], rowH: rh, border: { type: 'solid', pt: 0.4, color: 'BFBFBF' }, valign: 'middle', margin: 0.02 });
   s.addText(`${st.controls.length} control(s) in this section: ${st.controls.join('; ')}.`, { x: 0.3, y: 6.55, w: 9.4, h: 0.4, fontSize: 8, italic: true, color: GREY, margin: 0, valign: 'top', isTextBox: true });
-  s.addChart(pres.charts.BAR, series(st.rows.map(r => [r[0]].concat(r.slice(2)))), chartBase({ x: 5.1, y: 1.35, w: 4.7, h: Math.min(5.15, 1.0 + 0.32 * st.rows.length), barDir: 'bar', catAxisOrientation: 'maxMin', dataLabelFontSize: 7, catAxisLabelFontSize: 7 }));
+  s.addChart(pres.charts.BAR, series(st.rows.map(r => [r[0]].concat(r.slice(2)))), chartBase({ x: 5.05, y: 1.35, w: 4.65, h: Math.min(5.15, th), barDir: 'bar', catAxisOrientation: 'maxMin', dataLabelFontSize: 7, catAxisLabelFontSize: 7, legendFontSize: 6.5, layout: { x: 0.3, y: 0.06, w: 0.66, h: Math.max(0.55, 1 - 0.75 / Math.min(5.15, th) - 0.08) } }));
 });
 // ---------- key country slides
 pres.addSection({ title: 'Areas of opportunity' });
